@@ -1,28 +1,30 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "errors.h"
+
 enum action_t
 {
-    LOAD;
-    MOVE;
-    SCALE;
-    TURN;
-    DRAW;
-    QUIT;
+    LOAD,
+    MOVE,
+    SCALE,
+    TURN,
+    DRAW,
+    QUIT
 };
 
-struct transform_data_t
+struct transform_t
 {
-    double dx, dy, dz;
+    double x, y, z;
 };
 
 struct request_t
 {
     action_t action;
     const char *filename;
-    transform_data_t transform;
+    transform_t transform;
 };
 
-err_t handle_request(request_t req);
+err_t handle_request(const request_t &request);
 
 #endif

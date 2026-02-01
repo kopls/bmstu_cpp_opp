@@ -2,6 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QLineEdit>
+
+#include "ui_mainwindow.h"
+#include "request.h"
+#include "errors.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,6 +28,9 @@ private slots:
 
 
 private:
+    err_t read_params(QLineEdit *e1, QLineEdit *e2, QLineEdit *e3, transform_t &params);
+    void handle_rc(const err_t rc);
+
     Ui::MainWindow *ui;
 };
 
