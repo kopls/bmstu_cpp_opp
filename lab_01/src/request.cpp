@@ -23,6 +23,7 @@ err_t handle_request(const request_t &request)
         break;
     case DRAW:
         printf("Action: DRAW\n");
+        rc = draw_figure(figure, request.canvas);
         break;
     case QUIT:
         printf("Action: QUIT\n");

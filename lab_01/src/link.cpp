@@ -26,7 +26,7 @@ err_t read_links_arr_len(links_arr_t &links, FILE *file)
 err_t allocate_links_arr(links_arr_t &links)
 {
     links.data = (link_t *)malloc(links.len * sizeof(link_t));
-    if (!links_data)
+    if (!links.data)
         return ERR_MEMORY_LINKS_ARR;
 
     return ERR_OK;
@@ -42,8 +42,8 @@ err_t read_link(link_t &link, FILE *file)
 
 err_t read_links_data(links_arr_t &links, FILE *file)
 {
-    err_t rc = OK;
-    for (int i = 0; i < links.len; i++)
+    err_t rc = ERR_OK;
+    for (size_t i = 0; i < links.len; i++)
         rc = read_link(links.data[i], file);
 
     return rc;
@@ -65,7 +65,7 @@ err_t read_links(links_arr_t &links, FILE *file)
     return rc;
 }
 
-err_t check_link(const link_t &link, int max_vertex_num)
+err_t check_link(const link_t &link, const size_t max_vertex_num)
 {
     if (!link.vertex1 || link.vertex1 > max_vertex_num
         || !link.vertex2 || link.vertex2 > max_vertex_num)
@@ -74,10 +74,10 @@ err_t check_link(const link_t &link, int max_vertex_num)
     return ERR_OK;
 }
 
-err_t check_links(const links_arr_t &links, const int max_vertex_num)
+err_t check_links(const links_arr_t &links, const size_t max_vertex_num)
 {
     err_t rc = ERR_OK;   
-    for (int i = 0; i < links.len && !rc; i++)
+    for (size_t i = 0; i < links.len && !rc; i++)
         rc = check_link(links.data[i], max_vertex_num);
 
     return rc;

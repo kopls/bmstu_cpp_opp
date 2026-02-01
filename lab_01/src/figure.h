@@ -1,13 +1,14 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 
+#include "errors.h"
 #include "vertex.h"
 #include "link.h"
 
 struct figure_t
 {
     vertex_t centre;
-    vertex_arr_t vertexes;
+    vertexes_arr_t vertexes;
     links_arr_t links;
 };
 

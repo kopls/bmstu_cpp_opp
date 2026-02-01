@@ -5,19 +5,38 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    scene->setSceneRect(0, 0, 922, 733);
+    ui->graphicsView->setScene(scene);
 }
 
 
 MainWindow::~MainWindow()
 {
+    request_t quit_request;
+    quit_request.action = QUIT;
+    handle_request(quit_request);
     delete ui;
+}
+
+canvas_t MainWindow::init_canvas()
+{
+    static canvas_t canvas;
+
+    canvas.scene = ui->graphicsView->scene();
+    canvas.width = canvas.scene->width();
+    canvas.height = canvas.scene->height();
+
+    return canvas;
 }
 
 void MainWindow::handle_rc(const err_t rc)
 {
     if (!rc)
     {
-        request_t draw_request = {.action = DRAW};
+        canvas_t canvas = init_canvas();
+        request_t draw_request = {.action = DRAW, .canvas = canvas};
         handle_request(draw_request);
     }
     else

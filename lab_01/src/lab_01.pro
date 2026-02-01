@@ -9,11 +9,19 @@ SOURCES += \
     mainwindow.cpp \
     request.cpp \
     errors.cpp \
+    link.cpp \
+    vertex.cpp \
+    draw.cpp \
+    figure.cpp \
 
 HEADERS += \
     mainwindow.h \
     request.h \
     errors.h \
+    link.h \
+    vertex.h \
+    draw.h \
+    figure.h \
 
 
 FORMS += \

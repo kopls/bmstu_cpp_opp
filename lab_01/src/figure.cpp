@@ -14,7 +14,7 @@ figure_t &figure_init(void)
 void destroy_figure(figure_t &figure)
 {
     vertex_init(figure.centre);
-    destroy_vertex_arr(figure.vertexes);
+    destroy_vertexes_arr(figure.vertexes);
     destroy_links_arr(figure.links);
 }
 
@@ -35,7 +35,7 @@ err_t read_figure(figure_t &figure, FILE *file)
         return rc;
     }
 
-    rc = check_links(figure.links, get_vertex_num(figure.vertexes)); 
+    rc = check_links(figure.links, get_vertexes_num(figure.vertexes)); 
     if (rc)
         destroy_figure(figure);
 
@@ -62,19 +62,3 @@ err_t load_figure(figure_t &figure, const char *filename)
 
     return rc;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

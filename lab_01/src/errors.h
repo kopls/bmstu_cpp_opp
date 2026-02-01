@@ -12,7 +12,10 @@ enum err_t
     ERR_READ_LINKS_LEN,
     ERR_VALUE_LINKS_LEN,
     ERR_MEMORY_LINKS_ARR,
-    ERR_BAD_LINK
+    ERR_BAD_LINK,
+    ERR_DRAW_DATA,
+    ERR_READ_LINK,
+    ERR_OPEN_FILE
 };
 
 void handle_error(const err_t rc);

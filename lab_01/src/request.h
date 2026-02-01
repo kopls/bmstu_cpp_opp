@@ -1,6 +1,8 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "figure.h"
+#include "draw.h"
 #include "errors.h"
 
 enum action_t
@@ -23,6 +25,7 @@ struct request_t
     action_t action;
     const char *filename;
     transform_t transform;
+    canvas_t canvas;
 };
 
 err_t handle_request(const request_t &request);
