@@ -1,5 +1,6 @@
 #include "request.h"
-#include "stdio.h"
+#include "figure.h"
+#include "draw.h"
 
 err_t handle_request(const request_t &request)
 {
@@ -14,12 +15,15 @@ err_t handle_request(const request_t &request)
         break;
     case MOVE:
         printf("Action: MOVE by %f %f %f\n", request.transform.x, request.transform.y, request.transform.z);
+        rc = move_figure(figure, request.transform);
         break;
     case SCALE:
         printf("Action: SCALE by %f %f %f\n", request.transform.x, request.transform.y, request.transform.z);
+        rc = scale_figure(figure, request.transform);
         break;
     case TURN:
         printf("Action: TURN  by %f %f %f\n", request.transform.x, request.transform.y, request.transform.z);
+        rc = turn_figure(figure, request.transform);
         break;
     case DRAW:
         printf("Action: DRAW\n");

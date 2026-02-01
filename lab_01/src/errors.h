@@ -15,7 +15,8 @@ enum err_t
     ERR_BAD_LINK,
     ERR_DRAW_DATA,
     ERR_READ_LINK,
-    ERR_OPEN_FILE
+    ERR_OPEN_FILE,
+    ERR_NO_DATA
 };
 
 void handle_error(const err_t rc);

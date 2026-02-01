@@ -1,3 +1,6 @@
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "vertex.h"
 
 void vertex_init(vertex_t &vertex)
@@ -75,4 +78,112 @@ err_t read_vertexes(vertexes_arr_t &vertexes, FILE *file)
         destroy_vertexes_arr(vertexes);
 
     return rc;
+}
+
+void move_vertex(vertex_t &vertex, const transform_t &transform)
+{
+    vertex.x += transform.x;
+    vertex.y += transform.y;
+    vertex.z += transform.z;
+}
+
+err_t move_vertexes(vertexes_arr_t &vertexes, const transform_t &transform)
+{
+    if (!vertexes.data || !vertexes.len)
+        return ERR_NO_DATA;
+
+    for (size_t i = 0; i < vertexes.len; i++)
+        move_vertex(vertexes.data[i], transform);
+
+    return ERR_OK;
+}
+
+void scale_vertex(vertex_t &vertex, const vertex_t &centre, const transform_t &scale)
+{
+    vertex.x = centre.x + scale.x * (vertex.x - centre.x);
+    vertex.y = centre.y + scale.y * (vertex.y - centre.y);
+    vertex.z = centre.z + scale.z * (vertex.z - centre.z);
+}
+
+err_t scale_vertexes(vertexes_arr_t &vertexes, const vertex_t &centre, const transform_t &scale)
+{
+    if (!vertexes.data || !vertexes.len)
+        return ERR_NO_DATA;
+
+    for (size_t i = 0; i < vertexes.len; i++)
+        scale_vertex(vertexes.data[i], centre, scale);
+
+    return ERR_OK;
+}
+
+double to_radians(const double angle)
+{
+    return M_PI / 180 * angle;
+}
+
+void xturn_vertex(vertex_t &vertex, const double angle)
+{
+    double rad_angle = to_radians(angle);
+    double cos_a = cos(rad_angle);
+    double sin_a = sin(rad_angle);
+    double tmp_y = vertex.y;
+
+    vertex.y = vertex.y * cos_a - vertex.z * sin_a;
+    vertex.z = tmp_y * sin_a + vertex.z * cos_a;
+}
+
+void yturn_vertex(vertex_t &vertex, const double angle)
+{
+    double rad_angle = to_radians(angle);
+    double cos_a = cos(rad_angle);
+    double sin_a = sin(rad_angle);
+    double tmp_x = vertex.x;
+
+    vertex.x = vertex.x * cos_a - vertex.z * sin_a;
+    vertex.z = tmp_x * sin_a + vertex.z * cos_a;
+}
+
+void zturn_vertex(vertex_t &vertex, const double angle)
+{
+    double rad_angle = to_radians(angle);
+    double cos_a = cos(rad_angle);
+    double sin_a = sin(rad_angle);
+    double tmp_x = vertex.x;
+
+    vertex.x = vertex.x * cos_a - vertex.y * sin_a;
+    vertex.y = tmp_x * sin_a + vertex.y * cos_a;
+}
+
+void move_to_centre(vertex_t &vertex, const vertex_t &centre)
+{
+    vertex.x -= centre.x;
+    vertex.y -= centre.y;
+    vertex.z -= centre.z;
+}
+
+void move_back(vertex_t &vertex, const vertex_t &centre)
+{
+    vertex.x += centre.x;
+    vertex.y += centre.y;
+    vertex.z += centre.z;
+}
+
+void turn_vertex(vertex_t &vertex, const vertex_t &centre, const transform_t &turn)
+{
+    move_to_centre(vertex, centre);
+    xturn_vertex(vertex, turn.x);
+    yturn_vertex(vertex, turn.y);
+    zturn_vertex(vertex, turn.z);
+    move_back(vertex, centre);
+}
+
+err_t turn_vertexes(vertexes_arr_t &vertexes, const vertex_t &centre, const transform_t &turn)
+{
+    if (!vertexes.data || !vertexes.len)
+        return ERR_NO_DATA;
+
+    for (size_t i = 0; i < vertexes.len; i++)
+        turn_vertex(vertexes.data[i], centre, turn);
+
+    return ERR_OK;
 }

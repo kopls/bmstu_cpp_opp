@@ -13,6 +13,7 @@ SOURCES += \
     vertex.cpp \
     draw.cpp \
     figure.cpp \
+    canvas.cpp \
 
 HEADERS += \
     mainwindow.h \
@@ -22,6 +23,7 @@ HEADERS += \
     vertex.h \
     draw.h \
     figure.h \
+    canvas.h \
 
 
 FORMS += \

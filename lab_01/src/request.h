@@ -1,8 +1,7 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
-#include "figure.h"
-#include "draw.h"
+#include "canvas.h"
 #include "errors.h"
 
 enum action_t

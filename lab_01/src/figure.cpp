@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "figure.h"
 
 figure_t &figure_init(void)
@@ -60,5 +61,24 @@ err_t load_figure(figure_t &figure, const char *filename)
         figure = tmp_figure;
     }
 
+    return rc;
+}
+
+err_t move_figure(figure_t &figure, const transform_t &transform)
+{
+    move_vertex(figure.centre, transform);
+    err_t rc = move_vertexes(figure.vertexes, transform);
+    return rc;
+}
+
+err_t scale_figure(figure_t &figure, const transform_t &transform)
+{
+    err_t rc = scale_vertexes(figure.vertexes, figure.centre, transform);
+    return rc;
+}
+
+err_t turn_figure(figure_t &figure, const transform_t &transform)
+{
+    err_t rc = turn_vertexes(figure.vertexes, figure.centre, transform);
     return rc;
 }

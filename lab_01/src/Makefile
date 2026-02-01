@@ -59,7 +59,8 @@ SOURCES       = main.cpp \
 		link.cpp \
 		vertex.cpp \
 		draw.cpp \
-		figure.cpp moc_mainwindow.cpp
+		figure.cpp \
+		canvas.cpp moc_mainwindow.cpp
 OBJECTS       = main.o \
 		mainwindow.o \
 		request.o \
@@ -68,6 +69,7 @@ OBJECTS       = main.o \
 		vertex.o \
 		draw.o \
 		figure.o \
+		canvas.o \
 		moc_mainwindow.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -152,14 +154,16 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		link.h \
 		vertex.h \
 		draw.h \
-		figure.h main.cpp \
+		figure.h \
+		canvas.h main.cpp \
 		mainwindow.cpp \
 		request.cpp \
 		errors.cpp \
 		link.cpp \
 		vertex.cpp \
 		draw.cpp \
-		figure.cpp
+		figure.cpp \
+		canvas.cpp
 QMAKE_TARGET  = lab_01
 DESTDIR       = 
 TARGET        = lab_01
@@ -343,8 +347,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h request.h errors.h link.h vertex.h draw.h figure.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp request.cpp errors.cpp link.cpp vertex.cpp draw.cpp figure.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h request.h errors.h link.h vertex.h draw.h figure.h canvas.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp request.cpp errors.cpp link.cpp vertex.cpp draw.cpp figure.cpp canvas.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -382,11 +386,12 @@ compiler_moc_header_clean:
 moc_mainwindow.cpp: mainwindow.h \
 		ui_mainwindow.h \
 		figure.h \
-		vertex.h \
-		errors.h \
-		link.h \
-		draw.h \
 		request.h \
+		draw.h \
+		canvas.h \
+		errors.h \
+		vertex.h \
+		link.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artyom/Programing/repositories/cpp_oop/lab_01/src/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artyom/Programing/repositories/cpp_oop/lab_01/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
@@ -415,53 +420,70 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 main.o: main.cpp mainwindow.h \
 		ui_mainwindow.h \
 		figure.h \
-		vertex.h \
-		errors.h \
-		link.h \
+		request.h \
 		draw.h \
-		request.h
+		canvas.h \
+		errors.h \
+		vertex.h \
+		link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 mainwindow.o: mainwindow.cpp mainwindow.h \
 		ui_mainwindow.h \
 		figure.h \
-		vertex.h \
-		errors.h \
-		link.h \
+		request.h \
 		draw.h \
-		request.h
+		canvas.h \
+		errors.h \
+		vertex.h \
+		link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 request.o: request.cpp request.h \
+		draw.h \
 		figure.h \
 		vertex.h \
 		errors.h \
 		link.h \
-		draw.h
+		canvas.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o request.o request.cpp
 
 errors.o: errors.cpp errors.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o errors.o errors.cpp
 
-link.o: link.cpp link.h
+link.o: link.cpp link.h \
+		errors.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o link.o link.cpp
 
 vertex.o: vertex.cpp vertex.h \
-		errors.h
+		request.h \
+		draw.h \
+		figure.h \
+		link.h \
+		errors.h \
+		canvas.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o vertex.o vertex.cpp
 
 draw.o: draw.cpp draw.h \
 		figure.h \
-		vertex.h \
+		request.h \
 		errors.h \
-		link.h
+		vertex.h \
+		link.h \
+		canvas.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o draw.o draw.cpp
 
 figure.o: figure.cpp figure.h \
-		vertex.h \
+		request.h \
+		draw.h \
+		canvas.h \
 		errors.h \
+		vertex.h \
 		link.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o figure.o figure.cpp
+
+canvas.o: canvas.cpp canvas.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o canvas.o canvas.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

@@ -1,4 +1,5 @@
 #include "draw.h"
+#include "link.h"
 
 void project_to_centre(vertex_t &vertex, const double width, const double height)
 {
@@ -6,17 +7,6 @@ void project_to_centre(vertex_t &vertex, const double width, const double height
     vertex.y += height / 2;
 }
 
-void draw_line(const double x1, const double y1,
-               const double x2, const double y2,
-               const canvas_t &canvas)
-{
-    canvas.scene->addLine(x1, y1, x2, y2);
-}
-
-void clear_canvas(const canvas_t &canvas)
-{
-    canvas.scene->clear();
-}
 
 void draw_link(const link_t &link, const vertexes_arr_t &vertexes, const canvas_t &canvas)
 {
