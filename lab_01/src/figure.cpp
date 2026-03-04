@@ -1,5 +1,7 @@
-#include <stdio.h>
 #include "figure.h"
+
+static err_t read_figure(figure_t &figure, FILE *file);
+static err_t check_figure(figure_t &figure);
 
 figure_t &figure_init(void)
 {
@@ -19,32 +21,11 @@ void destroy_figure(figure_t &figure)
     destroy_links_arr(figure.links);
 }
 
-err_t read_figure(figure_t &figure, FILE *file)
-{
-    figure = figure_init();
-
-    err_t rc = read_vertex(figure.centre, file);
-    if (rc) return rc;
-
-    rc = read_vertexes(figure.vertexes, file);
-    if (rc) return rc;
-
-    rc = read_links(figure.links, file);
-    if (rc)
-    {
-        destroy_vertexes_arr(figure.vertexes);
-        return rc;
-    }
-
-    rc = check_links(figure.links, get_vertexes_num(figure.vertexes)); 
-    if (rc)
-        destroy_figure(figure);
-
-    return rc;
-}
-
 err_t load_figure(figure_t &figure, const char *filename)
 {
+    if (!filename)
+        return ERR_OPEN_FILE;
+
     FILE *f = fopen(filename, "r");
     if (!f)
         return ERR_OPEN_FILE;
@@ -53,6 +34,9 @@ err_t load_figure(figure_t &figure, const char *filename)
 
     err_t rc = read_figure(tmp_figure, f);
 
+    if (rc == ERR_OK)
+        rc = check_figure(tmp_figure);
+
     fclose(f);
 
     if (!rc)
@@ -60,6 +44,38 @@ err_t load_figure(figure_t &figure, const char *filename)
         destroy_figure(figure);
         figure = tmp_figure;
     }
+    else
+    {
+        destroy_figure(tmp_figure);
+    }
+
+    return rc;
+}
+
+static err_t read_figure(figure_t &figure, FILE *file)
+{
+    if (!file)
+        return ERR_OPEN_FILE;
+        
+    figure = figure_init();
+
+    err_t rc = read_vertex(figure.centre, file);
+
+    if (rc == ERR_OK)
+        rc = read_vertexes(figure.vertexes, file);
+
+    if (rc == ERR_OK)
+        rc = read_links(figure.links, file);
+
+    if (rc != ERR_OK)
+        destroy_figure(figure);
+
+    return rc;
+}
+
+static err_t check_figure(figure_t &figure)
+{
+    err_t rc = check_links(figure.links, get_vertexes_num(figure.vertexes));
 
     return rc;
 }

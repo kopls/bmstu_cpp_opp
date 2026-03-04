@@ -1,6 +1,4 @@
 #include "request.h"
-#include "figure.h"
-#include "draw.h"
 
 err_t handle_request(const request_t &request)
 {
@@ -27,7 +25,7 @@ err_t handle_request(const request_t &request)
     case QUIT:
         break;
     default:
-        printf("Unknown action\n");
+        rc = ERR_UNKNOWN;
     }
 
     return rc;

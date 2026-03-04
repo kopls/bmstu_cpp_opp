@@ -16,7 +16,10 @@ enum err_t
     ERR_DRAW_DATA,
     ERR_READ_LINK,
     ERR_OPEN_FILE,
-    ERR_NO_DATA
+    ERR_NO_DATA,
+    ERR_NULL_POINTER,
+    ERR_MAX_VERTEX,
+    ERR_UNKNOWN
 };
 
 void handle_error(const err_t rc);

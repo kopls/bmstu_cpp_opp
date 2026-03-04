@@ -1,6 +1,7 @@
 #ifndef DRAW_H
 #define DRAW_H
 
+#include "link.h"
 #include "figure.h"
 #include "canvas.h"
 #include "errors.h"
