@@ -1,17 +1,17 @@
 #ifndef FIGURE_H
 #define FIGURE_H
 
-#include <stdio.h>
-#include "request.h"
-#include "vertex.h"
-#include "link.h"
-
 struct figure_t
 {
     vertex_t centre;
     vertexes_arr_t vertexes;
     links_arr_t links;
 };
+
+// #include <stdio.h>
+// #include "request.h"
+// #include "vertex.h"
+// #include "link.h"
 
 figure_t &figure_init(void);
 void destroy_figure(figure_t &figure);

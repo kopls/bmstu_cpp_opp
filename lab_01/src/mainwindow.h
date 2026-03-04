@@ -5,10 +5,15 @@
 #include <QLineEdit>
 
 #include "ui_mainwindow.h"
-#include "figure.h"
-#include "draw.h"
-#include "request.h"
 #include "errors.h"
+#include "canvas.h"
+
+struct transform_t;
+
+
+// #include "figure.h"
+// #include "draw.h"
+// #include "request.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

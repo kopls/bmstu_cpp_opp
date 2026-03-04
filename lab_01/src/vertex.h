@@ -1,11 +1,11 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "request.h"
-#include "errors.h"
+// #include <math.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include "request.h"
+// #include "errors.h"
 
 struct vertex_t
 {
