@@ -7,8 +7,8 @@
 #include "ui_mainwindow.h"
 #include "errors.h"
 #include "canvas.h"
+#include "request.h"
 
-struct transform_t;
 
 
 // #include "figure.h"

@@ -1,10 +1,10 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-// #include "figure.h"
-// #include "link.h"
-// #include "canvas.h"
-// #include "errors.h"
+#include <stdlib.h>
+#include "errors.h"
+#include "canvas.h"
+#include "figure.h"
 
 err_t draw_figure(const figure_t &figure, const canvas_t &canvas);
 

@@ -1,6 +1,11 @@
 #ifndef REQUEST_H
 #define REQUEST_H
 
+#include "errors.h"
+#include "canvas.h"
+#include "figure.h"
+#include "draw.h"
+
 // #include "figure.h"
 // #include "draw.h"
 // #include "canvas.h"
@@ -14,11 +19,6 @@ enum action_t
     TURN,
     DRAW,
     QUIT
-};
-
-struct transform_t
-{
-    double x, y, z;
 };
 
 struct request_t

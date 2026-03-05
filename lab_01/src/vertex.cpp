@@ -2,10 +2,10 @@
 
 static err_t read_vertexes_len(vertexes_arr_t &vertexes, FILE *file);
 static err_t read_vertexes_data(vertexes_arr_t &vertexes, FILE *file);
-static err_t read_vertex(vertex_t &vertex, FILE *file);
+err_t read_vertex(vertex_t &vertex, FILE *file);
 static err_t allocate_vertexes_arr(vertexes_arr_t &vertexes);
 
-static void move_vertex(vertex_t &vertex, const transform_t &transform);
+void move_vertex(vertex_t &vertex, const transform_t &transform);
 static void scale_vertex(vertex_t &vertex, const vertex_t &centre, const transform_t &scale);
 
 static void turn_vertex(vertex_t &vertex, const vertex_t &centre, const transform_t &turn);
@@ -65,7 +65,7 @@ static err_t read_vertexes_len(vertexes_arr_t &vertexes, FILE *file)
     if (!file)
         return ERR_OPEN_FILE;
 
-    rc = ERR_OK;
+    err_t rc = ERR_OK;
 
     if (fscanf(file, "%lu", &vertexes.len) != 1)
         rc = ERR_READ_VERTEXES_LEN;
@@ -92,7 +92,7 @@ static err_t read_vertexes_data(vertexes_arr_t &vertexes, FILE *file)
     return rc;
 }
 
-static err_t read_vertex(vertex_t &vertex, FILE *file)
+err_t read_vertex(vertex_t &vertex, FILE *file)
 {
     if (!file)
         return ERR_OPEN_FILE;
@@ -123,7 +123,7 @@ err_t move_vertexes(vertexes_arr_t &vertexes, const transform_t &transform)
     return ERR_OK;
 }
 
-static void move_vertex(vertex_t &vertex, const transform_t &transform)
+void move_vertex(vertex_t &vertex, const transform_t &transform)
 {
     vertex.x += transform.x;
     vertex.y += transform.y;

@@ -1,5 +1,9 @@
 #include "draw.h"
 
+static err_t draw_links(const links_arr_t &links, const vertexes_arr_t &vertexes, const canvas_t &canvas);
+static void draw_link(const link_t &link, const vertexes_arr_t &vertexes, const canvas_t &canvas);
+static void project_to_centre(vertex_t &vertex, const double width, const double height);
+
 err_t draw_figure(const figure_t &figure, const canvas_t &canvas)
 {
     clear_canvas(canvas);
