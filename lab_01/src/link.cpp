@@ -27,14 +27,15 @@ err_t read_links(links_arr_t &links, FILE *file)
         return ERR_OPEN_FILE;
 
     err_t rc = read_links_arr_len(links, file);
-
-    if (!rc)
+    if (rc == ERR_OK)
+    {
         rc = allocate_links_arr(links);
+        if (rc == ERR_OK) 
+            rc = read_links_data(links, file);
 
-    if (!rc) 
-        rc = read_links_data(links, file);
+    }
 
-    if (rc)
+    if (rc != ERR_OK)
         destroy_links_arr(links);
 
     return rc;

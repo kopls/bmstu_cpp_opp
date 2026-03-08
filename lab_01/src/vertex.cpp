@@ -47,12 +47,12 @@ err_t read_vertexes(vertexes_arr_t &vertexes, FILE *file)
         return ERR_OPEN_FILE;
 
     err_t rc = read_vertexes_len(vertexes, file);
-// единый блок
     if (rc == ERR_OK)
+    {
         rc = allocate_vertexes_arr(vertexes);
-
-    if (rc == ERR_OK)
-        rc = read_vertexes_data(vertexes, file);
+        if (rc == ERR_OK)
+            rc = read_vertexes_data(vertexes, file);
+    }
 
     if (rc != ERR_OK)
         destroy_vertexes_arr(vertexes);

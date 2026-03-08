@@ -24,7 +24,7 @@ void destroy_figure(figure_t &figure)
 err_t load_figure(figure_t &figure, const char *filename)
 {
     if (!filename)
-        return ERR_OPEN_FILE;
+        return ERR_NULL_POINTER;
 
     FILE *f = fopen(filename, "r");
     if (!f)
@@ -60,12 +60,12 @@ static err_t read_figure(figure_t &figure, FILE *file)
     figure = figure_init();
 
     err_t rc = read_vertex(figure.centre, file);
-
     if (rc == ERR_OK)
+    {
         rc = read_vertexes(figure.vertexes, file);
-
-    if (rc == ERR_OK)
-        rc = read_links(figure.links, file);
+        if (rc == ERR_OK)
+            rc = read_links(figure.links, file);
+    }
 
     if (rc != ERR_OK)
         destroy_figure(figure);

@@ -23,6 +23,7 @@ err_t handle_request(const request_t &request)
         rc = draw_figure(figure, request.canvas);
         break;
     case QUIT:
+        destroy_figure(figure);
         break;
     default:
         rc = ERR_UNKNOWN;
