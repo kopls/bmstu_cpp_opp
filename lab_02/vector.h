@@ -107,17 +107,17 @@ public:
     Vector<Type> &operator-=(const Type &num);
 
     template <typename Type2>
-    Vector<Type> &eqByNumDiff(const Type &num);
+    Vector<Type> &eqByNumDiff(const Type2 &num);
     template <typename Type2>
-    Vector<Type> &operator-=(const Type &num);
+    Vector<Type> &operator-=(const Type2 &num);
 
-    Vector<Type> vecProd(const Vector<Type>) const;
+    Vector<Type> vecProd(const Vector<Type> &vector) const;
     Vector<Type> operator*(const Vector<Type>) const;
 
     template <typename Type2>
-    decltype(auto) vecProd(const Vector<Type2>) const;
+    decltype(auto) vecProd(const Vector<Type2> &vector) const;
     template <typename Type2>
-    decltype(auto) operator*(const Vector<Type2>) const;
+    decltype(auto) operator*(const Vector<Type2> &vector) const;
 
     Vector<Type> byNumProd(const Type &num) const;
     Vector<Type> operator*(const Type &num) const;
@@ -127,13 +127,13 @@ public:
     template <typename Type2>
     decltype(auto) operator*(const Type2 &num) const;
 
-    Vector<Type> &eqVecProd(const Vector<Type>);
-    Vector<Type> &operator*=(const Vector<Type>);
+    Vector<Type> &eqVecProd(const Vector<Type> &vector);
+    Vector<Type> &operator*=(const Vector<Type> &vector);
 
     template <typename Type2>
-    Vector<Type> &eqVecProd(const Vector<Type2>);
+    Vector<Type> &eqVecProd(const Vector<Type2> &vector);
     template <typename Type2>
-    Vector<Type> &operator*=(const Vector<Type2>);
+    Vector<Type> &operator*=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumProd(const Type &num);
     Vector<Type> &operator*=(const Type &num);
@@ -167,7 +167,7 @@ public:
     template <typename Type2>
     Vector<Type> &operator/=(const Vector<Type2> &vector);
 
-    Vector<Type> &qeByNumQuot(const Type &num);
+    Vector<Type> &eqByNumQuot(const Type &num);
     Vector<Type> &operator/=(const Type &num);
 
     template <typename Type2>
@@ -228,7 +228,9 @@ protected:
     void allocate(size_t sizeValue);
     void zeroSizeCheck(const uint line) const;
     void indexCheck(const size_t index, const uint line) const;
-    // ???
+    void divisionByZeroCheck(const Type &num, const uint line) const;
+    void vectorProdSizesCheck(const Vector<Type> &vector, const uint line) const;
+    void sizesCheck(const Vector<Type> &vector, const uint line) const;
 
 private:
     shared_ptr<Type[]> data = nullptr;
