@@ -2,6 +2,7 @@
 #define ITERATOR_H
 
 #include <memory>
+#include <iterator>
 
 template <typename Type>
 class Vector;

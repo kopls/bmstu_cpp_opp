@@ -14,10 +14,10 @@ class Vector : public BaseContainer
 {
 public:
     Vector() = default;
-    explicit Vector(size_t initialCapacity);
-    explicit Vector(const Vector<Type> &initialVector);
-    Vector(size_t initialCapacity, const Type &filler);
-    Vector(size_t initialCapacity, const Type *arr);
+    explicit Vector(size_t sizeValue);
+    explicit Vector(const Vector<Type> &vector);
+    Vector(size_t sizeValue, const Type &filler);
+    Vector(size_t sizeValue, const Type *arr);
     Vector(initializer_list<Type> elements);
     Vector(Vector<Type> &&vector) noexcept;
     template <typename IterType>
@@ -219,14 +219,13 @@ public:
 
     Iterator<Type> begin() noexcept;
     Iterator<Type> end() noexcept;
-    ConstIterator<Type> begin() noexcept;
-    ConstIterator<Type> end() noexcept;
-
-    ConstIterator<Type> cbegin() noexcept;
-    ConstIterator<Type> cend() noexcept;
+    ConstIterator<Type> begin() const noexcept;
+    ConstIterator<Type> end() const noexcept;
+    ConstIterator<Type> cbegin() const noexcept;
+    ConstIterator<Type> cend() const noexcept;
 
 protected:
-    void allocate(size_t size);
+    void allocate(size_t sizeValue);
     void zeroSizeCheck(const uint line) const;
     void indexCheck(const size_t index, const uint line) const;
     // ???
@@ -234,37 +233,5 @@ protected:
 private:
     shared_ptr<Type[]> data = nullptr;
 };
-
-#endif
-
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
 
 #endif
