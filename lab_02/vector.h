@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "base_container.h"
+
 #include "iterator.h"
 #include "const_iterator.h"
 
@@ -12,6 +13,10 @@ using namespace std;
 template <typename Type>
 class Vector : public BaseContainer
 {
+    
+    friend class Iterator<Type>;
+    friend class ConstIterator<Type>;
+
 public:
     Vector() = default;
     explicit Vector(size_t sizeValue);
@@ -95,13 +100,13 @@ public:
     template <typename Type2>
     decltype(auto) operator-(const Type2 &num) const;
 
-    Vector<Type> &eqVecDiff(const Vector<Type>);
-    Vector<Type> &operator-=(const Vector<Type>);
+    Vector<Type> &eqVecDiff(const Vector<Type> &vector);
+    Vector<Type> &operator-=(const Vector<Type> &vector);
 
     template <typename Type2>
-    Vector<Type> &eqVecDiff(const Vector<Type2>);
+    Vector<Type> &eqVecDiff(const Vector<Type2> &vector);
     template <typename Type2>
-    Vector<Type> &operator-=(const Vector<Type2>);
+    Vector<Type> &operator-=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumDiff(const Type &num);
     Vector<Type> &operator-=(const Type &num);
@@ -112,7 +117,7 @@ public:
     Vector<Type> &operator-=(const Type2 &num);
 
     Vector<Type> vecProd(const Vector<Type> &vector) const;
-    Vector<Type> operator*(const Vector<Type>) const;
+    Vector<Type> operator*(const Vector<Type> &vector) const;
 
     template <typename Type2>
     decltype(auto) vecProd(const Vector<Type2> &vector) const;
@@ -228,9 +233,15 @@ protected:
     void allocate(size_t sizeValue);
     void zeroSizeCheck(const uint line) const;
     void indexCheck(const size_t index, const uint line) const;
-    void divisionByZeroCheck(const Type &num, const uint line) const;
-    void vectorProdSizesCheck(const Vector<Type> &vector, const uint line) const;
-    void sizesCheck(const Vector<Type> &vector, const uint line) const;
+
+    template <typename Type2>
+    void sizesCheck(const Vector<Type2> &vector, const uint line) const;
+
+    template <typename Type2>
+    void vectorProdSizesCheck(const Vector<Type2> &vector, const uint line) const;
+
+    template <typename Type2>
+    void divisionByZeroCheck(const Type2 &num, const uint line) const;
 
 private:
     shared_ptr<Type[]> data = nullptr;

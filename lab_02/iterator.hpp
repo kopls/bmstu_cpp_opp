@@ -170,7 +170,7 @@ template <typename Type>
 Type *Iterator<Type>::getCurPtr() const
 {
     shared_ptr<Type[]> tmp = ptr.lock();
-    return tmp.get + index;
+    return tmp.get() + index;
 }
 
 template <typename Type>
@@ -190,7 +190,7 @@ void Iterator<Type>::indexCheck(const uint line) const
     if (index >= size)
     {
         time_t curTime = time(NULL);
-        throw OutOfRangeException(ctime(&curTime), __FILE__, line,
+        throw OutOfRangesException(ctime(&curTime), __FILE__, line,
                                typeid(*this).name(), __FUNCTION__);
     }
 }

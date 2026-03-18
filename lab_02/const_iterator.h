@@ -2,6 +2,9 @@
 #define CONST_ITERATOR_H
 
 #include <memory>
+#include <iterator>
+#include <cstddef>
+#include <compare>
 
 using namespace std;
 
@@ -23,8 +26,8 @@ public:
 
     operator bool() const;
 
-    const Type & operator*() const;
-    const Type * operator->() const;
+    const Type &operator*() const;
+    const Type *operator->() const;
 
     ConstIterator<Type> operator+(size_t dif) const;
     ConstIterator<Type> &operator+=(size_t dif);
@@ -38,11 +41,11 @@ public:
     ConstIterator<Type> &operator--();
     ConstIterator<Type> operator--(int);
 
-    auto operator<=>(const ConstIterator<Type> &iterator) const = default;
+    auto operator<=>(const ConstIterator<Type> &iterator) const;
 
 protected:
     const Type *getCurPtr() const;
-    void exprideCheck(const uint line) const;
+    void expiredCheck(const uint line) const;
     void indexCheck(const uint line) const;
 
 private:

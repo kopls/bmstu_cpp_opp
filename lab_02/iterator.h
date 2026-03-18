@@ -2,6 +2,9 @@
 #define ITERATOR_H
 
 #include <memory>
+#include <iterator>
+#include <cstddef>
+#include <compare>
 
 using namespace std;
 
@@ -54,6 +57,6 @@ private:
     size_t index = 0;
 };
 
-#include "iterator.h"
+#include "iterator.hpp"
 
 #endif

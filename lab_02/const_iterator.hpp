@@ -16,7 +16,7 @@ ConstIterator<Type>::ConstIterator(const Vector<Type> &vector) noexcept
 template <typename Type>
 ConstIterator<Type>::ConstIterator(const ConstIterator<Type> &iterator) noexcept 
 {
-    ptr = itreator.ptr;
+    ptr = iterator.ptr;
     size = iterator.size;
     index = iterator.index;
 }
@@ -38,30 +38,12 @@ ConstIterator<Type>::operator bool() const
 }
 
 template <typename Type>
-Type &ConstIterator<Type>::operator*() 
-{
-    expiredCheck(__LINE__);
-    indexCheck(__LINE__);
-
-    return *getCurPtr();
-}
-
-template <typename Type>
 const Type &ConstIterator<Type>::operator*() const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
 
     return *getCurPtr();
-}
-
-template <typename Type>
-Type *ConstIterator<Type>::operator->() 
-{
-    expiredCheck(__LINE__);
-    indexCheck(__LINE__);
-
-    return getCurPtr();
 }
 
 template <typename Type>
@@ -72,6 +54,7 @@ const Type *ConstIterator<Type>::operator->() const
 
     return getCurPtr();
 }
+
 
 template <typename Type>
 ConstIterator<Type> ConstIterator<Type>::operator+(size_t dif) const 
@@ -143,7 +126,7 @@ ConstIterator<Type> &ConstIterator<Type>::operator--()
     
     --index;
 
-    return *this
+    return *this;
 }
 
 template <typename Type>
@@ -158,7 +141,7 @@ ConstIterator<Type> ConstIterator<Type>::operator--(int)
 }
 
 template <typename Type>
-auto operator<=>(const ConstIterator<Type> &iterator) const
+auto ConstIterator<Type>::operator<=>(const ConstIterator<Type> &iterator) const
 {
     iterator.expiredCheck(__LINE__);
     expiredCheck(__LINE__);
@@ -170,7 +153,7 @@ template <typename Type>
 const Type *ConstIterator<Type>::getCurPtr() const
 {
     shared_ptr<Type[]> tmp = ptr.lock();
-    return tmp.get + index;
+    return tmp.get() + index;
 }
 
 template <typename Type>
@@ -190,7 +173,7 @@ void ConstIterator<Type>::indexCheck(const uint line) const
     if (index >= size)
     {
         time_t curTime = time(NULL);
-        throw OutOfRangeException(ctime(&curTime), __FILE__, line,
+        throw OutOfRangesException(ctime(&curTime), __FILE__, line,
                                typeid(*this).name(), __FUNCTION__);
     }
 }

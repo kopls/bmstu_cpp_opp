@@ -188,9 +188,8 @@ TYPED_TEST(ConstructorTest, MoveConstructor_Num)
     for (TypeParam i = TypeParam(1); vecIt; ++vecIt, ++i)
         EXPECT_EQ(*vecIt, i);
 
-    rvalueVec.at(0) = TypeParam(67);
-
-    EXPECT_NE(vec.at(0), rvalueVec.at(0));
+    EXPECT_EQ(rvalueVec.isEmpty(), true);
+    EXPECT_EQ(rvalueVec.getSize(), 0);
 }
 
 TEST(ConstructorTest, MoveConstructor_Str) 
@@ -206,9 +205,8 @@ TEST(ConstructorTest, MoveConstructor_Str)
     EXPECT_EQ(vec.at(1), "Sonya");
     EXPECT_EQ(vec.at(2), "Artyom");
 
-    rvalueVec.at(0) = "GUGUGAGA";
-
-    EXPECT_NE(vec.at(0), rvalueVec.at(0));
+    EXPECT_EQ(rvalueVec.isEmpty(), true);
+    EXPECT_EQ(rvalueVec.getSize(), 0);
 }
 
 TYPED_TEST(ConstructorTest, IteratorConstructor_Num) 

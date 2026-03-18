@@ -100,13 +100,13 @@ Vector<Type>::Vector(initializer_list<Type> elements)
 template <typename Type>
 Vector<Type>::Vector(const Vector<Type> &vector) 
 {
-    allocate(initialVector.size);
-    size = initialVector.size;
+    allocate(vector.size);
+    size = vector.size;
 
     ConstIterator<Type> src = vector.cbegin();
-    Itertor<Type> dst = begin();
+    Iterator<Type> dst = begin();
 
-    for (; src; ++src; ++dst)
+    for (; src; ++src, ++dst)
         *dst = *src;
 }
 
@@ -116,6 +116,7 @@ Vector<Type>::Vector(Vector<Type> &&vector) noexcept
     size = vector.size;
     data = vector.data;
     vector.data.reset();
+    vector.size = 0;
 }
 
 template <typename Type>
@@ -123,7 +124,7 @@ template <typename ItType>
 Vector<Type>::Vector(ItType begin, ItType end)
 {
     size_t len = 0;
-    for (auto it = begin; it != end; ++it, ++len)
+    for (auto it = begin; it != end; ++it, ++len) {}
 
     allocate(len);
     size = len;
@@ -225,7 +226,7 @@ Vector<OutType> Vector<Type>::getUnit() const
     zeroSizeCheck(__LINE__);
     Vector<OutType> res(size);
 
-    OutType len = lenght<OutType>();
+    OutType len = length<OutType>();
 
     Iterator<OutType> resIt = res.begin();
     ConstIterator<Type> srcIt = cbegin();
@@ -278,14 +279,14 @@ Vector<Type> Vector<Type>::vecSum(const Vector<Type> &vector) const
 }
 
 template <typename Type>
-Vector<Type> Vector<Type>operator+(const Vector<Type> &vector) const
+Vector<Type> Vector<Type>::operator+(const Vector<Type> &vector) const
 {
     return vecSum(vector);
 }
 
 template <typename Type>
 template <typename Type2>
-decltype(auto) vecSum(const Vector<Type2> &vector) const
+decltype(auto) Vector<Type>::vecSum(const Vector<Type2> &vector) const
 {
     sizesCheck(vector, __LINE__);
     Vector<decltype(at(0) + vector.at(0))> res(size);
@@ -299,7 +300,7 @@ decltype(auto) vecSum(const Vector<Type2> &vector) const
 
 template <typename Type>
 template <typename Type2>
-decltype(auto) Vector<Type>operator+(const Vector<Type2> &vector) const
+decltype(auto) Vector<Type>::operator+(const Vector<Type2> &vector) const
 {
     return vecSum(vector);
 }
@@ -449,7 +450,7 @@ decltype(auto) Vector<Type>::vecDiff(const Vector<Type2> &vector) const
     ConstIterator<Type2> vecIt = vector.cbegin();
 
     for (size_t i = 0; vecIt; ++vecIt, ++i)
-        res.at(i) = ar(i) - *vecIt;
+        res.at(i) = at(i) - *vecIt;
 
     return res;
 }
@@ -499,7 +500,7 @@ decltype(auto) Vector<Type>::operator-(const Type2 &num) const
 }
 
 template <typename Type>
-Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type>) 
+Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type> &vector) 
 {
     sizesCheck(vector, __LINE__);
 
@@ -513,14 +514,14 @@ Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type>)
 }
 
 template <typename Type>
-Vector<Type> &Vector<Type>::operator-=(const Vector<Type>) 
+Vector<Type> &Vector<Type>::operator-=(const Vector<Type> &vector) 
 {
     return eqVecDiff(vector);
 }
 
 template <typename Type>
 template <typename Type2>
-Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type2>) 
+Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type2> &vector) 
 {
     sizesCheck(vector, __LINE__);
 
@@ -534,7 +535,7 @@ Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type2>)
 }
 template <typename Type>
 template <typename Type2>
-Vector<Type> &Vector<Type>::operator-=(const Vector<Type2>) 
+Vector<Type> &Vector<Type>::operator-=(const Vector<Type2> &vector) 
 {
     return eqVecDiff(vector);
 }
@@ -542,8 +543,6 @@ Vector<Type> &Vector<Type>::operator-=(const Vector<Type2>)
 template <typename Type>
 Vector<Type> &Vector<Type>::eqByNumDiff(const Type &num) 
 {
-    sizesCheck(vector, __LINE__);
-
     Iterator<Type> resIt = begin();
 
     for (; resIt; ++resIt)
@@ -561,8 +560,6 @@ template <typename Type>
 template <typename Type2>
 Vector<Type> &Vector<Type>::eqByNumDiff(const Type2 &num) 
 {
-    sizesCheck(vector, __LINE__);
-
     Iterator<Type> resIt = begin();
 
     for (; resIt; ++resIt)
@@ -662,8 +659,6 @@ template <typename Type>
 template <typename Type2>
 decltype(auto) Vector<Type>::byNumProd(const Type2 &num) const 
 {
-    sizesCheck(vector, __LINE__);
-
     Vector<decltype(at(0) * num)> res(size);
     ConstIterator<Type2> vecIt = cbegin();
 
@@ -812,9 +807,7 @@ Vector<Type> Vector<Type>::byNumQuot(const Type &num) const
 
     divisionByZeroCheck(num, __LINE__);
     for (; resIt; ++resIt)
-    {
         *resIt /= num; 
-    }
 
     return res;
 }
@@ -833,11 +826,8 @@ decltype(auto) Vector<Type>::byNumQuot(const Type2 &num) const
     Vector<decltype(at(0) / num)> res(size);
     ConstIterator<Type2> it = cbegin();
 
-    for (size_t i = 0; vecIt; ++vecIt, ++i)
-    {
-        divisionByZeroCheck(*vecIt, __LINE__);
+    for (size_t i = 0; it; ++it, ++i)
         res.at(i) = *it / num; 
-    }
 
     return res;
 }
@@ -1078,7 +1068,7 @@ double Vector<Type>::angle(const Vector<Type> &vector) const
     double length2 = vector.length<double>();
 
     if (!(abs(length1) < EPS || abs(length2) < EPS))
-        res = acos(scalarProd(vector) / (length1 * lenght2));
+        res = acos(scalarProd(vector) / (length1 * length2));
 
     return res;
 }
@@ -1137,7 +1127,7 @@ bool Vector<Type>::isOrthogonal(const Vector<Type2> &vector) const
 }
 
 template <typename Type>
-bool Vector<Type>::isZero() const;
+bool Vector<Type>::isZero() const
 {
     return abs(length<double>()) < EPS;
 }
