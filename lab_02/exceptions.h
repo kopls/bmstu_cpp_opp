@@ -3,13 +3,24 @@
 
 #include "base_exception.h"
 
+class ExpiredException : public BaseException
+{
+public:
+    ExpiredException(const str &time, const str &fileName,
+                     const uint line, const str &className,
+                     const str &methodName,
+                     const str &info = "Expired weak pointer!")
+    : BaseException(time, fileName, line, className, methodName, info)
+    {};
+};
+
 class MemoryException : public BaseException
 {
 public:
     MemoryException(const str &time, const str &fileName,
-        const uint line, const str &className,
-        const str &methodName,
-        const str &info = "Memory allocation error!")
+                    const uint line, const str &className,
+                    const str &methodName,
+                    const str &info = "Memory allocation error!")
     : BaseException(time, fileName, line, className, methodName, info)
     {};
 };
@@ -18,9 +29,9 @@ class EmptyVectorException : public BaseException
 {
 public:
     EmptyVectorException(const str &time, const str &fileName,
-        const uint line, const str &className,
-        const str &methodName,
-        const str &info = "Operation with an empty vector!")
+                         const uint line, const str &className,
+                         const str &methodName,
+                         const str &info = "Operation with an empty vector!")
     : BaseException(time, fileName, line, className, methodName, info)
     {};
 };
@@ -29,9 +40,9 @@ class OutOfRangesException : public BaseException
 {
 public:
     OutOfRangesException(const str &time, const str &fileName,
-        const uint line, const str &className,
-        const str &methodName,
-        const str &info = "Index is out of range!")
+                         const uint line, const str &className,
+                         const str &methodName,
+                         const str &info = "Index is out of range!")
     : BaseException(time, fileName, line, className, methodName, info)
     {};
 

@@ -22,10 +22,10 @@ public:
 
     operator bool() const;
 
-    Type & operator*();
+    Type &operator*();
     const Type & operator*() const;
 
-    Type * operator->();
+    Type *operator->();
     const Type * operator->() const;
 
     Iterator<Type> operator+(size_t dif) const;
@@ -40,7 +40,7 @@ public:
     Iterator<Type> &operator--();
     Iterator<Type> operator--(int);
 
-    auto operator<=>(const Iterator<Type> &iterator) const = default;
+    auto operator<=>(const Iterator<Type> &iterator) const;
 
 protected:
     Type *getCurPtr() const;
