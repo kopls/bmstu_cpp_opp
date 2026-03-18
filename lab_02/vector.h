@@ -236,4 +236,6 @@ private:
     shared_ptr<Type[]> data = nullptr;
 };
 
+#include "vector.hpp"
+
 #endif

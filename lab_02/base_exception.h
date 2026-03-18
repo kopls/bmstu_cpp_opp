@@ -6,7 +6,7 @@
 
 using str = std::string;
 
-class BaseException : public std:exception
+class BaseException : public std::exception
 {
 public:
     BaseException(const str &time, const str &fileName,
@@ -17,6 +17,6 @@ public:
 
 protected:
     str errInfo;
-}
+};
 
 #endif

@@ -16,7 +16,7 @@ Iterator<Type>::Iterator(const Vector<Type> &vector) noexcept
 template <typename Type>
 Iterator<Type>::Iterator(const Iterator<Type> &iterator) noexcept 
 {
-    ptr = itreator.ptr;
+    ptr = iterator.ptr;
     size = iterator.size;
     index = iterator.index;
 }
@@ -143,7 +143,7 @@ Iterator<Type> &Iterator<Type>::operator--()
     
     --index;
 
-    return *this
+    return *this;
 }
 
 template <typename Type>
@@ -158,7 +158,7 @@ Iterator<Type> Iterator<Type>::operator--(int)
 }
 
 template <typename Type>
-auto operator<=>(const Iterator<Type> &iterator) const
+auto Iterator<Type>::operator<=>(const Iterator<Type> &iterator) const
 {
     iterator.expiredCheck(__LINE__);
     expiredCheck(__LINE__);

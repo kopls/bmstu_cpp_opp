@@ -1,6 +1,8 @@
 #ifndef BASE_CONTAINER_H
 #define BASE_CONTAINER_H
 
+#include <cstddef>
+
 class BaseContainer
 {
 public:

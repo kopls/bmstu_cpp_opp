@@ -2,7 +2,8 @@
 #define CONST_ITERATOR_H
 
 #include <memory>
-#include <iterator>
+
+using namespace std;
 
 template <typename Type>
 class Vector;
@@ -49,5 +50,7 @@ private:
     size_t size = 0;
     size_t index = 0;
 };
+
+#include "const_iterator.hpp"
 
 #endif
