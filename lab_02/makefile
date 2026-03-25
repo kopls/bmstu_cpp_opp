@@ -1,7 +1,7 @@
 TARGET = unit_tests.exe
-FLAGS = -std=c++20 -Wall -Werror -Iusr/include 
+FLAGS = -std=c++20 -Wall -Werror -Iusr/include -MMD -MP --coverage
 
-LIBS_GOOGLE = -lgtest -lgtest_main -pthread
+LIBS_GOOGLE = -lgtest -lgtest_main -pthread --coverage
 
 SRC = $(wildcard *.cpp)
 OBJ = $(patsubst %.cpp, out/%.o, $(SRC))

@@ -13,37 +13,37 @@
 template <typename Type>
 Iterator<Type> Vector<Type>::begin() noexcept
 {
-    return Iterator<Type>(*this);
+    return Iterator<Type>(data, size, 0);
 }
 
 template <typename Type>
 Iterator<Type> Vector<Type>::end() noexcept
 {
-    return Iterator<Type>(*this) + size;
+    return Iterator<Type>(data, size, size);
 }
 
 template <typename Type>
 ConstIterator<Type> Vector<Type>::begin() const noexcept
 {
-    return ConstIterator<Type>(*this);
+    return ConstIterator<Type>(data, size, 0);
 }
 
 template <typename Type>
 ConstIterator<Type> Vector<Type>::end() const noexcept
 {
-    return ConstIterator<Type>(*this) + size;
+    return ConstIterator<Type>(data, size, size);
 }
 
 template <typename Type>
 ConstIterator<Type> Vector<Type>::cbegin() const noexcept
 {
-    return ConstIterator<Type>(*this);
+    return ConstIterator<Type>(data, size, 0);
 }
 
 template <typename Type>
 ConstIterator<Type> Vector<Type>::cend() const noexcept
 {
-    return ConstIterator<Type>(*this) + size;
+    return ConstIterator<Type>(data, size, size);
 }
 
 // Constructors
@@ -62,11 +62,17 @@ Vector<Type>::Vector(size_t sizeValue, const Type &filler)
 
     for (Iterator<Type> it = begin(); it; ++it)
         *it = filler;
+}
 
-    /*
-    for (auto &elem : *this)
-        elem = filler;
-    */
+template <typename Type>
+template <typename Type2>
+Vector<Type>::Vector(size_t sizeValue, const Type2 &filler) requires convertible_to<Type2, Type>
+{
+    allocate(sizeValue);
+    size = sizeValue;
+
+    for (Iterator<Type> it = begin(); it; ++it)
+        *it = filler;
 }
 
 template <typename Type>
@@ -78,11 +84,18 @@ Vector<Type>::Vector(size_t sizeValue, const Type *arr)
     size_t i = 0;
     for (Iterator<Type> it = begin(); it; ++it, ++i)
         *it = arr[i];
+}
 
-    /*
-    for (size_t i = 0; auto &elem : *this)
-        elem = arr[i++];
-    */
+template <typename Type>
+template <typename Type2>
+Vector<Type>::Vector(size_t sizeValue, const Type2 *arr) requires convertible_to<Type2, Type>
+{
+    allocate(sizeValue);
+    size = sizeValue;
+
+    size_t i = 0;
+    for (Iterator<Type> it = begin(); it; ++it, ++i)
+        *it = arr[i];
 }
 
 template <typename Type>
@@ -98,12 +111,40 @@ Vector<Type>::Vector(initializer_list<Type> elements)
 }
 
 template <typename Type>
+template <typename Type2>
+Vector<Type>::Vector(initializer_list<Type2> elements) requires convertible_to<Type2, Type>
+{
+    allocate(elements.size());
+    size = elements.size();
+
+    Iterator<Type> it = begin();
+
+    for (const auto &elem : elements)
+        *(it++) = elem;
+}
+
+
+template <typename Type>
 Vector<Type>::Vector(const Vector<Type> &vector) 
 {
     allocate(vector.size);
     size = vector.size;
 
     ConstIterator<Type> src = vector.cbegin();
+    Iterator<Type> dst = begin();
+
+    for (; src; ++src, ++dst)
+        *dst = *src;
+}
+
+template <typename Type>
+template <typename Type2>
+Vector<Type>::Vector(const Vector<Type2> &vector) requires convertible_to<Type2, Type>
+{
+    allocate(vector.getSize());
+    size = vector.getSize();
+
+    ConstIterator<Type2> src = vector.cbegin();
     Iterator<Type> dst = begin();
 
     for (; src; ++src, ++dst)
@@ -120,8 +161,8 @@ Vector<Type>::Vector(Vector<Type> &&vector) noexcept
 }
 
 template <typename Type>
-template <typename ItType>
-Vector<Type>::Vector(ItType begin, ItType end)
+template<input_iterator Iter, sentinel_for<Iter> Sent>
+Vector<Type>::Vector(const Iter& begin, const Sent& end) requires convertible_to<iter_value_t<Iter>, value_type>
 {
     size_t len = 0;
     for (auto it = begin; it != end; ++it, ++len) {}
@@ -139,7 +180,7 @@ template <typename Type>
 Vector<Type> &Vector<Type>::operator=(initializer_list<Type> elements)
 {
     allocate(elements.size());
-    size = elements.size;
+    size = elements.size();
 
     Iterator<Type> it = begin();
     for (const auto &elem : elements)
@@ -167,6 +208,35 @@ Vector<Type> &Vector<Type>::operator=(Vector<Type> &&vector) noexcept
     size = vector.size;
     data = vector.data;
     vector.data.reset();
+    vector.size = 0;
+
+    return *this;
+}
+
+template <typename Type>
+template<typename Type2>
+Vector<Type> &Vector<Type>::operator=(const Vector<Type2> &vector) requires convertible_to<Type2, Type>
+{
+    allocate(vector.getSize());
+    size = vector.getSize();
+
+    Iterator<Type> it = begin();
+    for (const auto &elem : vector)
+        *(it++) = elem;
+
+    return *this;
+}
+
+template <typename Type>
+template<typename Type2>
+Vector<Type> &Vector<Type>::operator=(initializer_list<Type2> elements) requires convertible_to<Type2, Type>
+{
+    allocate(elements.size());
+    size = elements.size();
+
+    Iterator<Type> it = begin();
+    for (const auto &elem : elements)
+        *(it++) = elem;
 
     return *this;
 }
@@ -179,12 +249,20 @@ bool Vector<Type>::operator==(const Vector<Type> &vector) const
 }
 
 template <typename Type>
-bool Vector<Type>::isEqual(const Vector<Type> &vector) const
+template<typename Type2>
+bool Vector<Type>::operator==(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
+{
+    return isEqual(vector);
+}
+
+template <typename Type>
+template <typename Type2>
+bool Vector<Type>::isEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
 {
     ConstIterator<Type> first = cbegin();
-    ConstIterator<Type> second = vector.cbegin();
+    ConstIterator<Type2> second = vector.cbegin();
 
-    bool areEqual = (size && size == vector.size);
+    bool areEqual = (size && size == vector.getSize());
     for (; areEqual && (first != cend()) && (second != cend());
          ++first, ++second)
         areEqual = (*first == *second);
@@ -199,15 +277,22 @@ bool Vector<Type>::operator!=(const Vector<Type> &vector) const
 }
 
 template <typename Type>
-bool Vector<Type>::isNotEqual(const Vector<Type> &vector) const
+template <typename Type2>
+bool Vector<Type>::operator!=(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
+{
+    return isNotEqual(vector);
+}
+
+template <typename Type>
+template <typename Type2>
+bool Vector<Type>::isNotEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
 {
     return !(*this == vector);
 }
 
 // Methods, operators
 template <typename Type>
-template <typename OutType>
-OutType Vector<Type>::length() const
+double Vector<Type>::length() const
 {
     zeroSizeCheck(__LINE__);
 
@@ -220,15 +305,14 @@ OutType Vector<Type>::length() const
 }
 
 template <typename Type>
-template <typename OutType>
-Vector<OutType> Vector<Type>::getUnit() const
+Vector<double> Vector<Type>::getUnit() const
 {
     zeroSizeCheck(__LINE__);
-    Vector<OutType> res(size);
+    Vector<double> res(size);
 
-    OutType len = length<OutType>();
+    double len = length();
 
-    Iterator<OutType> resIt = res.begin();
+    Iterator<double> resIt = res.begin();
     ConstIterator<Type> srcIt = cbegin();
 
     for (; srcIt; ++resIt, ++srcIt)
@@ -292,8 +376,8 @@ decltype(auto) Vector<Type>::vecSum(const Vector<Type2> &vector) const
     Vector<decltype(at(0) + vector.at(0))> res(size);
 
     ConstIterator<Type2> vecIt = vector.cbegin();
-    for (size_t i = 0; vecIt; ++vecIt, ++i)
-        res.at(i) = res.at(i) + *vecIt;
+        for (size_t i = 0; vecIt; ++vecIt, ++i)
+        res.at(i) = at(i) + *vecIt;
 
     return res;
 }
@@ -398,7 +482,7 @@ Vector<Type> &Vector<Type>::eqByNumSum(const Type &num)
 template <typename Type>
 Vector<Type> &Vector<Type>::operator+=(const Type &num)
 {
-    return qeByNumSum(num);
+    return eqByNumSum(num);
 }
 
 template <typename Type>
@@ -1064,8 +1148,8 @@ double Vector<Type>::angle(const Vector<Type> &vector) const
 {
     double res;
 
-    double length1 = length<double>();
-    double length2 = vector.length<double>();
+    double length1 = length();
+    double length2 = vector.length();
 
     if (!(abs(length1) < EPS || abs(length2) < EPS))
         res = acos(scalarProd(vector) / (length1 * length2));
@@ -1079,8 +1163,8 @@ double Vector<Type>::angle(const Vector<Type2> &vector) const
 {
     double res;
 
-    double length1 = this->template length<double>();
-    double length2 = vector.template length<double>();
+    double length1 =  length();
+    double length2 = vector.length();
 
     if (!(abs(length1) < EPS || abs(length2) < EPS))
         res = acos(scalarProd(vector) / (length1 * length2));
@@ -1129,7 +1213,7 @@ bool Vector<Type>::isOrthogonal(const Vector<Type2> &vector) const
 template <typename Type>
 bool Vector<Type>::isZero() const
 {
-    return abs(length<double>()) < EPS;
+    return abs(length()) < EPS;
 }
 
 // Allocate

@@ -6,11 +6,11 @@
 #include "exceptions.h"
 
 template <typename Type>
-ConstIterator<Type>::ConstIterator(const Vector<Type> &vector) noexcept 
+ConstIterator<Type>::ConstIterator(const shared_ptr<Type[]> &data, size_t limit, size_t i) noexcept 
 {
-    ptr = vector.data;
-    size = vector.size;
-    index = 0;
+    ptr = data;
+    size = limit;
+    index = i;
 }
 
 template <typename Type>
@@ -55,9 +55,14 @@ const Type *ConstIterator<Type>::operator->() const
     return getCurPtr();
 }
 
+template <typename Type>
+const Type &ConstIterator<Type>::operator[](difference_type dif) const 
+{ 
+    return *(*this + dif);
+}
 
 template <typename Type>
-ConstIterator<Type> ConstIterator<Type>::operator+(size_t dif) const 
+ConstIterator<Type> ConstIterator<Type>::operator+(difference_type dif) const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
@@ -68,8 +73,14 @@ ConstIterator<Type> ConstIterator<Type>::operator+(size_t dif) const
     return it;
 }
 
+template<typename Type>
+ConstIterator<Type> operator+(typename ConstIterator<Type>::difference_type n, const ConstIterator<Type>& it)
+{
+    return it + n;
+}
+
 template <typename Type>
-ConstIterator<Type> &ConstIterator<Type>::operator+=(size_t dif) 
+ConstIterator<Type> &ConstIterator<Type>::operator+=(difference_type dif) 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
@@ -98,7 +109,7 @@ ConstIterator<Type> ConstIterator<Type>::operator++(int)
 }
 
 template <typename Type>
-ConstIterator<Type> ConstIterator<Type>::operator-(size_t dif) const 
+ConstIterator<Type> ConstIterator<Type>::operator-(difference_type dif) const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
@@ -110,7 +121,7 @@ ConstIterator<Type> ConstIterator<Type>::operator-(size_t dif) const
 }
 
 template <typename Type>
-ConstIterator<Type> &ConstIterator<Type>::operator-=(size_t dif) 
+ConstIterator<Type> &ConstIterator<Type>::operator-=(difference_type dif) 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
@@ -138,6 +149,12 @@ ConstIterator<Type> ConstIterator<Type>::operator--(int)
     --(*this);
 
     return tmp;
+}
+
+template <typename Type>
+auto ConstIterator<Type>::operator-(const ConstIterator<Type>& other) const 
+{
+    return static_cast<difference_type>(index) - static_cast<difference_type>(other.index);
 }
 
 template <typename Type>

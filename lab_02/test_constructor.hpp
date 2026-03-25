@@ -69,6 +69,24 @@ TYPED_TEST(ConstructorTest, CopyConstructor_Num)
     EXPECT_NE(copyV.at(0), vec.at(0));
 }
 
+TEST(ConstructorTest, CopyConstructor_SameType) 
+{
+    Vector<int> vec{1, 2, 3, 4, 5};
+
+    Vector<double> copyV(vec);
+
+    EXPECT_EQ(vec.getSize(), copyV.getSize());
+
+    ConstIterator<int> vecIt = vec.cbegin();
+    ConstIterator<double> copyIt = copyV.cbegin();
+
+    for (; copyIt; ++copyIt, ++vecIt)
+        EXPECT_EQ(*vecIt, *copyIt);
+
+    copyV.at(0) = 10;
+    EXPECT_NE(copyV.at(0), vec.at(0));
+}
+
 TEST(ConstructorTest, CopyConstructor_Str) 
 {
     Vector<string> vec{"apple", "banana", "pineapple"};
@@ -94,10 +112,24 @@ TYPED_TEST(ConstructorTest, FillerConstructor_Num)
 
     Vector<TypeParam> vec(size, TypeParam(filler));
 
-
     EXPECT_EQ(vec.getSize(), size);
 
     ConstIterator<TypeParam> vecIt = vec.cbegin();
+
+    for (; vecIt; ++vecIt)
+        EXPECT_EQ(*vecIt, filler);
+}
+
+TEST(ConstructorTest, FillerConstructor_SameType) 
+{
+    size_t size = 5;
+    int filler = 67;
+
+    Vector<double> vec(size, filler);
+
+    EXPECT_EQ(vec.getSize(), size);
+
+    ConstIterator<double> vecIt = vec.cbegin();
 
     for (; vecIt; ++vecIt)
         EXPECT_EQ(*vecIt, filler);
@@ -135,6 +167,22 @@ TYPED_TEST(ConstructorTest, ArrConstructor_Num)
         EXPECT_EQ(*vecIt, arr[i]);
 }
 
+TEST(ConstructorTest, ArrConstructor_SameType) 
+{
+    size_t size = 3;
+
+    const int arr[] = {1, 2, 3};
+
+    Vector<double> vec(size, arr); 
+
+    EXPECT_EQ(vec.getSize(), size);
+
+    ConstIterator<double> vecIt = vec.cbegin();
+
+    for (size_t i = 0; vecIt; ++vecIt, ++i)
+        EXPECT_EQ(*vecIt, arr[i]);
+}
+
 TEST(ConstructorTest, ArrConstructor_Str) 
 {
     size_t size = 3;
@@ -161,6 +209,18 @@ TYPED_TEST(ConstructorTest, Init_ListConstructor_Num)
 
     for (TypeParam i = TypeParam(1); vecIt; ++vecIt, ++i)
         EXPECT_EQ(*vecIt, i);
+}
+
+TEST(ConstructorTest, Init_ListConstructor_SameType) 
+{
+    Vector<int> vec{6.7, 6.7, 6.7};
+
+    EXPECT_EQ(vec.getSize(), 3);
+
+    ConstIterator<int> vecIt = vec.cbegin();
+
+    for (; vecIt; ++vecIt)
+        EXPECT_EQ(*vecIt, 6);
 }
 
 TEST(ConstructorTest, Init_ListConstructor_Str) 
@@ -209,7 +269,7 @@ TEST(ConstructorTest, MoveConstructor_Str)
     EXPECT_EQ(rvalueVec.getSize(), 0);
 }
 
-TYPED_TEST(ConstructorTest, IteratorConstructor_Num) 
+TYPED_TEST(ConstructorTest, IteratorsConstructor_Num) 
 {
     Vector<TypeParam> vec{TypeParam(1), TypeParam(2), TypeParam(3)};
     ConstIterator<TypeParam> begin = vec.cbegin();
@@ -229,7 +289,7 @@ TYPED_TEST(ConstructorTest, IteratorConstructor_Num)
     EXPECT_NE(vec.at(0), resVec.at(0));
 }
 
-TEST(ConstructorTest, IteratorConstructor_String) 
+TEST(ConstructorTest, IteratorsConstructor_String) 
 {
     Vector<string> vec{"raspberry", "blueberry", "strawberry"};
     ConstIterator<string> begin = vec.cbegin();
@@ -247,6 +307,32 @@ TEST(ConstructorTest, IteratorConstructor_String)
     resVec.at(0) = "blackberry";
 
     EXPECT_NE(vec.at(0), resVec.at(0));
+}
+
+TYPED_TEST(ConstructorTest, Destructor_Num) 
+{
+    auto sp = make_shared<TypeParam>(TypeParam(1));
+    EXPECT_EQ(sp.use_count(), 1);
+
+    size_t size = 5;
+    {
+        Vector<shared_ptr<TypeParam>> v(size, sp); // filler constructor
+        EXPECT_EQ(sp.use_count(), size + 1);
+    }
+    EXPECT_EQ(sp.use_count(), 1);
+}
+
+TEST(ConstructorTest, Destructor_Str) 
+{
+    auto sp = make_shared<string>("coconut");
+    EXPECT_EQ(sp.use_count(), 1);
+
+    size_t size = 5;
+    {
+        Vector<shared_ptr<string>> v(size, sp); // filler constructor
+        EXPECT_EQ(sp.use_count(), size + 1);
+    }
+    EXPECT_EQ(sp.use_count(), 1);
 }
 
 #endif

@@ -13,20 +13,43 @@ using namespace std;
 template <typename Type>
 class Vector : public BaseContainer
 {
-    
-    friend class Iterator<Type>;
-    friend class ConstIterator<Type>;
-
 public:
+    using value_type = Type;
+    using reference = Type&;
+    using const_reference = const Type&;
+    using pointer = Type*;
+    using const_pointer = const Type*;
+    using size_type = size_t;
+    using iterator = Iterator<Type>;
+    using const_iterator = ConstIterator<Type>;
+
     Vector() = default;
     explicit Vector(size_t sizeValue);
+
     explicit Vector(const Vector<Type> &vector);
+
+    template <typename Type2>
+    explicit Vector(const Vector<Type2> &vector) requires convertible_to<Type2, Type>;
+
     Vector(size_t sizeValue, const Type &filler);
+
+    template <typename Type2>
+    Vector(size_t sizeValue, const Type2 &filler) requires convertible_to<Type2, Type>;
+
     Vector(size_t sizeValue, const Type *arr);
+
+    template <typename Type2>
+    Vector(size_t sizeValue, const Type2 *arr) requires convertible_to<Type2, Type>;
+
     Vector(initializer_list<Type> elements);
+    
+    template<typename Type2>
+	Vector(initializer_list<Type2> elements) requires convertible_to<Type2, Type>;
+
     Vector(Vector<Type> &&vector) noexcept;
-    template <typename IterType>
-    Vector(IterType begin, IterType end);
+
+    template<input_iterator Iter, sentinel_for<Iter> Sent>
+	Vector(const Iter& begin, const Sent& end) requires convertible_to<iter_value_t<Iter>, value_type>;
 
     ~Vector() override = default;
 
@@ -34,17 +57,31 @@ public:
     Vector<Type> &operator=(const Vector<Type> &vector);
     Vector<Type> &operator=(Vector<Type> &&vector) noexcept;
 
+    template<typename Type2>
+	Vector<Type> &operator=(const Vector<Type2> &vector) requires convertible_to<Type2, Type>;
+
+	template<typename Type2>
+	Vector<Type> &operator=(initializer_list<Type2> elements) requires convertible_to<Type2, Type>;
+
     bool operator==(const Vector<Type> &vector) const;
-    bool isEqual(const Vector<Type> &vector) const;
+
+    template<typename Type2>
+    bool operator==(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>;
+
+	template<typename Type2>
+    bool isEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>;
 
     bool operator!=(const Vector<Type> &vector) const;
-    bool isNotEqual(const Vector<Type> &vector) const;
 
-    template <typename OutType>
-    OutType length() const;
+    template<typename Type2>
+    bool operator!=(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>;
 
-    template <typename OutType>
-    Vector<OutType> getUnit() const;
+    template<typename Type2>
+    bool isNotEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>;
+
+    double length() const;
+
+    Vector<double> getUnit() const;
 
     Type &at(size_t index);
     Type &operator[](size_t index);
