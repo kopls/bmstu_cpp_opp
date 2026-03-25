@@ -8,6 +8,8 @@
 #include "iterator.h"
 #include "const_iterator.h"
 
+#include "concept.h"
+
 using namespace std;
 
 template <typename Type>
@@ -79,9 +81,9 @@ public:
     template<typename Type2>
     bool isNotEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>;
 
-    double length() const;
+    double length() const requires convertible_to<Type, double>;
 
-    Vector<double> getUnit() const;
+    Vector<double> getUnit() const requires convertible_to<Type, double>;
 
     Type &at(size_t index);
     Type &operator[](size_t index);
@@ -92,157 +94,157 @@ public:
     Vector<Type> vecSum(const Vector<Type> &vector) const;
     Vector<Type> operator+(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     decltype(auto) vecSum(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     decltype(auto) operator+(const Vector<Type2> &vector) const;
 
     Vector<Type> byNumSum(const Type &num) const;
     Vector<Type> operator+(const Type &num) const;
 
-    template<typename Type2>
+    template <support_sum<Type> Type2>
     decltype(auto) byNumSum(const Type2 &num) const;
-    template<typename Type2>
+    template <support_sum<Type> Type2>
     decltype(auto) operator+(const Type2 &num) const;
 
     Vector<Type> &eqVecSum(const Vector<Type> &vector);
     Vector<Type> &operator+=(const Vector<Type> &vector);
 
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     Vector<Type> &eqVecSum(const Vector<Type2> &vector);
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     Vector<Type> &operator+=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumSum(const Type &num);
     Vector<Type> &operator+=(const Type &num);
 
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     Vector<Type> &eqByNumSum(const Type2 &num);
-    template <typename Type2>
+    template <support_sum<Type> Type2>
     Vector<Type> &operator+=(const Type2 &num);
 
     Vector<Type> vecDiff(const Vector<Type> &vector) const;
     Vector<Type> operator-(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     decltype(auto) vecDiff(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     decltype(auto) operator-(const Vector<Type2> &vector) const;
 
     Vector<Type> byNumDiff(const Type &num) const;
     Vector<Type> operator-(const Type &num) const;
 
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     decltype(auto) byNumDiff(const Type2 &num) const;
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     decltype(auto) operator-(const Type2 &num) const;
 
     Vector<Type> &eqVecDiff(const Vector<Type> &vector);
     Vector<Type> &operator-=(const Vector<Type> &vector);
 
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     Vector<Type> &eqVecDiff(const Vector<Type2> &vector);
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     Vector<Type> &operator-=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumDiff(const Type &num);
     Vector<Type> &operator-=(const Type &num);
 
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     Vector<Type> &eqByNumDiff(const Type2 &num);
-    template <typename Type2>
+    template <support_sub<Type> Type2>
     Vector<Type> &operator-=(const Type2 &num);
 
     Vector<Type> vecProd(const Vector<Type> &vector) const;
     Vector<Type> operator*(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     decltype(auto) vecProd(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     decltype(auto) operator*(const Vector<Type2> &vector) const;
 
     Vector<Type> byNumProd(const Type &num) const;
     Vector<Type> operator*(const Type &num) const;
 
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     decltype(auto) byNumProd(const Type2 &num) const;
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     decltype(auto) operator*(const Type2 &num) const;
 
     Vector<Type> &eqVecProd(const Vector<Type> &vector);
     Vector<Type> &operator*=(const Vector<Type> &vector);
 
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     Vector<Type> &eqVecProd(const Vector<Type2> &vector);
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     Vector<Type> &operator*=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumProd(const Type &num);
     Vector<Type> &operator*=(const Type &num);
 
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     Vector<Type> &eqByNumProd(const Type2 &num);
-    template <typename Type2>
+    template <support_prod<Type> Type2>
     Vector<Type> &operator*=(const Type2 &num);
 
     Vector<Type> vecQuot(const Vector<Type> &vector) const;
     Vector<Type> operator/(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     decltype(auto) vecQuot(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     decltype(auto) operator/(const Vector<Type2> &vector) const;
 
     Vector<Type> byNumQuot(const Type &num) const;
     Vector<Type> operator/(const Type &num) const;
 
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     decltype(auto) byNumQuot(const Type2 &num) const;
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     decltype(auto) operator/(const Type2 &num) const;
 
     Vector<Type> &eqVecQuot(const Vector<Type> &vector);
     Vector<Type> &operator/=(const Vector<Type> &vector);
 
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     Vector<Type> &eqVecQuot(const Vector<Type2> &vector);
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     Vector<Type> &operator/=(const Vector<Type2> &vector);
 
     Vector<Type> &eqByNumQuot(const Type &num);
     Vector<Type> &operator/=(const Type &num);
 
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     Vector<Type> &eqByNumQuot(const Type2 &num);
-    template <typename Type2>
+    template <support_quot<Type> Type2>
     Vector<Type> &operator/=(const Type2 &num);
     
 
-    Vector<Type> neg() const;
-    Vector<Type> operator-() const;
+    Vector<Type> neg() const requires convertible_to<Type, double>;
+    Vector<Type> operator-() const requires convertible_to<Type, double>;
 
     Type scalarProd(const Vector<Type> &vector) const; 
     Type operator&(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     decltype(auto) scalarProd(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     decltype(auto) operator&(const Vector<Type2> &vector) const;
 
     Vector<Type> vectorProd(const Vector<Type> &vector) const;
     Vector<Type> operator^(const Vector<Type> &vector) const;
 
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     decltype(auto) vectorProd(const Vector<Type2> &vector) const;
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     decltype(auto) operator^(const Vector<Type2> &vector) const;
 
     Vector<Type> &eqVectorProd(const Vector<Type> &vector);
     Vector<Type> operator^=(const Vector<Type> &vector);
 
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     Vector<Type> &eqVectorProd(const Vector<Type2> &vector);
-    template <typename Type2>
+    template <supports_sum_mul<Type> Type2>
     Vector<Type> operator^=(const Vector<Type2> &vector);
 
     double angle(const Vector<Type> &vector) const;

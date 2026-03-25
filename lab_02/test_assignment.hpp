@@ -40,6 +40,16 @@ TEST(AssignmentTest, Init_ListAssignment_SameType)
         EXPECT_EQ(*vecIt, 6);
 }
 
+/*TEST(AssignmentTest, Init_ListAssignment_Error) 
+{
+    Vector<string> vec;
+    vec = {"asb", "sag"};
+
+    double len = vec.length();    СЕКРЕТНЫЙ ХАКЕРСКИЙ ТЕСТ НА КОНЦЕПТЫ
+
+    EXPECT_EQ(len, 6);
+}*/
+
 TEST(AssignmentTest, Init_ListAssignment_Str) 
 {
     Vector<string> vec;
