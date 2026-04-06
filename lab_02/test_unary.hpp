@@ -17,10 +17,10 @@ TYPED_TEST_SUITE(UnaryTest, TestType);
 
 TYPED_TEST(UnaryTest, LengthUnary_Num) 
 {
-    TypeParam a = 1;
-    TypeParam b = 2;
-    TypeParam c = 5;
-    Vector<TypeParam> vec = {a, b, c};
+    double a = 1;
+    double b = 2;
+    double c = 5;
+    Vector<double> vec = {a, b, c};
     
     double len = vec.length();
 
@@ -64,8 +64,10 @@ TEST(UnaryTest, NotEqualUnary_Str)
 TYPED_TEST(UnaryTest, getUnit_Num)
 {
     Vector<TypeParam> vec = {TypeParam(4), TypeParam(3)};
-    Vector<double> needVec = {0.8, 0.6};
-    Vector<double> resVec = vec.getUnit();
+    TypeParam need1 = TypeParam(0.8);
+    TypeParam need2 = TypeParam(0.6);
+    Vector<TypeParam> needVec = {need1, need2};
+    Vector<TypeParam> resVec = vec.getUnit();
 
     EXPECT_EQ(needVec == resVec, true);
 }

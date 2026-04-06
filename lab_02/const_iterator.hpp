@@ -2,10 +2,10 @@
 #define CONST_ITERATOR_HPP
 
 #include <time.h>
-#include "iterator.h"
+#include "const_iterator.h"
 #include "exceptions.h"
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type>::ConstIterator(const shared_ptr<Type[]> &data, size_t limit, size_t i) noexcept 
 {
     ptr = data;
@@ -13,7 +13,7 @@ ConstIterator<Type>::ConstIterator(const shared_ptr<Type[]> &data, size_t limit,
     index = i;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type>::ConstIterator(const ConstIterator<Type> &iterator) noexcept 
 {
     ptr = iterator.ptr;
@@ -21,159 +21,144 @@ ConstIterator<Type>::ConstIterator(const ConstIterator<Type> &iterator) noexcept
     index = iterator.index;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> &ConstIterator<Type>::operator=(const ConstIterator<Type> &iterator) noexcept 
 {
-    ptr.reset(iterator.ptr);
+    ptr = iterator.ptr;
     size = iterator.size;
     index = iterator.index;
+    return *this;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type>::operator bool() const 
 {
     expiredCheck(__LINE__);
-
     return size && index < size;
 }
 
-template <typename Type>
-const Type &ConstIterator<Type>::operator*() const 
+template<VectorElement Type>
+typename ConstIterator<Type>::reference ConstIterator<Type>::operator*() const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     return *getCurPtr();
 }
 
-template <typename Type>
-const Type *ConstIterator<Type>::operator->() const 
+template<VectorElement Type>
+typename ConstIterator<Type>::pointer ConstIterator<Type>::operator->() const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     return getCurPtr();
 }
 
-template <typename Type>
-const Type &ConstIterator<Type>::operator[](difference_type dif) const 
+template<VectorElement Type>
+typename ConstIterator<Type>::reference ConstIterator<Type>::operator[](difference_type dif) const 
 { 
     return *(*this + dif);
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> ConstIterator<Type>::operator+(difference_type dif) const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     ConstIterator<Type> it(*this);
     it.index += dif;
-
     return it;
 }
 
-template<typename Type>
+template<VectorElement Type>
 ConstIterator<Type> operator+(typename ConstIterator<Type>::difference_type n, const ConstIterator<Type>& it)
 {
     return it + n;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> &ConstIterator<Type>::operator+=(difference_type dif) 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     index += dif;
     return *this;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> &ConstIterator<Type>::operator++() 
 {
     expiredCheck(__LINE__);
-
     ++index; 
     return *this;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> ConstIterator<Type>::operator++(int) 
 {
     expiredCheck(__LINE__);
-    
     ConstIterator<Type> tmp(*this);
     ++(*this);
     return tmp;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> ConstIterator<Type>::operator-(difference_type dif) const 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     ConstIterator<Type> it(*this);
     it.index -= dif;
-
     return it;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> &ConstIterator<Type>::operator-=(difference_type dif) 
 {
     expiredCheck(__LINE__);
     indexCheck(__LINE__);
-
     index -= dif;
     return *this;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> &ConstIterator<Type>::operator--() 
 {
     expiredCheck(__LINE__);
-    
     --index;
-
     return *this;
 }
 
-template <typename Type>
+template<VectorElement Type>
 ConstIterator<Type> ConstIterator<Type>::operator--(int) 
 {
     expiredCheck(__LINE__);
-
     ConstIterator<Type> tmp(*this);
     --(*this);
-
     return tmp;
 }
 
-template <typename Type>
-auto ConstIterator<Type>::operator-(const ConstIterator<Type>& other) const 
+template<VectorElement Type>
+typename ConstIterator<Type>::difference_type ConstIterator<Type>::operator-(const ConstIterator<Type>& other) const 
 {
     return static_cast<difference_type>(index) - static_cast<difference_type>(other.index);
 }
 
-template <typename Type>
+template<VectorElement Type>
 auto ConstIterator<Type>::operator<=>(const ConstIterator<Type> &iterator) const
 {
     iterator.expiredCheck(__LINE__);
     expiredCheck(__LINE__);
-
     return getCurPtr() <=> iterator.getCurPtr();
 }
 
-template <typename Type>
-const Type *ConstIterator<Type>::getCurPtr() const
+template<VectorElement Type>
+typename ConstIterator<Type>::pointer ConstIterator<Type>::getCurPtr() const
 {
     shared_ptr<Type[]> tmp = ptr.lock();
     return tmp.get() + index;
 }
 
-template <typename Type>
+template<VectorElement Type>
 void ConstIterator<Type>::expiredCheck(const uint line) const
 {
     if (ptr.expired())
@@ -184,7 +169,7 @@ void ConstIterator<Type>::expiredCheck(const uint line) const
     }
 }
 
-template <typename Type>
+template<VectorElement Type>
 void ConstIterator<Type>::indexCheck(const uint line) const
 {
     if (index >= size)

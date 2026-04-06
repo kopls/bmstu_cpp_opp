@@ -375,8 +375,8 @@ TYPED_TEST(BinaryTest, angle)
 
 TYPED_TEST(BinaryTest, isCollinear_True)
 {
-    Vector<TypeParam> vec1 = {1, 2, 3};
-    Vector<TypeParam> vec2 = {2, 4, 6};
+    Vector<double> vec1 = {1, 2, 3};
+    Vector<double> vec2 = {2, 4, 6};
 
     EXPECT_TRUE(vec1.isCollinear(vec2));
 }

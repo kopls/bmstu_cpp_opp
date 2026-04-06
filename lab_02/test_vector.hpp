@@ -13,5 +13,6 @@
 
 #include "test_assignment.hpp"
 
+#include "test_iterators.hpp"
 
 #endif

@@ -11,3 +11,5 @@ size_t BaseContainer::getSize() const
 }
 
 BaseContainer::~BaseContainer() = default;
+
+// концепт для контейнера

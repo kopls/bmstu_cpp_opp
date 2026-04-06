@@ -3,6 +3,9 @@
 
 #include <cmath>
 #include <limits>
+#include <algorithm>
+#include <numeric>
+#include <ranges>
 
 #include "vector.h"
 #include "exceptions.h"
@@ -10,149 +13,160 @@
 #define EPS __DBL_EPSILON__
 
 // Iterators
-template <typename Type>
-Iterator<Type> Vector<Type>::begin() noexcept
+// Iterators
+template<VectorElement Type>
+typename Vector<Type>::iterator Vector<Type>::begin() noexcept
 {
-    return Iterator<Type>(data, size, 0);
+    return iterator(data, size, 0);
 }
 
-template <typename Type>
-Iterator<Type> Vector<Type>::end() noexcept
+template<VectorElement Type>
+typename Vector<Type>::iterator Vector<Type>::end() noexcept
 {
-    return Iterator<Type>(data, size, size);
+    return iterator(data, size, size);
 }
 
-template <typename Type>
-ConstIterator<Type> Vector<Type>::begin() const noexcept
+template<VectorElement Type>
+typename Vector<Type>::const_iterator Vector<Type>::begin() const noexcept
 {
-    return ConstIterator<Type>(data, size, 0);
+    return const_iterator(data, size, 0);
 }
 
-template <typename Type>
-ConstIterator<Type> Vector<Type>::end() const noexcept
+template<VectorElement Type>
+typename Vector<Type>::const_iterator Vector<Type>::end() const noexcept
 {
-    return ConstIterator<Type>(data, size, size);
+    return const_iterator(data, size, size);
 }
 
-template <typename Type>
-ConstIterator<Type> Vector<Type>::cbegin() const noexcept
+template<VectorElement Type>
+typename Vector<Type>::const_iterator Vector<Type>::cbegin() const noexcept
 {
-    return ConstIterator<Type>(data, size, 0);
+    return const_iterator(data, size, 0);
 }
 
-template <typename Type>
-ConstIterator<Type> Vector<Type>::cend() const noexcept
+template<VectorElement Type>
+typename Vector<Type>::const_iterator Vector<Type>::cend() const noexcept
 {
-    return ConstIterator<Type>(data, size, size);
+    return const_iterator(data, size, size);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::reverse_iterator Vector<Type>::rbegin() noexcept
+{
+    return reverse_iterator(data, size, size - 1);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::reverse_iterator Vector<Type>::rend() noexcept
+{
+    return reverse_iterator(data, size, -1);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::const_reverse_iterator Vector<Type>::rbegin() const noexcept
+{
+    return const_reverse_iterator(data, size, size - 1);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::const_reverse_iterator Vector<Type>::rend() const noexcept
+{
+    return const_reverse_iterator(data, size, -1);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::const_reverse_iterator Vector<Type>::crbegin() const noexcept
+{
+    return const_reverse_iterator(data, size, size - 1);
+}
+
+template<VectorElement Type>
+typename Vector<Type>::const_reverse_iterator Vector<Type>::crend() const noexcept
+{
+    return const_reverse_iterator(data, size, -1);
 }
 
 // Constructors
-template <typename Type>
-Vector<Type>::Vector(size_t sizeValue)
+template<VectorElement Type>
+Vector<Type>::Vector(typename Vector<Type>::size_type sizeValue)
 {
     allocate(sizeValue);
     size = sizeValue;
 }
 
-template <typename Type>
-Vector<Type>::Vector(size_t sizeValue, const Type &filler) 
+template<VectorElement Type>
+Vector<Type>::Vector(typename Vector<Type>::size_type sizeValue, typename Vector<Type>::const_reference filler) 
 {
     allocate(sizeValue);
     size = sizeValue;
-
-    for (Iterator<Type> it = begin(); it; ++it)
-        *it = filler;
+    std::ranges::fill(*this, filler);
 }
 
-template <typename Type>
-template <typename Type2>
-Vector<Type>::Vector(size_t sizeValue, const Type2 &filler) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template <ConvertibleTo<Type> Type2>
+Vector<Type>::Vector(typename Vector<Type>::size_type sizeValue, const Type2 &filler)
 {
     allocate(sizeValue);
     size = sizeValue;
-
-    for (Iterator<Type> it = begin(); it; ++it)
-        *it = filler;
+    std::ranges::fill(*this, static_cast<Type>(filler));
 }
 
-template <typename Type>
-Vector<Type>::Vector(size_t sizeValue, const Type *arr) 
+template<VectorElement Type>
+Vector<Type>::Vector(typename Vector<Type>::size_type sizeValue, typename Vector<Type>::const_pointer arr) 
 {
     allocate(sizeValue);
     size = sizeValue;
-
-    size_t i = 0;
-    for (Iterator<Type> it = begin(); it; ++it, ++i)
-        *it = arr[i];
+    std::ranges::copy(arr, arr + size, begin());
 }
 
-template <typename Type>
-template <typename Type2>
-Vector<Type>::Vector(size_t sizeValue, const Type2 *arr) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template <ConvertibleTo<Type> Type2>
+Vector<Type>::Vector(typename Vector<Type>::size_type sizeValue, const Type2 *arr)
 {
     allocate(sizeValue);
     size = sizeValue;
-
-    size_t i = 0;
-    for (Iterator<Type> it = begin(); it; ++it, ++i)
-        *it = arr[i];
+    std::ranges::transform(arr, arr + size, begin(),
+                          [](const Type2& val) { return static_cast<Type>(val); });
 }
 
-template <typename Type>
-Vector<Type>::Vector(initializer_list<Type> elements)
+template<VectorElement Type>
+Vector<Type>::Vector(initializer_list<typename Vector<Type>::value_type> elements)
 {
     allocate(elements.size());
     size = elements.size();
-
-    Iterator<Type> it = begin();
-
-    for (const auto &elem : elements)
-        *(it++) = elem;
+    std::ranges::copy(elements, begin());
 }
 
-template <typename Type>
-template <typename Type2>
-Vector<Type>::Vector(initializer_list<Type2> elements) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template <ConvertibleTo<Type> Type2>
+Vector<Type>::Vector(initializer_list<Type2> elements)
 {
     allocate(elements.size());
     size = elements.size();
-
-    Iterator<Type> it = begin();
-
-    for (const auto &elem : elements)
-        *(it++) = elem;
+    std::ranges::transform(elements, begin(),
+                          [](const Type2& val) { return static_cast<Type>(val); });
 }
 
-
-template <typename Type>
-Vector<Type>::Vector(const Vector<Type> &vector) 
+template<VectorElement Type>
+Vector<Type>::Vector(const Vector &vector) 
 {
     allocate(vector.size);
     size = vector.size;
-
-    ConstIterator<Type> src = vector.cbegin();
-    Iterator<Type> dst = begin();
-
-    for (; src; ++src, ++dst)
-        *dst = *src;
+    std::ranges::copy(vector, begin());
 }
 
-template <typename Type>
-template <typename Type2>
-Vector<Type>::Vector(const Vector<Type2> &vector) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template <ConvertibleTo<Type> Type2>
+Vector<Type>::Vector(const Vector<Type2> &vector)
 {
     allocate(vector.getSize());
     size = vector.getSize();
-
-    ConstIterator<Type2> src = vector.cbegin();
-    Iterator<Type> dst = begin();
-
-    for (; src; ++src, ++dst)
-        *dst = *src;
+    std::ranges::transform(vector, begin(),
+                          [](const Type2& val) { return static_cast<Type>(val); });
 }
 
-template <typename Type>
-Vector<Type>::Vector(Vector<Type> &&vector) noexcept
+template<VectorElement Type>
+Vector<Type>::Vector(Vector &&vector) noexcept
 {
     size = vector.size;
     data = vector.data;
@@ -160,930 +174,488 @@ Vector<Type>::Vector(Vector<Type> &&vector) noexcept
     vector.size = 0;
 }
 
-template <typename Type>
+template<VectorElement Type>
 template<input_iterator Iter, sentinel_for<Iter> Sent>
-Vector<Type>::Vector(const Iter& begin, const Sent& end) requires convertible_to<iter_value_t<Iter>, value_type>
+requires ConvertibleTo<iter_value_t<Iter>, typename Vector<Type>::value_type>
+Vector<Type>::Vector(const Iter& begin, const Sent& end)
 {
-    size_t len = 0;
-    for (auto it = begin; it != end; ++it, ++len) {}
-
+    typename Vector<Type>::size_type len = std::distance(begin, end);
     allocate(len);
     size = len;
+    std::ranges::copy(begin, end, this->begin());
+}
 
-    len = 0;
-    for (auto it = begin; it != end; ++it, ++len)
-        data[len] = *it;
+template<VectorElement Type>
+template<std::ranges::input_range Range>
+requires ConvertibleTo<std::ranges::range_value_t<Range>, typename Vector<Type>::value_type>
+Vector<Type>::Vector(Range&& range)
+{
+    size = std::ranges::size(range);
+    allocate(size);
+    std::ranges::copy(range, begin());
 }
 
 // Assigment
-template <typename Type>
-Vector<Type> &Vector<Type>::operator=(initializer_list<Type> elements)
-{
-    allocate(elements.size());
-    size = elements.size();
-
-    Iterator<Type> it = begin();
-    for (const auto &elem : elements)
-        *(it++) = elem;
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator=(const Vector<Type> &vector)
+template<VectorElement Type>
+Vector<Type> &Vector<Type>::operator=(const Vector &vector)
 {
     allocate(vector.size);
     size = vector.size;
-
-    Iterator<Type> it = begin();
-    for (const auto &elem : vector)
-        *(it++) = elem;
-
+    std::ranges::copy(vector, begin());
     return *this;
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::operator=(Vector<Type> &&vector) noexcept
+template<VectorElement Type>
+Vector<Type> &Vector<Type>::operator=(Vector &&vector) noexcept
 {
     size = vector.size;
     data = vector.data;
     vector.data.reset();
     vector.size = 0;
-
     return *this;
 }
 
-template <typename Type>
-template<typename Type2>
-Vector<Type> &Vector<Type>::operator=(const Vector<Type2> &vector) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template<ConvertibleTo<Type> Type2>
+Vector<Type> &Vector<Type>::operator=(const Vector<Type2> &vector)
 {
     allocate(vector.getSize());
     size = vector.getSize();
-
-    Iterator<Type> it = begin();
-    for (const auto &elem : vector)
-        *(it++) = elem;
-
+    std::ranges::transform(vector, begin(),
+                          [](const Type2& val) { return static_cast<Type>(val); });
     return *this;
 }
 
-template <typename Type>
-template<typename Type2>
-Vector<Type> &Vector<Type>::operator=(initializer_list<Type2> elements) requires convertible_to<Type2, Type>
+template<VectorElement Type>
+template<ConvertibleTo<Type> Type2>
+Vector<Type> &Vector<Type>::operator=(initializer_list<Type2> elements)
 {
     allocate(elements.size());
     size = elements.size();
-
-    Iterator<Type> it = begin();
-    for (const auto &elem : elements)
-        *(it++) = elem;
-
+    std::ranges::transform(elements, begin(),
+                          [](const Type2& val) { return static_cast<Type>(val); });
     return *this;
 }
 
 // Comparison
-template <typename Type>
-bool Vector<Type>::operator==(const Vector<Type> &vector) const
+template<VectorElement Type>
+template<EqualityComparableWith<Type> Type2>
+bool Vector<Type>::operator==(const Vector<Type2> &vector) const
 {
     return isEqual(vector);
 }
 
-template <typename Type>
-template<typename Type2>
-bool Vector<Type>::operator==(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
+template<VectorElement Type>
+template <EqualityComparableWith<Type> Type2>
+bool Vector<Type>::isEqual(const Vector<Type2> &vector) const
 {
-    return isEqual(vector);
+    if (size != vector.getSize())
+        return false;
+    return std::ranges::equal(*this, vector);
 }
 
-template <typename Type>
-template <typename Type2>
-bool Vector<Type>::isEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
-{
-    ConstIterator<Type> first = cbegin();
-    ConstIterator<Type2> second = vector.cbegin();
-
-    bool areEqual = (size && size == vector.getSize());
-    for (; areEqual && (first != cend()) && (second != cend());
-         ++first, ++second)
-        areEqual = (*first == *second);
-
-    return areEqual || !size;
-}
-
-template <typename Type>
-bool Vector<Type>::operator!=(const Vector<Type> &vector) const
+template<VectorElement Type>
+template <EqualityComparableWith<Type> Type2>
+bool Vector<Type>::operator!=(const Vector<Type2> &vector) const
 {
     return isNotEqual(vector);
 }
 
-template <typename Type>
-template <typename Type2>
-bool Vector<Type>::operator!=(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
-{
-    return isNotEqual(vector);
-}
-
-template <typename Type>
-template <typename Type2>
-bool Vector<Type>::isNotEqual(const Vector<Type2> &vector) const requires equality_comparable_with<Type2, Type>
+template<VectorElement Type>
+template <EqualityComparableWith<Type> Type2>
+bool Vector<Type>::isNotEqual(const Vector<Type2> &vector) const
 {
     return !(*this == vector);
 }
 
 // Methods, operators
-template <typename Type>
-double Vector<Type>::length() const requires convertible_to<Type, double>
+template<VectorElement Type>
+template<ConvertibleTo<double> U>
+Type Vector<Type>::length() const
 {
     zeroSizeCheck(__LINE__);
-
-    Type len = 0;
-    ConstIterator<Type> it = cbegin();
-    for (; it; ++it)
-        len += *it * *it;
-
-    return sqrt(len);
+    
+    auto square = [](const Type& x) { return x * x; };
+    Type len = std::accumulate(cbegin(), cend(), Type(0),
+                               [&square](Type acc, const Type& x) {
+                                   return acc + square(x);
+                               });
+    return std::sqrt(len);
 }
 
-template <typename Type>
-Vector<double> Vector<Type>::getUnit() const requires convertible_to<Type, double>
+template<VectorElement Type>
+template<ConvertibleTo<double> U>
+Vector<Type> Vector<Type>::getUnit() const
 {
     zeroSizeCheck(__LINE__);
-    Vector<double> res(size);
-
-    double len = length();
-
-    Iterator<double> resIt = res.begin();
-    ConstIterator<Type> srcIt = cbegin();
-
-    for (; srcIt; ++resIt, ++srcIt)
-        *resIt = *srcIt / len;
-
+    Vector<Type> res(size);
+    Type len = length();
+    std::ranges::transform(*this, res.begin(),
+                          [len](const Type& val) { return val / len; });
     return res;
 }
 
-template <typename Type>
-Type &Vector<Type>::at(size_t index)
+template<VectorElement Type>
+typename Vector<Type>::reference Vector<Type>::at(typename Vector<Type>::size_type index)
 {
     indexCheck(index, __LINE__);
     return data[index];
 }
 
-template <typename Type>
-Type &Vector<Type>::operator[](size_t index)
+template<VectorElement Type>
+typename Vector<Type>::reference Vector<Type>::operator[](typename Vector<Type>::size_type index)
 {
     return at(index);
 }
 
-template <typename Type>
-const Type &Vector<Type>::at(size_t index) const
+template<VectorElement Type>
+typename Vector<Type>::const_reference Vector<Type>::at(typename Vector<Type>::size_type index) const
 {
     indexCheck(index, __LINE__);
     return data[index];
 }
 
-template <typename Type>
-const Type &Vector<Type>::operator[](size_t index) const
+template<VectorElement Type>
+typename Vector<Type>::const_reference Vector<Type>::operator[](typename Vector<Type>::size_type index) const
 {
     return at(index);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::vecSum(const Vector<Type> &vector) const
-{
-    sizesCheck(vector, __LINE__);
-
-    Vector<Type> res(*this);
-    Iterator<Type> resIt = res.begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; vecIt; ++vecIt, ++resIt)
-        *resIt +=  *vecIt;
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator+(const Vector<Type> &vector) const
-{
-    return vecSum(vector);
-}
-
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 decltype(auto) Vector<Type>::vecSum(const Vector<Type2> &vector) const
 {
     sizesCheck(vector, __LINE__);
     Vector<decltype(at(0) + vector.at(0))> res(size);
 
-    ConstIterator<Type2> vecIt = vector.cbegin();
-        for (size_t i = 0; vecIt; ++vecIt, ++i)
-        res.at(i) = at(i) + *vecIt;
+    for (size_t i = 0; i < size; ++i)
+        res.at(i) = at(i) + vector.at(i);
 
     return res;
 }
 
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 decltype(auto) Vector<Type>::operator+(const Vector<Type2> &vector) const
 {
     return vecSum(vector);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::byNumSum(const Type &num) const
-{
-    Vector<Type> res(*this);
-    Iterator<Type> resIt = res.begin();
-
-    for (; resIt; ++resIt)
-        *resIt += num;
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator+(const Type &num) const
-{
-    return byNumSum(num);
-}
-
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 decltype(auto) Vector<Type>::byNumSum(const Type2 &num) const
 {
     Vector<decltype(at(0) + num)> res(size);
-    ConstIterator<Type> it = cbegin(); 
-
-    for (size_t i = 0; it; ++it)
-        res.at(i) = *it + num;
-
+    std::ranges::transform(*this, res.begin(),
+                          [&num](const Type& val) { return val + num; });
     return res;
 }
 
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 decltype(auto) Vector<Type>::operator+(const Type2 &num) const
 {
     return byNumSum(num);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqVecSum(const Vector<Type> &vector)
-{
-    sizesCheck(vector, __LINE__);
-
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt)
-        *resIt += *(vecIt++);
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator+=(const Vector<Type> &vector)
-{
-    return eqVecSum(vector);
-}
-
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 Vector<Type> &Vector<Type>::eqVecSum(const Vector<Type2> &vector)
 {
     sizesCheck(vector, __LINE__);
 
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type2> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt)
-        *resIt += *(vecIt++);
+    for (size_t i = 0; i < size; ++i)
+        at(i) += vector.at(i);
 
     return *this;
 }
 
-template <typename Type>
-template <support_sum<Type> Type2>
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
 Vector<Type> &Vector<Type>::operator+=(const Vector<Type2> &vector)
 {
     return eqVecSum(vector);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqByNumSum(const Type &num)
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
+Vector<Type> &Vector<Type>::eqByNumSum(const Type2 &num)
 {
-    Iterator<Type> it = begin();
-    for (; it; ++it)
-        *it += num;
-
+    std::ranges::transform(*this, begin(),
+                          [&num](const Type& val) { return val + num; });
     return *this;
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::operator+=(const Type &num)
+template<VectorElement Type>
+template <SupportSum<Type> Type2>
+Vector<Type> &Vector<Type>::operator+=(const Type2 &num)
 {
     return eqByNumSum(num);
 }
 
-template <typename Type>
-template <support_sum<Type> Type2>
-Vector<Type> &Vector<Type>::eqByNumSum(const Type2 &num)
-{
-    Iterator<Type> it = begin();
-    for (; it; ++it)
-        *it += num;
-
-    return *this;
-}
-
-template <typename Type>
-template <support_sum<Type> Type2>
-Vector<Type> &Vector<Type>::operator+=(const Type2 &num)
-{
-    return qeByNumSum(num);
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::vecDiff(const Vector<Type> &vector) const
-{
-    sizesCheck(vector, __LINE__);
-
-    Vector<Type> res(*this);
-    Iterator<Type> resIt = res.begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt, ++vecIt)
-        *resIt -= *vecIt;
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator-(const Vector<Type> &vector) const
-{
-    return vecDiff(vector);
-}
-
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 decltype(auto) Vector<Type>::vecDiff(const Vector<Type2> &vector) const
 {
     sizesCheck(vector, __LINE__);
-
     Vector<decltype(at(0) - vector.at(0))> res(size);
-    ConstIterator<Type2> vecIt = vector.cbegin();
 
-    for (size_t i = 0; vecIt; ++vecIt, ++i)
-        res.at(i) = at(i) - *vecIt;
+    for (size_t i = 0; i < size; ++i)
+        res.at(i) = at(i) - vector.at(i);
 
     return res;
 }
 
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 decltype(auto) Vector<Type>::operator-(const Vector<Type2> &vector) const
 {
     return vecDiff(vector);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::byNumDiff(const Type &num) const
-{
-    Vector<Type> res(*this);
-    Iterator<Type> it = res.begin();
-
-    for (; it; ++it)
-        *it -= num;
-
-    return res;
-}
-template <typename Type>
-Vector<Type> Vector<Type>::operator-(const Type &num) const
-{
-    return byNumDiff(num);
-}
-
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 decltype(auto) Vector<Type>::byNumDiff(const Type2 &num) const
 {
     Vector<decltype(at(0) - num)> res(size);
-    ConstIterator<Type> it = cbegin();
-
-    for (size_t i = 0; it; ++it, ++i)
-        res.at(i) = *it - num;
-
+    std::ranges::transform(*this, res.begin(),
+                          [&num](const Type& val) { return val - num; });
     return res;
 }
 
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 decltype(auto) Vector<Type>::operator-(const Type2 &num) const
 {
     return byNumDiff(num);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type> &vector) 
-{
-    sizesCheck(vector, __LINE__);
-
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt)
-        *resIt -= *(vecIt++);
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator-=(const Vector<Type> &vector) 
-{
-    return eqVecDiff(vector);
-}
-
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 Vector<Type> &Vector<Type>::eqVecDiff(const Vector<Type2> &vector) 
 {
     sizesCheck(vector, __LINE__);
 
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type2> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt)
-        *resIt -= *(vecIt++);
+    for (size_t i = 0; i < size; ++i)
+        at(i) -= vector.at(i);
 
     return *this;
 }
-template <typename Type>
-template <support_sub<Type> Type2>
+
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 Vector<Type> &Vector<Type>::operator-=(const Vector<Type2> &vector) 
 {
     return eqVecDiff(vector);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqByNumDiff(const Type &num) 
-{
-    Iterator<Type> resIt = begin();
-
-    for (; resIt; ++resIt)
-        *resIt -= num;
-
-    return *this;
-}
-template <typename Type>
-Vector<Type> &Vector<Type>::operator-=(const Type &num) 
-{
-    return eqByNumDiff(num);
-}
-
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 Vector<Type> &Vector<Type>::eqByNumDiff(const Type2 &num) 
 {
-    Iterator<Type> resIt = begin();
-
-    for (; resIt; ++resIt)
-        *resIt -= num;
-
+    std::ranges::transform(*this, begin(),
+                          [&num](const Type& val) { return val - num; });
     return *this;
 }
 
-template <typename Type>
-template <support_sub<Type> Type2>
+template<VectorElement Type>
+template <SupportSub<Type> Type2>
 Vector<Type> &Vector<Type>::operator-=(const Type2 &num) 
 {
     return eqByNumDiff(num);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::neg() const requires convertible_to<Type, double>
+template<VectorElement Type>
+template<ConvertibleTo<double> U>
+Vector<Type> Vector<Type>::neg() const
 {
-    Vector<Type> res(*this);
-
-    for (auto &elem : res)
-        elem = -elem;
-
+    Vector<Type> res(size);
+    std::ranges::transform(*this, res.begin(), std::negate<>());
     return res;
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::operator-() const requires convertible_to<Type, double>
+template<VectorElement Type>
+template<ConvertibleTo<double> U>
+Vector<Type> Vector<Type>::operator-() const
 {
     return neg();
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::vecProd(const Vector<Type> &vector) const 
-{
-    sizesCheck(vector, __LINE__);
-
-    Vector<Type> res(*this);
-
-    Iterator<Type> resIt = res.begin(); 
-    ConstIterator<Type> vecIt = vector.cbegin(); 
-
-    for (; resIt; ++resIt)
-        *resIt *= *(vecIt++);
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator*(const Vector<Type> &vector) const 
-{
-    return vecProd(vector);
-}
-
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 decltype(auto) Vector<Type>::vecProd(const Vector<Type2> &vector) const 
 {
     sizesCheck(vector, __LINE__);
-
     Vector<decltype(at(0) * vector.at(0))> res(size);
-    ConstIterator<Type2> vecIt = vector.cbegin();
 
-    for (size_t i = 0; vecIt; ++i)
-        res.at(i) = at(i) * *(vecIt++);
+    for (size_t i = 0; i < size; ++i)
+        res.at(i) = at(i) * vector.at(i);
 
     return res;
 }
 
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 decltype(auto) Vector<Type>::operator*(const Vector<Type2> &vector) const 
 {
     return vecProd(vector);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::byNumProd(const Type &num) const 
-{
-    Vector<Type> res(*this);
-
-    Iterator<Type> resIt = res.begin(); 
-
-    for (; resIt; ++resIt)
-        *resIt *= num;
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator*(const Type &num) const 
-{
-    return byNumProd(num);
-}
-
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 decltype(auto) Vector<Type>::byNumProd(const Type2 &num) const 
 {
     Vector<decltype(at(0) * num)> res(size);
-    ConstIterator<Type2> vecIt = cbegin();
-
-    for (size_t i = 0; vecIt; ++i, ++vecIt)
-        res.at(i) = *vecIt * num;
-
+    std::ranges::transform(*this, res.begin(),
+                          [&num](const Type& val) { return val * num; });
     return res;
 }
 
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 decltype(auto) Vector<Type>::operator*(const Type2 &num) const 
 {
     return byNumProd(num);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqVecProd(const Vector<Type> &vector) 
-{
-    sizesCheck(vector, __LINE__);
-    Iterator<Type> it = begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; it; ++it, ++vecIt)
-        *it *= *vecIt;
-
-    return *this;
-}
-template <typename Type>
-Vector<Type> &Vector<Type>::operator*=(const Vector<Type> &vector) 
-{
-    return eqVecProd(vector);
-}
-
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 Vector<Type> &Vector<Type>::eqVecProd(const Vector<Type2> &vector) 
 {
     sizesCheck(vector, __LINE__);
-    Iterator<Type> it = begin();
-    ConstIterator<Type2> vecIt = vector.cbegin();
 
-    for (; it; ++it, ++vecIt)
-        *it *= *vecIt;
+    for (size_t i = 0; i < size; ++i)
+        at(i) *= vector.at(i);
 
     return *this;
 }
 
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 Vector<Type> &Vector<Type>::operator*=(const Vector<Type2> &vector) 
 {
     return eqVecProd(vector);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqByNumProd(const Type &num) 
-{
-    Iterator<Type> it = begin();
-
-    for (; it; ++it)
-        *it *= num;
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator*=(const Type &num) 
-{
-    return eqByNumProd(num);
-}
-
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 Vector<Type> &Vector<Type>::eqByNumProd(const Type2 &num) 
 {
-    Iterator<Type> it = begin();
-
-    for (; it; ++it)
-        *it *= num;
-
+    std::ranges::transform(*this, begin(),
+                          [&num](const Type& val) { return val * num; });
     return *this;
 }
 
-template <typename Type>
-template <support_prod<Type> Type2>
+template<VectorElement Type>
+template <SupportProd<Type> Type2>
 Vector<Type> &Vector<Type>::operator*=(const Type2 &num) 
 {
     return eqByNumProd(num);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::vecQuot(const Vector<Type> &vector) const 
-{
-    sizesCheck(vector, __LINE__);
-
-    Vector<Type> res(*this);
-    ConstIterator<Type> vecIt = vector.cbegin();
-    Iterator<Type> resIt = res.begin();
-
-    for (; resIt; ++resIt, ++vecIt)
-    {
-        divisionByZeroCheck(*vecIt, __LINE__);
-        *resIt /= *vecIt; 
-    }
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator/(const Vector<Type> &vector) const 
-{
-    return vecQuot(vector);
-}
-
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 decltype(auto) Vector<Type>::vecQuot(const Vector<Type2> &vector) const 
 {
     sizesCheck(vector, __LINE__);
-
     divisionByZeroCheck(vector.at(0), __LINE__);
     Vector<decltype(at(0) / vector.at(0))> res(size);
-    ConstIterator<Type2> vecIt = vector.cbegin();
 
-    for (size_t i = 0; vecIt; ++vecIt, ++i)
+    for (size_t i = 0; i < size; ++i)
     {
-        divisionByZeroCheck(*vecIt, __LINE__);
-        res.at(i) = at(i) / *vecIt; 
+        divisionByZeroCheck(vector.at(i), __LINE__);
+        res.at(i) = at(i) / vector.at(i);
     }
 
     return res;
 }
-template <typename Type>
-template <support_quot<Type> Type2>
+
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 decltype(auto) Vector<Type>::operator/(const Vector<Type2> &vector) const 
 {
     return vecQuot(vector);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::byNumQuot(const Type &num) const 
-{
-    Vector<Type> res(*this);
-    Iterator<Type> resIt = res.begin();
-
-    divisionByZeroCheck(num, __LINE__);
-    for (; resIt; ++resIt)
-        *resIt /= num; 
-
-    return res;
-}
-template <typename Type>
-Vector<Type> Vector<Type>::operator/(const Type &num) const 
-{
-    return byNumQuot(num);
-}
-
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 decltype(auto) Vector<Type>::byNumQuot(const Type2 &num) const 
 {
     divisionByZeroCheck(num, __LINE__);
-
     Vector<decltype(at(0) / num)> res(size);
-    ConstIterator<Type2> it = cbegin();
-
-    for (size_t i = 0; it; ++it, ++i)
-        res.at(i) = *it / num; 
-
+    std::ranges::transform(*this, res.begin(),
+                          [&num](const Type& val) { return val / num; });
     return res;
 }
 
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 decltype(auto) Vector<Type>::operator/(const Type2 &num) const 
 {
     return byNumQuot(num);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqVecQuot(const Vector<Type> &vector) 
-{
-    sizesCheck(vector, __LINE__);
-
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt, ++vecIt)
-    {
-        divisionByZeroCheck(*vecIt, __LINE__);
-        *resIt /= *vecIt;
-    }
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator/=(const Vector<Type> &vector) 
-{
-    return eqVecQuot(vector);
-}
-
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 Vector<Type> &Vector<Type>::eqVecQuot(const Vector<Type2> &vector) 
 {
     sizesCheck(vector, __LINE__);
 
-    Iterator<Type> resIt = begin();
-    ConstIterator<Type2> vecIt = vector.cbegin();
-
-    for (; resIt; ++resIt, ++vecIt)
+    for (size_t i = 0; i < size; ++i)
     {
-        divisionByZeroCheck(*vecIt, __LINE__);
-        *resIt /= *vecIt;
+        divisionByZeroCheck(vector.at(i), __LINE__);
+        at(i) /= vector.at(i);
     }
 
     return *this;
 }
 
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 Vector<Type> &Vector<Type>::operator/=(const Vector<Type2> &vector) 
 {
-    return eqVecQuot(vector, __LINE__);
+    return eqVecQuot(vector);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqByNumQuot(const Type &num) 
-{
-    Iterator<Type> resIt = begin();
-
-    divisionByZeroCheck(num, __LINE__);
-    for (; resIt; ++resIt)
-    {
-        *resIt /= num;
-    }
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> &Vector<Type>::operator/=(const Type &num) 
-{
-    return eqByNumQuot(num);
-}
-
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 Vector<Type> &Vector<Type>::eqByNumQuot(const Type2 &num) 
 {
-    Iterator<Type> resIt = begin();
-
     divisionByZeroCheck(num, __LINE__);
-    for (; resIt; ++resIt)
-    {
-        *resIt /= num;
-    }
-
+    std::ranges::transform(*this, begin(),
+                          [&num](const Type& val) { return val / num; });
     return *this;
 }
 
-template <typename Type>
-template <support_quot<Type> Type2>
+template<VectorElement Type>
+template <SupportQuot<Type> Type2>
 Vector<Type> &Vector<Type>::operator/=(const Type2 &num) 
 {
     return eqByNumQuot(num);
 }
 
-
-template <typename Type>
-Type Vector<Type>::scalarProd(const Vector<Type> &vector) const  
-{
-    sizesCheck(vector, __LINE__);
-
-    ConstIterator<Type> it1 = cbegin();
-    ConstIterator<Type> it2 = vector.cbegin();
-    
-    Type sum = 0;
-    for (; it1; ++it1, ++it2)
-        sum += *it1 * *it2;
-
-    return sum;
-}
-
-template <typename Type>
-Type Vector<Type>::operator&(const Vector<Type> &vector) const 
-{
-    return scalarProd(vector);
-}
-
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 decltype(auto) Vector<Type>::scalarProd(const Vector<Type2> &vector) const 
 {
     sizesCheck(vector, __LINE__);
-
-    ConstIterator<Type> it1 = cbegin();
-    ConstIterator<Type2> it2 = vector.cbegin();
-    
-    decltype(*it1 * *it2) sum = 0;
-    for (; it1; ++it1, ++it2)
-        sum += *it1 * *it2;
-
-    return sum;
+    return std::inner_product(cbegin(), cend(), vector.cbegin(), 
+                              decltype(at(0) * vector.at(0))(0));
 }
 
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 decltype(auto) Vector<Type>::operator&(const Vector<Type2> &vector) const 
 {
     return scalarProd(vector);
 }
 
-template <typename Type>
-Vector<Type> Vector<Type>::vectorProd(const Vector<Type> &vector) const 
-{
-    vectorProdSizesCheck(vector, __LINE__);
-
-    Vector<Type> res(size);
-
-    res.at(0) = at(1) * vector.at(2) - at(2) * vector.at(1);
-    res.at(1) = at(2) * vector.at(0) - at(0) * vector.at(2);
-    res.at(2) = at(0) * vector.at(1) - at(1) * vector.at(0);
-
-    return res;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator^(const Vector<Type> &vector) const 
-{
-    return vectorProd(vector);
-}
-
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 decltype(auto) Vector<Type>::vectorProd(const Vector<Type2> &vector) const 
 {
     vectorProdSizesCheck(vector, __LINE__);
-
+    
     Vector<decltype(at(1) * vector.at(2) - at(2) * vector.at(1))> res(size);
 
     res.at(0) = at(1) * vector.at(2) - at(2) * vector.at(1);
@@ -1093,131 +665,77 @@ decltype(auto) Vector<Type>::vectorProd(const Vector<Type2> &vector) const
     return res;
 }
 
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 decltype(auto) Vector<Type>::operator^(const Vector<Type2> &vector) const 
 {
     return vectorProd(vector);
 }
 
-template <typename Type>
-Vector<Type> &Vector<Type>::eqVectorProd(const Vector<Type> &vector) 
-{
-    vectorProdSizesCheck(vector, __LINE__);
-
-    Vector<Type> temp(*this);
-
-    at(0) = temp.at(1) * vector.at(2) - temp.at(2) * vector.at(1);
-    at(1) = temp.at(2) * vector.at(0) - temp.at(0) * vector.at(2);
-    at(2) = temp.at(0) * vector.at(1) - temp.at(1) * vector.at(0);
-
-    return *this;
-}
-
-template <typename Type>
-Vector<Type> Vector<Type>::operator^=(const Vector<Type> &vector) 
-{
-    return eqVecProd(vector);
-}
-
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 Vector<Type> &Vector<Type>::eqVectorProd(const Vector<Type2> &vector) 
 {
     vectorProdSizesCheck(vector, __LINE__);
-
-    Vector<Type> temp(*this);
-
-    at(0) = temp.at(1) * vector.at(2) - temp.at(2) * vector.at(1);
-    at(1) = temp.at(2) * vector.at(0) - temp.at(0) * vector.at(2);
-    at(2) = temp.at(0) * vector.at(1) - temp.at(1) * vector.at(0);
-
+    
+    Type old0 = at(0);
+    Type old1 = at(1);
+    Type old2 = at(2);
+    
+    at(0) = old1 * vector.at(2) - old2 * vector.at(1);
+    at(1) = old2 * vector.at(0) - old0 * vector.at(2);
+    at(2) = old0 * vector.at(1) - old1 * vector.at(0);
+    
     return *this;
 }
 
-template <typename Type>
-template <supports_sum_mul<Type> Type2>
-Vector<Type> Vector<Type>::operator^=(const Vector<Type2> &vector) 
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
+Vector<Type> &Vector<Type>::operator^=(const Vector<Type2> &vector) 
 {
     return eqVectorProd(vector);
 }
 
-template <typename Type>
-double Vector<Type>::angle(const Vector<Type> &vector) const
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
+double Vector<Type>::angle(const Vector<Type2> &vector) const
 {
-    double res;
-
     double length1 = length();
     double length2 = vector.length();
 
-    if (!(abs(length1) < EPS || abs(length2) < EPS))
-        res = acos(scalarProd(vector) / (length1 * length2));
-
-    return res;
+    if (abs(length1) < EPS || abs(length2) < EPS)
+        return 0;
+    
+    double dot = scalarProd(vector);
+    return acos(dot / (length1 * length2));
 }
 
-template <typename Type>
-template <typename Type2>
-double Vector<Type>::angle(const Vector<Type2> &vector) const
-{
-    double res;
-
-    double length1 =  length();
-    double length2 = vector.length();
-
-    if (!(abs(length1) < EPS || abs(length2) < EPS))
-        res = acos(scalarProd(vector) / (length1 * length2));
-
-    return res;
-}
-
-template <typename Type>
-bool Vector<Type>::isCollinear(const Vector<Type> &vector) const
-{
-    sizesCheck(vector, __LINE__);
-
-    double ang = angle(vector);
-
-    return abs(ang) < EPS || abs(ang - M_PI) < EPS;
-}
-
-template <typename Type>
-template <typename Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 bool Vector<Type>::isCollinear(const Vector<Type2> &vector) const
 {
     sizesCheck(vector, __LINE__);
-
     double ang = angle(vector);
-
     return abs(ang) < EPS || abs(ang - M_PI) < EPS;
 }
 
-template <typename Type>
-bool Vector<Type>::isOrthogonal(const Vector<Type> &vector) const
-{
-    sizesCheck(vector, __LINE__);
-
-    return abs(angle(vector) - M_PI / 2) < EPS; 
-}
-
-template <typename Type>
-template <typename Type2>
+template<VectorElement Type>
+template <SupportsSumMul<Type> Type2>
 bool Vector<Type>::isOrthogonal(const Vector<Type2> &vector) const
 {
     sizesCheck(vector, __LINE__);
-
-    return abs(angle(vector) - M_PI / 2) < EPS; 
+    return abs(scalarProd(vector)) < EPS;
 }
 
-template <typename Type>
+template<VectorElement Type>
 bool Vector<Type>::isZero() const
 {
     return abs(length()) < EPS;
 }
 
 // Allocate
-template <typename Type>
-void Vector<Type>::allocate(size_t sizeValue)
+template<VectorElement Type>
+void Vector<Type>::allocate(typename Vector<Type>::size_type sizeValue)
 {
     time_t curTime = time(NULL);
     uint line;
@@ -1225,7 +743,7 @@ void Vector<Type>::allocate(size_t sizeValue)
     try
     {
         line = __LINE__;
-        data.reset(new Type[sizeValue]);
+        data.reset(new typename Vector<Type>::value_type[sizeValue]);
     }
     catch (bad_alloc &err)
     {
@@ -1235,7 +753,7 @@ void Vector<Type>::allocate(size_t sizeValue)
 }
 
 // Checks
-template <typename Type>
+template<VectorElement Type>
 void Vector<Type>::zeroSizeCheck(const uint line) const
 {
     if (isEmpty())
@@ -1247,8 +765,8 @@ void Vector<Type>::zeroSizeCheck(const uint line) const
     }
 }
 
-template <typename Type>
-void Vector<Type>::indexCheck(size_t index, const uint line) const
+template<VectorElement Type>
+void Vector<Type>::indexCheck(typename Vector<Type>::size_type index, const uint line) const
 {
     if (index >= getSize())
     {
@@ -1259,7 +777,7 @@ void Vector<Type>::indexCheck(size_t index, const uint line) const
     }
 }
 
-template <typename Type>
+template<VectorElement Type>
 template <typename Type2>
 void Vector<Type>::sizesCheck(const Vector<Type2> &vector,
                               const uint line) const
@@ -1273,7 +791,7 @@ void Vector<Type>::sizesCheck(const Vector<Type2> &vector,
     }
 }
 
-template <typename Type>
+template<VectorElement Type>
 template <typename Type2>
 void Vector<Type>::vectorProdSizesCheck(const Vector<Type2> &vector,
                               const uint line) const
@@ -1287,7 +805,7 @@ void Vector<Type>::vectorProdSizesCheck(const Vector<Type2> &vector,
     }
 }
 
-template <typename Type>
+template<VectorElement Type>
 template <typename Type2>
 void Vector<Type>::divisionByZeroCheck(const Type2 &num,
                               const uint line) const

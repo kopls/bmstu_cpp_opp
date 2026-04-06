@@ -8,7 +8,7 @@ class BaseContainer
 public:
     virtual bool isEmpty() const;
     virtual size_t getSize() const;
-    virtual ~BaseContainer();
+    virtual ~BaseContainer() = 0;
 
 protected:
     size_t size = 0;

@@ -7,13 +7,14 @@
 #include <compare>
 
 #include "base_iterator.h"
+#include "concept.h"
 
 using namespace std;
 
-template <typename Type>
+template <VectorElement Type>
 class Vector;
 
-template <typename Type>
+template <VectorElement Type>
 class ConstIterator : BaseIterator
 {
 public:
@@ -33,10 +34,10 @@ public:
 
     operator bool() const;
 
-    const Type &operator*() const;
-    const Type *operator->() const;
+    reference operator*() const;
+    pointer operator->() const;
 
-    const Type& operator[](difference_type dif) const;
+    reference operator[](difference_type dif) const;
 
     ConstIterator<Type> operator+(difference_type dif) const;
     ConstIterator<Type> &operator+=(difference_type dif);
@@ -50,12 +51,12 @@ public:
     ConstIterator<Type> &operator--();
     ConstIterator<Type> operator--(int);
 
-    auto operator-(const ConstIterator<Type>& other) const;
+    difference_type operator-(const ConstIterator<Type>& other) const;
 
     auto operator<=>(const ConstIterator<Type> &iterator) const;
 
 protected:
-    const Type *getCurPtr() const;
+    pointer getCurPtr() const;
     void expiredCheck(const uint line) const;
     void indexCheck(const uint line) const;
 

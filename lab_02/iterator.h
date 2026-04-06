@@ -7,13 +7,14 @@
 #include <compare>
 
 #include "base_iterator.h"
+#include "concept.h"
 
 using namespace std;
 
-template <typename Type>
+template <VectorElement Type>
 class Vector;
 
-template <typename Type>
+template <VectorElement Type>
 class Iterator : BaseIterator
 {
 public:
@@ -26,47 +27,48 @@ public:
     using const_rvalue_reference = const Type&&;
 
     Iterator() = default;
-    Iterator(const shared_ptr<Type[]> &data, size_t limit, size_t i) noexcept;
-    Iterator(const Iterator<Type> &iterator) noexcept;
+    Iterator(const shared_ptr<value_type[]> &data, size_t limit, size_t i) noexcept;
+    Iterator(const Iterator<value_type> &iterator) noexcept;
 
     ~Iterator() = default;
 
-    Iterator<Type> &operator=(const Iterator<Type> &iterator) noexcept;
+    Iterator<value_type> &operator=(const Iterator<value_type> &iterator) noexcept;
 
-    operator bool() const;
+    operator bool() const noexcept;
 
-    Type &operator*();
-    Type &operator*() const;
+    reference operator*();
+    reference operator*() const;
 
-    Type *operator->();
-    Type *operator->() const;
+    pointer operator->();
+    pointer operator->() const;
 
-    Type& operator[](difference_type dif);
-    Type& operator[](difference_type dif) const;
+    reference operator[](difference_type dif);
+    reference operator[](difference_type dif) const;
 
-    Iterator<Type> operator+(difference_type dif) const;
-    Iterator<Type> &operator+=(difference_type dif);
+    Iterator<value_type> operator+(difference_type dif) const noexcept;
+    Iterator<value_type> &operator+=(difference_type dif) noexcept;
 
-    Iterator<Type> &operator++();
-    Iterator<Type> operator++(int);
+    Iterator<value_type> &operator++() noexcept;
+    Iterator<value_type> operator++(int) noexcept;
 
-    Iterator<Type> operator-(difference_type dif) const;
-    Iterator<Type> &operator-=(difference_type dif);
+    Iterator<value_type> operator-(difference_type dif) const noexcept;
+    Iterator<value_type> &operator-=(difference_type dif) noexcept;
 
-    Iterator<Type> &operator--();
-    Iterator<Type> operator--(int);
+    Iterator<value_type> &operator--() noexcept;
+    Iterator<value_type> operator--(int) noexcept;
 
-    auto operator-(const Iterator<Type>& other) const;
+    auto operator-(const Iterator<value_type>& other) const noexcept;
 
-    auto operator<=>(const Iterator<Type> &iterator) const;
+    bool operator==(const Iterator<value_type>& other) const noexcept;
+    auto operator<=>(const Iterator<value_type> &iterator) const noexcept;
 
 protected:
-    Type *getCurPtr() const;
+    pointer getCurPtr() const noexcept;
     void expiredCheck(const uint line) const;
     void indexCheck(const uint line) const;
 
 private:
-    std::weak_ptr<Type[]> ptr;
+    std::weak_ptr<value_type[]> ptr;
 };
 
 #include "iterator.hpp"

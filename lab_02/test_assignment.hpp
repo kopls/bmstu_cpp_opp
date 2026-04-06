@@ -2,6 +2,7 @@
 #define TEST_ASSIGMENT_HPP
 
 #include <gtest/gtest.h>
+#include <list>
 
 #include "vector.h"
 
@@ -140,6 +141,141 @@ TEST(AssignmentTest, RValueAssignment_Str)
     EXPECT_EQ(resVec.at(0), "apple");
     EXPECT_EQ(resVec.at(1), "banana");
     EXPECT_EQ(resVec.at(2), "strawberry");
+}
+
+TEST(RangeConstructorTest, FromVector)
+{
+    std::vector<int> source = {1, 2, 3, 4, 5};
+    Vector<int> vec(source);
+
+    EXPECT_EQ(vec.getSize(), 5);
+
+    ConstIterator<int> it = vec.cbegin();
+    for (int i = 1; i <= 5; ++i, ++it)
+        EXPECT_EQ(*it, i);
+}
+
+TEST(RangeConstructorTest, FromList)
+{
+    std::list<double> source = {1.5, 2.5, 3.5, 4.5};
+    Vector<int> vec(source);  // double -> int конвертация
+
+    EXPECT_EQ(vec.getSize(), 4);
+
+    ConstIterator<int> it = vec.cbegin();
+    EXPECT_EQ(*it, 1); ++it;
+    EXPECT_EQ(*it, 2); ++it;
+    EXPECT_EQ(*it, 3); ++it;
+    EXPECT_EQ(*it, 4);
+}
+
+TEST(RangeConstructorTest, FromArray)
+{
+    std::array<char, 5> source = {'a', 'b', 'c', 'd', 'e'};
+    Vector<char> vec(source);
+
+    EXPECT_EQ(vec.getSize(), 5);
+
+    ConstIterator<char> it = vec.cbegin();
+    EXPECT_EQ(*it, 'a'); ++it;
+    EXPECT_EQ(*it, 'b'); ++it;
+    EXPECT_EQ(*it, 'c'); ++it;
+    EXPECT_EQ(*it, 'd'); ++it;
+    EXPECT_EQ(*it, 'e');
+}
+
+TEST(RangeConstructorTest, FromString)
+{
+    std::string source = "hello";
+    Vector<char> vec(source);
+
+    EXPECT_EQ(vec.getSize(), 5);
+
+    ConstIterator<char> it = vec.cbegin();
+    EXPECT_EQ(*it, 'h'); ++it;
+    EXPECT_EQ(*it, 'e'); ++it;
+    EXPECT_EQ(*it, 'l'); ++it;
+    EXPECT_EQ(*it, 'l'); ++it;
+    EXPECT_EQ(*it, 'o');
+}
+
+TEST(RangeConstructorTest, FromInitializerList)
+{
+    Vector<int> vec = {1, 2, 3, 4, 5};
+
+    EXPECT_EQ(vec.getSize(), 5);
+
+    ConstIterator<int> it = vec.cbegin();
+    for (int i = 1; i <= 5; ++i, ++it)
+        EXPECT_EQ(*it, i);
+}
+
+TEST(RangeConstructorTest, FromEmptyVector)
+{
+    std::vector<int> source;
+    Vector<int> vec(source);
+
+    EXPECT_EQ(vec.getSize(), 0);
+    EXPECT_TRUE(vec.isEmpty());
+}
+
+TEST(RangeConstructorTest, FromVectorOfDifferentType)
+{
+    std::vector<double> source = {1.1, 2.2, 3.3, 4.4};
+    Vector<int> vec(source);  // конвертация double -> int
+
+    EXPECT_EQ(vec.getSize(), 4);
+
+    ConstIterator<int> it = vec.cbegin();
+    EXPECT_EQ(*it, 1); ++it;
+    EXPECT_EQ(*it, 2); ++it;
+    EXPECT_EQ(*it, 3); ++it;
+    EXPECT_EQ(*it, 4);
+}
+
+TEST(RangeConstructorTest, FromStringToIntVector)
+{
+    std::string source = "12345";
+    Vector<int> vec(source);  // char -> int конвертация
+
+    EXPECT_EQ(vec.getSize(), 5);
+
+    ConstIterator<int> it = vec.cbegin();
+    EXPECT_EQ(*it, '1'); ++it;
+    EXPECT_EQ(*it, '2'); ++it;
+    EXPECT_EQ(*it, '3'); ++it;
+    EXPECT_EQ(*it, '4'); ++it;
+    EXPECT_EQ(*it, '5');
+}
+
+TEST(RangeConstructorTest, FromStdArray)
+{
+    std::array<int, 3> source = {10, 20, 30};
+    Vector<int> vec(source);
+
+    EXPECT_EQ(vec.getSize(), 3);
+
+    ConstIterator<int> it = vec.cbegin();
+    EXPECT_EQ(*it, 10); ++it;
+    EXPECT_EQ(*it, 20); ++it;
+    EXPECT_EQ(*it, 30);
+}
+
+TEST(RangeConstructorTest, MultipleVectorsFromSameSource)
+{
+    std::vector<int> source = {1, 2, 3};
+
+    Vector<int> vec1(source);
+    Vector<int> vec2(source);
+    Vector<int> vec3(source);
+
+    EXPECT_EQ(vec1.getSize(), 3);
+    EXPECT_EQ(vec2.getSize(), 3);
+    EXPECT_EQ(vec3.getSize(), 3);
+
+    EXPECT_EQ(vec1[0], vec2[0]);
+    EXPECT_EQ(vec1[1], vec2[1]);
+    EXPECT_EQ(vec1[2], vec2[2]);
 }
 
 #endif
