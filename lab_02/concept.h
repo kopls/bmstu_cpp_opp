@@ -5,7 +5,7 @@
 #include <type_traits>
 
 template<typename Type>
-concept VectorElement = true;
+concept VectorElement = std::is_default_constructible_v<Type> && std::is_copy_assignable_v<Type>;
 
 template<typename Type, typename Type2>
 concept ConvertibleTo = std::convertible_to<Type2, Type>;
