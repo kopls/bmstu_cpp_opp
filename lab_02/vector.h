@@ -15,7 +15,7 @@
 using namespace std;
 
 template <VectorElement Type>
-class Vector : public BaseContainer
+class Vector : public BaseVector
 {
 public:
     // ========== TYPE ALIASES ==========

@@ -34,7 +34,7 @@ public:
 
     Iterator<value_type> &operator=(const Iterator<value_type> &iterator) noexcept;
 
-    operator bool() const noexcept;
+    explicit operator bool() const noexcept;
 
     reference operator*();
     reference operator*() const;
@@ -70,6 +70,7 @@ protected:
 private:
     std::weak_ptr<value_type[]> ptr;
 };
+
 
 #include "iterator.hpp"
 

@@ -13,7 +13,6 @@
 #define EPS __DBL_EPSILON__
 
 // Iterators
-// Iterators
 template<VectorElement Type>
 typename Vector<Type>::iterator Vector<Type>::begin() noexcept
 {

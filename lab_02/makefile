@@ -1,5 +1,5 @@
 TARGET = unit_tests.exe
-FLAGS = -std=c++20 -Wall -Werror -Iusr/include -MMD -MP --coverage
+FLAGS = -std=c++20 -Wall -Werror -Wextra -Wpedantic -Iusr/include -MMD -MP --coverage
 
 LIBS_GOOGLE = -lgtest -lgtest_main -pthread --coverage
 

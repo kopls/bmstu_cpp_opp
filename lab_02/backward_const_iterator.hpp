@@ -115,7 +115,7 @@ void ConstBackwardIterator<Type>::expiredCheck(const uint line) const
 template<VectorElement Type>
 void ConstBackwardIterator<Type>::indexCheck(const uint line) const
 {
-    if (index < 0 || static_cast<size_t>(index) >= size)
+    if (static_cast<size_t>(index) >= size)
     {
         time_t curTime = time(NULL);
         throw OutOfRangesException(ctime(&curTime), __FILE__, line,

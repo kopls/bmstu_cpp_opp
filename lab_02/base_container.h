@@ -3,12 +3,12 @@
 
 #include <cstddef>
 
-class BaseContainer
+class BaseVector
 {
 public:
     virtual bool isEmpty() const;
     virtual size_t getSize() const;
-    virtual ~BaseContainer() = 0;
+    virtual ~BaseVector() = 0;
 
 protected:
     size_t size = 0;
