@@ -1,0 +1,22 @@
+#ifndef OBJECT_H
+#define OBJECT_H
+
+class Visitor;
+
+class Object
+{
+public:
+    virtual ~Object() = default;
+
+    virtual void accept(Visitor &visitor) = 0;
+
+    virtual void transform(double dx, double dy) = 0;
+
+    virtual bool isVisible() const = 0;
+
+    virtual bool isComposite() const = 0;
+
+    // Бегин енд
+};
+
+#endif

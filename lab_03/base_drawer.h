@@ -1,0 +1,18 @@
+#ifndef BASE_DRAWER_H
+#define BASE_DRAWER_H
+
+struct Point
+{
+    double x, y;
+}
+
+class BaseDrawer
+{
+public:
+    virtual ~BaseDrawer() = default;
+
+    virtual void drawLine(const Point &p1, const Point &p2) = 0;
+    virtual void clearScene() = 0;
+};
+
+#endif
