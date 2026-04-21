@@ -7,6 +7,6 @@ class VisibleObject : public Object
 {
 public:
     bool isVisible() const override { return true; }
-}
+};
 
 #endif

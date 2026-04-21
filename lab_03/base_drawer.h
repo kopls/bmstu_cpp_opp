@@ -1,10 +1,7 @@
 #ifndef BASE_DRAWER_H
 #define BASE_DRAWER_H
 
-struct Point
-{
-    double x, y;
-}
+#include "point.h"
 
 class BaseDrawer
 {

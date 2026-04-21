@@ -17,7 +17,7 @@ double Point::getY() const
     return _y;
 }
 
-double Point::getX() const
+double Point::getZ() const
 {
     return _z;
 }

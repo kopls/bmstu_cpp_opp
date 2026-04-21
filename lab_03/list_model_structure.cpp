@@ -31,7 +31,7 @@ const std::vector<Edge> &ListModelStructure::getEdges() const
     return _edges;
 }
 
-const Point ListModelStructure::getCentre() const
+const Point ListModelStructure::getCenter() const
 {
     return _center;
 }

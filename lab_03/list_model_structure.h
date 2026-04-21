@@ -11,16 +11,16 @@ class ListModelStructure : public BaseModelStructure
 {
 public:
     ListModelStructure() = default;
+    ~ListModelStructure() = default;
     ListModelStructure(std::vector<Point> &points, std::vector<Edge> &edges);
     ListModelStructure(std::vector<Point> &points, std::vector<Edge> &edges, Point &center);
-    ~ListModelStructure() override = default;
 
     void addEdge(const Edge &edge) override;
     void addPoint(const Point &point) override;
 
     const std::vector<Point> &getPoints() const override;
     const std::vector<Edge> &getEdges() const override;
-    const Point getCentre() const override;
+    const Point getCenter() const override;
 
 private:
     Point _center;

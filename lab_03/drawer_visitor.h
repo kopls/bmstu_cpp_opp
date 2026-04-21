@@ -1,6 +1,10 @@
 #ifndef DRAWER_VISITOR_H
 #define DRAWER_VISITOR_H
 
+#include <memory>
+
+#include "base_visitor.h"
+#include "base_drawer.h"
 #include "skeleton_model.h"
 
 class DrawerVisitor : public BaseVisitor

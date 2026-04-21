@@ -1,6 +1,10 @@
 #ifndef QT_DRAWER_H
 #define QT_DRAWER_H
 
+#include <QGraphicsScene>
+
+#include "point.h"
+
 class QtDrawer : public BaseDrawer
 {
 public:

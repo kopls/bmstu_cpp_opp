@@ -7,6 +7,6 @@ class BaseModel : public VisibleObject
 {
 public:
     bool isComposite() const override { return false; }
-}
+};
 
 #endif

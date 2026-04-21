@@ -1,6 +1,8 @@
 #ifndef SKELETON_MODEL_H
 #define SKELETON_MODEL_H
 
+#include <memory>
+
 #include "base_model.h"
 #include "base_model_structure.h"
 

@@ -21,7 +21,7 @@ void Edge::setFirst(const std::size_t index)
     _first = index;
 }
 
-void Edge::setSecond(const std::size_t index);
+void Edge::setSecond(const std::size_t index)
 {
     _second = index;
 }
