@@ -1,14 +1,14 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-class Visitor;
+class BaseVisitor;
 
 class Object
 {
 public:
     virtual ~Object() = default;
 
-    virtual void accept(Visitor &visitor) = 0;
+    virtual void accept(BaseVisitor &visitor) = 0;
 
     virtual void transform(double dx, double dy) = 0;
 

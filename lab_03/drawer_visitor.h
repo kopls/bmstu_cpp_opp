@@ -10,7 +10,7 @@
 class DrawerVisitor : public BaseVisitor
 {
 public:
-    ~DrawerVisitor() override = default;
+    ~DrawerVisitor() = default;
     explicit DrawerVisitor(std::shared_ptr<BaseDrawer> drawer) : _drawer(drawer) {}
 
     void visit(SkeletonModel &model) override;

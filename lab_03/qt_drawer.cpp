@@ -7,7 +7,7 @@ QtDrawer::QtDrawer(QGraphicsScene *scene)
 
 QtDrawer::QtDrawer(QtDrawer &drawer)
 {
-    _scene = drawer._scene
+    _scene = drawer._scene;
 }
 
 void QtDrawer::drawLine(const Point &p1, const Point &p2) 
@@ -17,5 +17,5 @@ void QtDrawer::drawLine(const Point &p1, const Point &p2)
 
 void QtDrawer::clearScene()
 {
-    _scene.clear();
+    _scene->clear();
 }

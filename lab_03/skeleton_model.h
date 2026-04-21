@@ -6,7 +6,7 @@
 #include "base_model.h"
 #include "base_model_structure.h"
 
-class Visitor;
+class BaseVisitor;
 
 class SkeletonModel : public BaseModel
 {
@@ -16,7 +16,7 @@ public:
 
     ~SkeletonModel() override = default;
 
-    void accept(Visitor &visitor) override;
+    void accept(BaseVisitor &visitor) override;
 
     //std::shared_ptr<BaseModelStructure> getStructure() const { return _modelStructure; } либо гетер, либо общий доступ, без дружбы никак
 

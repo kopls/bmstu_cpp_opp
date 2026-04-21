@@ -6,7 +6,7 @@
 class BaseVisitor
 {
 public:
-    virtual ~BaseVisitor() = 0;
+    virtual ~BaseVisitor() = default;
 
     virtual void visit(SkeletonModel &model) = 0;
 };

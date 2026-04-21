@@ -3,6 +3,7 @@
 
 #include <QGraphicsScene>
 
+#include "base_drawer.h"
 #include "point.h"
 
 class QtDrawer : public BaseDrawer
