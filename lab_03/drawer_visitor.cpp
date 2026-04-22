@@ -13,3 +13,8 @@ void DrawerVisitor::visit(SkeletonModel &model)
         _drawer->drawLine(p1, p2);
     }
 }
+
+void DrawerVisitor::setDrawer(std::shared_ptr<BaseDrawer> drawer)
+{
+    _drawer = drawer;
+}

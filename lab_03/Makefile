@@ -55,12 +55,14 @@ OBJECTS_DIR   = ./
 SOURCES       = drawer_visitor.cpp \
 		edge.cpp \
 		list_model_structure.cpp \
+		main.cpp \
 		point.cpp \
 		qt_drawer.cpp \
 		skeleton_model.cpp 
 OBJECTS       = drawer_visitor.o \
 		edge.o \
 		list_model_structure.o \
+		main.o \
 		point.o \
 		qt_drawer.o \
 		skeleton_model.o
@@ -121,6 +123,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -154,6 +157,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		visible_object.h drawer_visitor.cpp \
 		edge.cpp \
 		list_model_structure.cpp \
+		main.cpp \
 		point.cpp \
 		qt_drawer.cpp \
 		skeleton_model.cpp
@@ -225,6 +229,7 @@ Makefile: lab.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -303,6 +308,7 @@ Makefile: lab.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -339,7 +345,7 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents base_drawer.h base_model.h base_model_structure.h base_visitor.h drawer_visitor.h edge.h list_model_structure.h object.h point.h qt_drawer.h skeleton_model.h visible_object.h $(DISTDIR)/
-	$(COPY_FILE) --parents drawer_visitor.cpp edge.cpp list_model_structure.cpp point.cpp qt_drawer.cpp skeleton_model.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents drawer_visitor.cpp edge.cpp list_model_structure.cpp main.cpp point.cpp qt_drawer.cpp skeleton_model.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -410,10 +416,25 @@ list_model_structure.o: list_model_structure.cpp list_model_structure.h \
 		edge.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o list_model_structure.o list_model_structure.cpp
 
+main.o: main.cpp skeleton_model.h \
+		base_model.h \
+		visible_object.h \
+		object.h \
+		base_model_structure.h \
+		point.h \
+		edge.h \
+		list_model_structure.h \
+		drawer_visitor.h \
+		base_visitor.h \
+		base_drawer.h \
+		qt_drawer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
 point.o: point.cpp point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o point.o point.cpp
 
 qt_drawer.o: qt_drawer.cpp qt_drawer.h \
+		base_drawer.h \
 		point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qt_drawer.o qt_drawer.cpp
 
@@ -423,7 +444,8 @@ skeleton_model.o: skeleton_model.cpp skeleton_model.h \
 		object.h \
 		base_model_structure.h \
 		point.h \
-		edge.h
+		edge.h \
+		base_visitor.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o skeleton_model.o skeleton_model.cpp
 
 ####### Install
