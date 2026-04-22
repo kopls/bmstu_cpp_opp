@@ -52,19 +52,27 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = drawer_visitor.cpp \
+SOURCES       = composite.cpp \
+		draw_manager.cpp \
+		drawer_visitor.cpp \
 		edge.cpp \
 		list_model_structure.cpp \
 		main.cpp \
+		object.cpp \
 		point.cpp \
 		qt_drawer.cpp \
+		scene.cpp \
 		skeleton_model.cpp 
-OBJECTS       = drawer_visitor.o \
+OBJECTS       = composite.o \
+		draw_manager.o \
+		drawer_visitor.o \
 		edge.o \
 		list_model_structure.o \
 		main.o \
+		object.o \
 		point.o \
 		qt_drawer.o \
+		scene.o \
 		skeleton_model.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -144,22 +152,34 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		lab.pro base_drawer.h \
+		base_drawer_factory.h \
+		base_manager.h \
+		base_manager_creator.h \
 		base_model.h \
 		base_model_structure.h \
 		base_visitor.h \
+		composite.h \
+		draw_manager.h \
 		drawer_visitor.h \
 		edge.h \
 		list_model_structure.h \
 		object.h \
 		point.h \
 		qt_drawer.h \
+		qt_factory.h \
+		scene.h \
+		scene_manager.h \
 		skeleton_model.h \
-		visible_object.h drawer_visitor.cpp \
+		visible_object.h composite.cpp \
+		draw_manager.cpp \
+		drawer_visitor.cpp \
 		edge.cpp \
 		list_model_structure.cpp \
 		main.cpp \
+		object.cpp \
 		point.cpp \
 		qt_drawer.cpp \
+		scene.cpp \
 		skeleton_model.cpp
 QMAKE_TARGET  = app
 DESTDIR       = 
@@ -344,8 +364,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents base_drawer.h base_model.h base_model_structure.h base_visitor.h drawer_visitor.h edge.h list_model_structure.h object.h point.h qt_drawer.h skeleton_model.h visible_object.h $(DISTDIR)/
-	$(COPY_FILE) --parents drawer_visitor.cpp edge.cpp list_model_structure.cpp main.cpp point.cpp qt_drawer.cpp skeleton_model.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents base_drawer.h base_drawer_factory.h base_manager.h base_manager_creator.h base_model.h base_model_structure.h base_visitor.h composite.h draw_manager.h drawer_visitor.h edge.h list_model_structure.h object.h point.h qt_drawer.h qt_factory.h scene.h scene_manager.h skeleton_model.h visible_object.h $(DISTDIR)/
+	$(COPY_FILE) --parents composite.cpp draw_manager.cpp drawer_visitor.cpp edge.cpp list_model_structure.cpp main.cpp object.cpp point.cpp qt_drawer.cpp scene.cpp skeleton_model.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -395,16 +415,30 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
+composite.o: composite.cpp composite.h \
+		object.h \
+		base_visitor.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o composite.o composite.cpp
+
+draw_manager.o: draw_manager.cpp draw_manager.h \
+		base_manager.h \
+		base_visitor.h \
+		scene.h \
+		object.h \
+		composite.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o draw_manager.o draw_manager.cpp
+
 drawer_visitor.o: drawer_visitor.cpp drawer_visitor.h \
 		base_visitor.h \
+		base_drawer.h \
+		point.h \
 		skeleton_model.h \
 		base_model.h \
 		visible_object.h \
 		object.h \
 		base_model_structure.h \
-		point.h \
 		edge.h \
-		base_drawer.h
+		composite.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o drawer_visitor.o drawer_visitor.cpp
 
 edge.o: edge.cpp edge.h
@@ -427,8 +461,16 @@ main.o: main.cpp skeleton_model.h \
 		drawer_visitor.h \
 		base_visitor.h \
 		base_drawer.h \
-		qt_drawer.h
+		composite.h \
+		qt_drawer.h \
+		draw_manager.h \
+		base_manager.h \
+		scene.h \
+		scene_manager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+object.o: object.cpp object.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o object.o object.cpp
 
 point.o: point.cpp point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o point.o point.cpp
@@ -437,6 +479,12 @@ qt_drawer.o: qt_drawer.cpp qt_drawer.h \
 		base_drawer.h \
 		point.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qt_drawer.o qt_drawer.cpp
+
+scene.o: scene.cpp scene.h \
+		object.h \
+		composite.h \
+		base_visitor.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scene.o scene.cpp
 
 skeleton_model.o: skeleton_model.cpp skeleton_model.h \
 		base_model.h \

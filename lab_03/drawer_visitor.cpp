@@ -2,7 +2,6 @@
 
 void DrawerVisitor::visit(SkeletonModel &model)
 {
-
     const auto &points = model._modelStructure->getPoints();
     const auto &edges = model._modelStructure->getEdges();
 
@@ -12,6 +11,12 @@ void DrawerVisitor::visit(SkeletonModel &model)
         const auto &p2 = points[edge.getSecond()];
         _drawer->drawLine(p1, p2);
     }
+}
+
+void DrawerVisitor::visit(Composite &composite)
+{
+    for (const auto &elem : composite.getElements())
+        elem->accept(*this);
 }
 
 void DrawerVisitor::setDrawer(std::shared_ptr<BaseDrawer> drawer)

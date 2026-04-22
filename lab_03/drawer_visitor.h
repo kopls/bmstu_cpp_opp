@@ -6,6 +6,7 @@
 #include "base_visitor.h"
 #include "base_drawer.h"
 #include "skeleton_model.h"
+#include "composite.h"
 
 class DrawerVisitor : public BaseVisitor
 {
@@ -31,6 +32,7 @@ public:
     void setDrawer(std::shared_ptr<BaseDrawer> drawer);
 
     void visit(SkeletonModel &model) override;
+    void visit(Composite &composite) override;
 
 private:
     explicit DrawerVisitor(std::shared_ptr<BaseDrawer> drawer) : _drawer(drawer) {}

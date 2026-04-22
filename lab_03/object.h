@@ -2,26 +2,38 @@
 #define OBJECT_H
 
 #include <memory>
+#include <vector>
 
 class BaseVisitor;
+
+class Object;
+
+using Iterator = std::vector<std::shared_ptr<Object>>::iterator;
 
 class Object
 {
 public:
+    Object() { _id = _nextId++; };
     virtual ~Object() = default;
 
-    virtual bool add(std::shared_ptr<Object> &element) = 0;
-    virtual bool remove(const Iterator &iter) = 0;
+    virtual bool add(const std::shared_ptr<Object> &) { return false; };
+    virtual bool remove(const Iterator &) { return false; };
 
     virtual void accept(BaseVisitor &visitor) = 0;
 
     //virtual void transform(double dx, double dy) = 0;
 
-    virtual bool isVisible() const = 0;
-    virtual bool isComposite() const = 0;
+    virtual bool isVisible() const { return false; };
+    virtual bool isComposite() const { return false; };
 
-    virtual Iterator begin() = 0;
-    virtual Iterator end() = 0;
+    virtual Iterator begin() { return Iterator(); };
+    virtual Iterator end() { return Iterator(); };
+
+    virtual std::size_t getId() { return _id; }
+
+protected:
+    std::size_t _id;
+    static std::size_t _nextId;
 };
 
 #endif

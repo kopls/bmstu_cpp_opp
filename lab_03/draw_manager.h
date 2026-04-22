@@ -1,8 +1,11 @@
 #ifndef DRAW_MANAGER_H
 #define DRAW_MANAGER_H
 
+#include <memory>
+
 #include "base_manager.h"
 #include "base_visitor.h"
+#include "scene.h"
 
 class DrawManager : public BaseManager
 {
@@ -11,6 +14,7 @@ public:
     {
         class DrawManagerProxy : public DrawManager
         {
+        public:
             explicit DrawManagerProxy(std::shared_ptr<BaseVisitor> visitor) : DrawManager(visitor) {} 
         };
 
@@ -22,12 +26,13 @@ public:
         return myInstance;
     }
 
+    ~DrawManager() = default;
+
     void setVisitor(std::shared_ptr<BaseVisitor> visitor);
-    //void drawScene(std::shared_ptr<Scene> &scene);
+    void drawScene(std::shared_ptr<Scene> scene);
 
 private:
     explicit DrawManager(std::shared_ptr<BaseVisitor> visitor) : _visitor(visitor) {} 
-    ~DrawManager() override = default;
 
     std::shared_ptr<BaseVisitor> _visitor;
 };

@@ -1,6 +1,10 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <memory>
+#include <cstddef>
+
+#include "object.h"
 #include "composite.h"
 
 class Scene
@@ -19,6 +23,6 @@ public:
 
 private:
     std::shared_ptr<Composite> _objects;
-}
+};
 
 #endif

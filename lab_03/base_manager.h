@@ -3,6 +3,7 @@
 
 class BaseManager
 {
+public:
     virtual ~BaseManager() = default;
 };
 
