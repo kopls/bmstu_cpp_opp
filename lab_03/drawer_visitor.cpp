@@ -23,3 +23,8 @@ void DrawerVisitor::setDrawer(std::shared_ptr<BaseDrawer> drawer)
 {
     _drawer = drawer;
 }
+
+void DrawerVisitor::setCamera(std::shared_ptr<BaseCamera> camera)
+{
+    _camera = camera;
+}

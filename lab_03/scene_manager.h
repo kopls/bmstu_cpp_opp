@@ -3,6 +3,7 @@
 
 #include "base_manager.h"
 #include "base_visitor.h"
+#include "base_camera.h"
 
 class SceneManager : public BaseManager
 {
@@ -17,17 +18,17 @@ public:
     }
 
     void setScene(std::shared_ptr<Scene> scene) { _scene = scene; }
-    //void setCamera(std::shared_ptr<Camera> camera) { _camera = camera; }
+    void setCamera(std::shared_ptr<BaseCamera> camera) { _camera = camera; }
     
     std::shared_ptr<Scene> getScene() const { return _scene; }
-    //std::shared_ptr<Camera> getCamera() const { return _camera; }
+    std::shared_ptr<BaseCamera> getCamera() const { return _camera; }
 
 private:
     SceneManager() = default;
     ~SceneManager() override = default;
 
     std::shared_ptr<Scene> _scene;
-    //std::shared_ptr<Camera> _camera;
+    std::shared_ptr<BaseCamera> _camera;
 };
 
 #endif

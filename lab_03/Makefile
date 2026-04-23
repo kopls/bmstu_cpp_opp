@@ -52,7 +52,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = composite.cpp \
+SOURCES       = camera.cpp \
+		composite.cpp \
 		draw_manager.cpp \
 		drawer_visitor.cpp \
 		edge.cpp \
@@ -63,7 +64,8 @@ SOURCES       = composite.cpp \
 		qt_drawer.cpp \
 		scene.cpp \
 		skeleton_model.cpp 
-OBJECTS       = composite.o \
+OBJECTS       = camera.o \
+		composite.o \
 		draw_manager.o \
 		drawer_visitor.o \
 		edge.o \
@@ -151,17 +153,20 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		lab.pro base_drawer.h \
+		lab.pro base_camera.h \
+		base_drawer.h \
 		base_drawer_factory.h \
 		base_manager.h \
 		base_manager_creator.h \
 		base_model.h \
 		base_model_structure.h \
 		base_visitor.h \
+		camera.h \
 		composite.h \
 		draw_manager.h \
 		drawer_visitor.h \
 		edge.h \
+		invisible_object.h \
 		list_model_structure.h \
 		object.h \
 		point.h \
@@ -170,7 +175,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		scene.h \
 		scene_manager.h \
 		skeleton_model.h \
-		visible_object.h composite.cpp \
+		visible_object.h camera.cpp \
+		composite.cpp \
 		draw_manager.cpp \
 		drawer_visitor.cpp \
 		edge.cpp \
@@ -364,8 +370,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents base_drawer.h base_drawer_factory.h base_manager.h base_manager_creator.h base_model.h base_model_structure.h base_visitor.h composite.h draw_manager.h drawer_visitor.h edge.h list_model_structure.h object.h point.h qt_drawer.h qt_factory.h scene.h scene_manager.h skeleton_model.h visible_object.h $(DISTDIR)/
-	$(COPY_FILE) --parents composite.cpp draw_manager.cpp drawer_visitor.cpp edge.cpp list_model_structure.cpp main.cpp object.cpp point.cpp qt_drawer.cpp scene.cpp skeleton_model.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents base_camera.h base_drawer.h base_drawer_factory.h base_manager.h base_manager_creator.h base_model.h base_model_structure.h base_visitor.h camera.h composite.h draw_manager.h drawer_visitor.h edge.h invisible_object.h list_model_structure.h object.h point.h qt_drawer.h qt_factory.h scene.h scene_manager.h skeleton_model.h visible_object.h $(DISTDIR)/
+	$(COPY_FILE) --parents camera.cpp composite.cpp draw_manager.cpp drawer_visitor.cpp edge.cpp list_model_structure.cpp main.cpp object.cpp point.cpp qt_drawer.cpp scene.cpp skeleton_model.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -415,6 +421,22 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
+camera.o: camera.cpp camera.h \
+		base_camera.h \
+		invisible_object.h \
+		object.h \
+		point.h \
+		drawer_visitor.h \
+		base_visitor.h \
+		base_drawer.h \
+		skeleton_model.h \
+		base_model.h \
+		visible_object.h \
+		base_model_structure.h \
+		edge.h \
+		composite.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o camera.o camera.cpp
+
 composite.o: composite.cpp composite.h \
 		object.h \
 		base_visitor.h
@@ -438,7 +460,9 @@ drawer_visitor.o: drawer_visitor.cpp drawer_visitor.h \
 		object.h \
 		base_model_structure.h \
 		edge.h \
-		composite.h
+		composite.h \
+		base_camera.h \
+		invisible_object.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o drawer_visitor.o drawer_visitor.cpp
 
 edge.o: edge.cpp edge.h
@@ -462,6 +486,8 @@ main.o: main.cpp skeleton_model.h \
 		base_visitor.h \
 		base_drawer.h \
 		composite.h \
+		base_camera.h \
+		invisible_object.h \
 		qt_drawer.h \
 		draw_manager.h \
 		base_manager.h \
