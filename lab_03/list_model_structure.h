@@ -22,6 +22,8 @@ public:
     const std::vector<Edge> &getEdges() const override;
     const Point getCenter() const override;
 
+    void transform(const Point &move, const Point &scale, const Point &rotate) override;
+
 private:
     Point _center;
     std::vector<Point> _points;

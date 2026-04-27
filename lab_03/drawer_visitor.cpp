@@ -1,25 +1,26 @@
 #include "drawer_visitor.h"
 #include "camera.h"
+#include <iostream>
 
 Point DrawerVisitor::getProjection(const Point& point)
 {
     if (!_camera) 
         return point;
     // перевод
-    double dx = point.getX() - _camera->location.getX();
-    double dy = point.getY() - _camera->location.getY();
-    double dz = point.getZ() - _camera->location.getZ();
+    double dx = point.getX() - _camera->getLocation().getX();
+    double dy = point.getY() - _camera->getLocation().getY();
+    double dz = point.getZ() - _camera->getLocation().getZ();
     
     // проекции
-    double x = dx * _camera->right.getX() + dy * _camera->right.getY() + dz * _camera->right.getZ();
-    double y = dx * _camera->up.getX() + dy * _camera->up.getY() + dz * _camera->up.getZ();
-    double z = dx * _camera->forward.getX() + dy * _camera->forward.getY() + dz * _camera->forward.getZ();
+    double x = dx * _camera->getRight().getX() + dy * _camera->getRight().getY() + dz * _camera->getRight().getZ();
+    double y = dx * _camera->getUp().getX() + dy * _camera->getUp().getY() + dz * _camera->getUp().getZ();
+    double z = dx * _camera->getForward().getX() + dy * _camera->getForward().getY() + dz * _camera->getForward().getZ();
     
     if (z <= 0)
         return Point(0, 0, 0);
     
-    double screenX = x * _camera->focalLength / z;
-    double screenY = y * _camera->focalLength / z;
+    double screenX = x * _camera->getFocalLength() / z;
+    double screenY = y * _camera->getFocalLength() / z;
     
     screenX = (screenX + 1) * 800 / 2;
     screenY = (1 - screenY) * 600 / 2;

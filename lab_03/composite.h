@@ -16,7 +16,7 @@ public:
 
     bool isVisible() const override;
     bool isComposite() const override;
-    // tr
+    virtual void transform(const Point &move, const Point &scale, const Point &rotate) override;
 
     void accept(BaseVisitor &visitor) override;
 
