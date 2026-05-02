@@ -52,11 +52,13 @@ int main(int argc, char *argv[])
 
     auto cube = std::make_shared<SkeletonModel>(structure);
 
-    Point move(0, 0, 500);
+    Point move(0, 0, 100);
     Point scale(1, 1, 1);
-    Point rotate(0, 0, 0);
+    Point rotate(0, 45, 0);
 
     TransformManager::transformObject(cube, move, scale, rotate);
+
+    TransformManager::rotateObject(cube, 45, 0, 0);
 
     auto scene = std::make_shared<Scene>();
     scene->addObject(cube);
@@ -64,7 +66,7 @@ int main(int argc, char *argv[])
     std::shared_ptr<Camera> camera = std::make_shared<Camera>(Point(0, 0, -200));
 
     TransformManager::moveObject(camera, 0, 0, 0);
-    TransformManager::rotateObject(camera, 0, 45, 0);
+    TransformManager::rotateObject(camera, 0, 0, 0);
 
     auto drawer = std::make_shared<QtDrawer>(qscene);
     auto visitor = DrawerVisitor::instance(drawer, camera);

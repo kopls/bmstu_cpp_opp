@@ -28,7 +28,6 @@ public:
     const Point &getForward() const;
     double getFocalLength() const;
 
-
 private:
     Point _location;
     Point _right;

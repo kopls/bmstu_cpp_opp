@@ -42,8 +42,8 @@ void ListModelStructure::transform(const Point &move, const Point &scale, const 
 
    for (auto &point : _points)
    {
-       point.move(move.getX(), move.getY(), move.getZ());
         point.scale(scale.getX(), scale.getY(), scale.getZ());
         point.rotate(rotate.getX(), rotate.getY(), rotate.getZ());
+        point.move(move.getX(), move.getY(), move.getZ());
    }
 }

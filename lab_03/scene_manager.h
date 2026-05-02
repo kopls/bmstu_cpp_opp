@@ -18,7 +18,7 @@ public:
     }
 
     void setScene(std::shared_ptr<Scene> scene) { _scene = scene; }
-    void setCamera(std::shared_ptr<BaseCamera> camera) { _camera = camera; }
+    void setCamera(const std::size_t id) { _camera = std::dynamic_pointer_cast<Camera>(*_scene->getObject(id)); }
     
     std::shared_ptr<Scene> getScene() const { return _scene; }
     std::shared_ptr<BaseCamera> getCamera() const { return _camera; }
