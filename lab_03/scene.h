@@ -22,7 +22,7 @@ public:
     Iterator end();
 
 private:
-    std::shared_ptr<Composite> _objects;
+    std::list<std::shared_ptr<Object>> _objects;
 };
 
 #endif

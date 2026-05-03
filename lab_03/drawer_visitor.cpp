@@ -14,19 +14,3 @@ void DrawerVisitor::visit(SkeletonModel &model)
         _drawer->drawLine(p1, p2);
     }
 }
-
-void DrawerVisitor::visit(Composite &composite)
-{
-    for (const auto &elem : composite.getElements())
-        elem->accept(*this);
-}
-
-void DrawerVisitor::setDrawer(std::shared_ptr<BaseDrawer> drawer)
-{
-    _drawer = drawer;
-}
-
-void DrawerVisitor::setCamera(std::shared_ptr<Camera> camera)
-{
-    _camera = camera;
-}

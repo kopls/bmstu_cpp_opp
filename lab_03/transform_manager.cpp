@@ -3,32 +3,30 @@
 
 void TransformManager::moveObject(const std::shared_ptr<Object> &object, const double dx, const double dy, const double dz)
 {
-    Point move(dx, dy, dz);
-    Point scale(1, 1, 1);
-    Point rotate(0, 0, 0);
-
-    object->transform(move, scale, rotate);
+    transformObject(object,
+                    Point(dx, dy, dz),
+                    Point(1, 1, 1),
+                    Point(0, 0, 0));
 }
 
 void TransformManager::scaleObject(const std::shared_ptr<Object> &object, const double kx, const double ky, const double kz)
 {
-    Point move(0, 0, 0);
-    Point scale(kx, ky, kz);
-    Point rotate(0, 0, 0);
-
-    object->transform(move, scale, rotate);
+    transformObject(object,
+                    Point(0, 0, 0),
+                    Point(kx, ky, kz),
+                    Point(0, 0, 0));
 }
 
 void TransformManager::rotateObject(const std::shared_ptr<Object> &object, const double ox, const double oy, const double oz)
 {
-    Point move(0, 0, 0);
-    Point scale(1, 1, 1);
-    Point rotate(ox, oy, oz);
-
-    object->transform(move, scale, rotate);
+    transformObject(object,
+                    Point(0, 0, 0),
+                    Point(1, 1, 1),
+                    Point(ox, oy, oz));
 }
 
 void TransformManager::transformObject(const std::shared_ptr<Object> &object, const Point &move, const Point &scale, const Point &rotate)
 {
-    object->transform(move, scale, rotate);
+    _visitor->setTransform(move, scale, rotate);
+    object->accept(*_visitor);
 }

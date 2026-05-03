@@ -6,17 +6,18 @@ Scene::Scene() : _objects(std::make_shared<Composite>()) {}
 
 void Scene::addObject(const std::shared_ptr<Object> &object)
 {
-    _objects->add(object);
+    _objects.push_back(object);
 }
 
 void Scene::deleteObject(Iterator &iter)
 {
-    _objects->remove(iter);
+    _objects.erase(iter);
 }
 
 Iterator Scene::getObject(const std::size_t id)
 {
     auto iter = begin();
+
     for (; iter != end() && (*iter)->getId() != id; ++iter);
 
     return iter;
@@ -24,10 +25,10 @@ Iterator Scene::getObject(const std::size_t id)
 
 Iterator Scene::begin()
 {
-    return _objects->begin();
+    return _objects.begin();
 }
 
 Iterator Scene::end()
 {
-    return _objects->end();
+    return _objects.end();
 }

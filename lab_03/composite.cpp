@@ -37,13 +37,11 @@ bool Composite::isComposite() const
     return true;
 }
 
-// tr
-
 void Composite::accept(BaseVisitor &visitor)  
 {
-    visitor.visit(*this);
+    for (auto &elem : _elements)
+        elem->accept(visitor);
 }
-
 
 Iterator Composite::begin()  
 {

@@ -1,7 +1,10 @@
 #ifndef TRANSFORM_MANAGER_H
 #define TRANSFORM_MANAGER_H
 
+#include <memory>
+
 #include "base_manager.h"
+#include "transform_visitor.h"
 #include "object.h"
 #include "point.h"
 
@@ -16,7 +19,10 @@ public:
     static void rotateObject(const std::shared_ptr<Object> &object, const double ox, const double oy, const double oz);
     static void transformObject(const std::shared_ptr<Object> &object, const Point &move, const Point &scale, const Point &rotate);
 
+    void setVisitor(std::shared_ptr<BaseVisitor> visitor) { _visitor = visitor; };
+
 private:
+    std::shared_ptr<BaseVisitor> _visitor;
 };
 
 #endif
