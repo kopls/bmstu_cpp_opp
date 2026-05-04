@@ -16,7 +16,7 @@ public:
     ~DrawerVisitor() override = default;
 
     void visit(SkeletonModel &model) override;
-    void visit(Composite &composite) override { (void)camera; };
+    void visit(Composite &composite) override { (void)composite; };
     void visit(Camera &camera) override { (void)camera; };
 
     void setDrawer(std::shared_ptr<BaseDrawer> drawer) { _drawer = drawer; };
@@ -24,7 +24,7 @@ public:
 private:
 
     std::shared_ptr<BaseDrawer> _drawer;
-    std::shared_ptr<Camera> _camera;
+    std::shared_ptr<BaseCamera> _camera;
 };
 
 #endif

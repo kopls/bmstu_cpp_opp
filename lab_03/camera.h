@@ -13,17 +13,15 @@ class Camera : public BaseCamera
 public:
     Camera() = default;
     
-
-    explicit Camera(std::shared_ptr<BaseCameraImpl> impl) : _impl(impl) {}
+    Camera(std::shared_ptr<BaseCameraImpl> impl) : _impl(impl) {}
 
     ~Camera() override = default;
 
     void accept(BaseVisitor &visitor) override;
-    void transform(const Point &move, const Point &scale, const Point &rotate);
     Point project(const Point &point) const;
     const Point &getLocation() const;
 
-private:
+//private: дружба крепкая
     std::shared_ptr<BaseCameraImpl> _impl;
 };
 

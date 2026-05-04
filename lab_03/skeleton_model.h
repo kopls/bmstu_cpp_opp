@@ -17,8 +17,6 @@ public:
 
     void accept(BaseVisitor &visitor) override;
 
-    void transform(const Point &move, const Point &scale, const Point &rotate) override;
-
     //std::shared_ptr<BaseModelStructure> getStructure() const { return _modelStructure; } либо гетер, либо общий доступ, без дружбы никак
 
 //protected:

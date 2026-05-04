@@ -17,12 +17,11 @@ public:
 
     void addEdge(const Edge &edge) override;
     void addPoint(const Point &point) override;
+    void transform(const Point &move, const Point &scale, const Point &rotate) override;
 
     const std::vector<Point> &getPoints() const override;
     const std::vector<Edge> &getEdges() const override;
     const Point getCenter() const override;
-
-    void transform(const Point &move, const Point &scale, const Point &rotate) override;
 
 private:
     Point _center;

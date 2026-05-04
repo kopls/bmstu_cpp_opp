@@ -57,9 +57,3 @@ std::vector<std::shared_ptr<Object>> Composite::getElements()
 {
     return _elements;
 }
-
-void Composite::transform(const Point &move, const Point &scale, const Point &rotate)
-{
-    for (auto &element : _elements)
-        element->transform(move, scale, rotate);
-}

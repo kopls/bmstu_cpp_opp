@@ -15,9 +15,9 @@ public:
     ~TransformVisitor() override = default;
 
     void visit(SkeletonModel &model) override;
-    void visit(Composite &composite) override { (void)camera; };
+    void visit(Composite &composite) override { (void)composite; };
     void visit(Camera &camera) override;
-    void setTransform(const Point &move, const Point &scale, const Point &rotate) : _move(move), _scale(scale), _rotate(rotate) {}
+    void setTransform(const Point &move, const Point &scale, const Point &rotate) { _move = move; _scale = scale; _rotate = rotate; }
 
 private:
     Point _move;

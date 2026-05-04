@@ -36,6 +36,7 @@ const Point ListModelStructure::getCenter() const
     return _center;
 }
 
+// перенос
 void ListModelStructure::transform(const Point &move, const Point &scale, const Point &rotate)
 {
    _center.move(move.getX(), move.getY(), move.getZ());

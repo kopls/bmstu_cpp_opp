@@ -4,8 +4,6 @@
 #include <memory>
 #include <vector>
 
-#include "point.h"
-
 class BaseVisitor;
 
 class Object;
@@ -22,8 +20,6 @@ public:
     virtual bool remove(const Iterator &) { return false; };
 
     virtual void accept(BaseVisitor &visitor) = 0;
-
-    virtual void transform(const Point &move, const Point &scale, const Point &rotate) = 0;
 
     virtual bool isVisible() const { return false; };
     virtual bool isComposite() const { return false; };
