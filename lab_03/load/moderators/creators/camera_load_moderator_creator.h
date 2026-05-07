@@ -1,19 +1,18 @@
-#ifndef CAMERALOADMODERATORCREATOR_H
-#define CAMERALOADMODERATORCREATOR_H
+#ifndef CAMERA_LOAD_MODERATOR_CREATOR_H
+#define CAMERA_LOAD_MODERATOR_CREATOR_H
 
-#include "cameraloadmoderator.h"
-#include "basecamerabuilddirector.h"
+#include "base_moderator_creator.h"
+#include "camera_load_moderator.h"
+#include "file_camera_build_director.h"
 
-class CameraLoadModeratorCreator
+class CameraLoadModeratorCreator : public BaseModeratorCreator<CameraLoadModerator>
 {
-public:
-    std::shared_ptr<CameraLoadModerator> createModerator();
-
-private:
-    void createInstance();
-
-    std::shared_ptr<CameraLoadModerator> _moderator;
+protected:
+    std::shared_ptr<CameraLoadModerator> create() override
+    {
+        auto director = std::make_shared<FileCameraBuildDirector>();
+        return std::make_shared<CameraLoadModerator>(director);
+    }
 };
 
-
-#endif // CAMERALOADMODERATORCREATOR_H
+#endif

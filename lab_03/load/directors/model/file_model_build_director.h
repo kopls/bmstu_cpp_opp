@@ -1,23 +1,27 @@
-#ifndef FILEMODELBUILDDIRECTOR_H
-#define FILEMODELBUILDDIRECTOR_H
+#ifndef FILE_MODEL_BUILD_DIRECTOR_H
+#define FILE_MODEL_BUILD_DIRECTOR_H
 
+#include <memory>
 
-#include "basemodelbuilddirector.h"
-#include "filecarcassmodelreader.h"
+#include "base_model_build_director.h"
+#include "base_reader.h"
+#include "file_reader.h"
+#include "model_builder.h"
 
 class FileModelBuildDirector : public BaseModelBuildDirector
 {
 public:
     FileModelBuildDirector();
-    explicit FileModelBuildDirector(std::shared_ptr<FileCarcassModelReader> &reader);
-
+    FileModelBuildDirector(std::shared_ptr<BaseReader> reader,
+                           std::shared_ptr<BaseModelBuilder> builder);
     ~FileModelBuildDirector() override = default;
 
-    std::shared_ptr<CarcassModel> load(std::shared_ptr<BaseModelBuilder> builder,
-                                       std::string &fileName) override;
+    std::shared_ptr<Object> load(const std::string &fileName) override;
+    std::shared_ptr<Object> loadFromCurrentSource() override;
 
-protected:
-    std::shared_ptr<FileCarcassModelReader> _reader;
+private:
+    std::shared_ptr<BaseReader> _reader;
+    std::shared_ptr<BaseModelBuilder> _builder;
 };
 
-#endif // FILEMODELBUILDDIRECTOR_H
+#endif

@@ -1,32 +1,21 @@
-#include "cameraloadmoderator.h"
-#include "exceptions.h"
-#include "camerabuilder.h"
+#include "camera_load_moderator.h"
 
+#include <stdexcept>
 
-CameraLoadModerator::CameraLoadModerator(std::shared_ptr<BaseCameraBuildDirector> director) :
-    _builder(new CameraBuilder)
+CameraLoadModerator::CameraLoadModerator(std::shared_ptr<BaseCameraBuildDirector> director)
+    : _director(director)
 {
-    _director = director;
 }
 
-std::shared_ptr<Object> CameraLoadModerator::load(std::string &fileName)
+std::shared_ptr<Object> CameraLoadModerator::load(const std::string &fileName)
 {
-    std::shared_ptr<Camera> camera_sh_ptr;
+    if (!_director)
+        throw std::logic_error("CameraLoadModerator: director is not set");
 
-    try
-    {
-        camera_sh_ptr = _director->load(_builder, fileName);
-    }
-    catch (SourceException &error)
-    {
-        std::string msg = "Error : Open file";
-        throw SourceException(msg);
-    }
-    catch (std::exception &error)
-    {
-        std::string msg = "Error : Read model";
-        throw SourceException(msg);
-    }
+    return _director->load(fileName);
+}
 
-    return std::shared_ptr<Object>(camera_sh_ptr);
+void CameraLoadModerator::setDirector(std::shared_ptr<BaseCameraBuildDirector> director)
+{
+    _director = director;
 }

@@ -1,57 +1,63 @@
-#include "filescenebuilddirector.h"
-#include "filecamerabuilddirector.h"
-#include "filemodelbuilddirector.h"
-#include "exceptions.h"
+#include "file_scene_build_director.h"
 
 FileSceneBuildDirector::FileSceneBuildDirector()
+    : _reader(std::make_shared<FileReader>()),
+      _builder(std::make_shared<SceneBuilder>())
 {
-    _reader = std::make_shared<FileCarcassModelReader>();
+    _modelDirector = std::make_shared<FileModelBuildDirector>(
+        _reader,
+        std::make_shared<ModelBuilder>()
+    );
+
+    _cameraDirector = std::make_shared<FileCameraBuildDirector>(
+        _reader,
+        std::make_shared<CameraBuilder>()
+    );
 }
 
-FileSceneBuildDirector::FileSceneBuildDirector(std::shared_ptr<FileCarcassModelReader> &reader)
+FileSceneBuildDirector::FileSceneBuildDirector(std::shared_ptr<BaseReader> reader,
+                                               std::shared_ptr<BaseSceneBuilder> builder,
+                                               std::shared_ptr<BaseModelBuildDirector> modelDirector,
+                                               std::shared_ptr<BaseCameraBuildDirector> cameraDirector)
+    : _reader(reader),
+      _builder(builder),
+      _modelDirector(modelDirector),
+      _cameraDirector(cameraDirector)
 {
-    _reader = reader;
 }
 
-std::shared_ptr<Scene> FileSceneBuildDirector::load(std::shared_ptr<SceneBuilder> builder,
-                                                    std::string &fileName)
+std::shared_ptr<Scene> FileSceneBuildDirector::load(const std::string &fileName)
 {
     _reader->open(fileName);
 
-    builder->build();
+    _builder->build();
 
-    loadModels(builder, fileName);
-    loadCameras(builder, fileName);
+    loadModels();
+    loadCameras();
 
     _reader->close();
 
-    return builder->get();
+    return _builder->get();
 }
 
-void FileSceneBuildDirector::loadModels(std::shared_ptr<SceneBuilder> builder,
-                                        std::string &fileName)
+void FileSceneBuildDirector::loadModels()
 {
-    size_t modelsCount = _reader->readCount();
+    const std::size_t count = _reader->readCount();
 
-    auto modBuilder = std::make_shared<ModelBuilder>();
-
-    for (size_t i = 0; i < modelsCount; i++)
+    for (std::size_t i = 0; i < count; ++i)
     {
-        auto model = FileModelBuildDirector(_reader).load(modBuilder, fileName);
-        builder->buildObject(model);
+        auto model = _modelDirector->loadFromCurrentSource();
+        _builder->buildObject(model);
     }
 }
 
-void FileSceneBuildDirector::loadCameras(std::shared_ptr<SceneBuilder> builder,
-                                         std::string &fileName)
+void FileSceneBuildDirector::loadCameras()
 {
-    size_t camsCount = _reader->readCount();
+    const std::size_t count = _reader->readCount();
 
-    auto camBuilder = std::make_shared<CameraBuilder>();
-
-    for (size_t i = 0; i < camsCount; i++)
+    for (std::size_t i = 0; i < count; ++i)
     {
-        auto camera = FileCameraBuildDirector(_reader).load(camBuilder, fileName);
-        builder->buildObject(camera);
+        auto camera = _cameraDirector->loadFromCurrentSource();
+        _builder->buildObject(camera);
     }
 }

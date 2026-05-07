@@ -1,23 +1,27 @@
-#ifndef FILECAMERABUILDDIRECTOR_H
-#define FILECAMERABUILDDIRECTOR_H
+#ifndef FILE_CAMERA_BUILD_DIRECTOR_H
+#define FILE_CAMERA_BUILD_DIRECTOR_H
 
+#include <memory>
 
-#include "basecamerabuilddirector.h"
-#include "filecarcassmodelreader.h"
+#include "base_camera_build_director.h"
+#include "base_reader.h"
+#include "file_reader.h"
+#include "camera_builder.h"
 
 class FileCameraBuildDirector : public BaseCameraBuildDirector
 {
 public:
     FileCameraBuildDirector();
-    explicit FileCameraBuildDirector(std::shared_ptr<FileCarcassModelReader> &reader);
-
+    FileCameraBuildDirector(std::shared_ptr<BaseReader> reader,
+                            std::shared_ptr<BaseCameraBuilder> builder);
     ~FileCameraBuildDirector() override = default;
 
-    std::shared_ptr<Camera> load(std::shared_ptr<BaseCameraBuilder> builder,
-                                 std::string &fileName) override;
+    std::shared_ptr<Object> load(const std::string &fileName) override;
+    std::shared_ptr<Object> loadFromCurrentSource() override;
 
-protected:
-    std::shared_ptr<FileCarcassModelReader> _reader;
+private:
+    std::shared_ptr<BaseReader> _reader;
+    std::shared_ptr<BaseCameraBuilder> _builder;
 };
 
-#endif // FILECAMERABUILDDIRECTOR_H
+#endif

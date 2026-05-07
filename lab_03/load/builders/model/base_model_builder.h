@@ -1,26 +1,23 @@
-#ifndef BASEMODELBUILDER_H
-#define BASEMODELBUILDER_H
+#ifndef BASE_MODEL_BUILDER_H
+#define BASE_MODEL_BUILDER_H
 
+#include <memory>
 
-#include "modelstructure.h"
-#include "carcassmodel.h"
-#include "basebuilder.h"
+#include "base_builder.h"
+#include "object.h"
+#include "point.h"
+#include "edge.h"
 
 class BaseModelBuilder : public BaseBuilder
 {
 public:
     BaseModelBuilder() = default;
-    ~BaseModelBuilder() = default;
+    ~BaseModelBuilder() override = default;
 
-    virtual void build() override = 0;
-    virtual void buildVertex(const Vertex &vertex) = 0;
-    virtual void buildLink(const Link &link) = 0;
-    virtual bool isBuild() const override = 0;
+    virtual void buildPoint(const Point &point) = 0;
+    virtual void buildEdge(const Edge &edge) = 0;
 
-    virtual std::shared_ptr<CarcassModel> get() = 0;
-
-protected:
-    std::shared_ptr<ModelStructure> _model;
+    virtual std::shared_ptr<Object> get() = 0;
 };
 
-#endif // BASEMODELBUILDER_H
+#endif

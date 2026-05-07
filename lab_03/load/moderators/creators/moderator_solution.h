@@ -1,22 +1,11 @@
-#ifndef CREATEMODERATORSOLUTION_H
-#define CREATEMODERATORSOLUTION_H
+#ifndef MODERATOR_SOLUTION_H
+#define MODERATOR_SOLUTION_H
 
-#include <memory>
-
-template<typename Tcreator>
-class ModeratorSolution
+template <typename Creator>
+decltype(auto) createModerator()
 {
-public:
-    decltype(auto) create();
-};
-
-template<typename Tcreator>
-decltype(auto) ModeratorSolution<Tcreator>::create()
-{
-    auto creator = Tcreator();
-    auto moderator = creator.createModerator();
-
-    return moderator;
+    Creator creator;
+    return creator.getModerator();
 }
 
-#endif // CREATEMODERATORSOLUTION_H
+#endif

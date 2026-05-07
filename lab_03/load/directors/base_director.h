@@ -1,12 +1,5 @@
-#ifndef BASEDIRECTOR_H
-#define BASEDIRECTOR_H
-
-
-#include <string>
-#include <fstream>
-#include <memory>
-
-#include "object.h"
+#ifndef BASE_DIRECTOR_H
+#define BASE_DIRECTOR_H
 
 class BaseDirector
 {
@@ -15,4 +8,4 @@ public:
     virtual ~BaseDirector() = default;
 };
 
-#endif // BASEDIRECTOR_H
+#endif

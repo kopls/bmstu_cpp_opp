@@ -1,26 +1,33 @@
-#include "filecamerabuilddirector.h"
-#include "exceptions.h"
+#include "file_camera_build_director.h"
 
 FileCameraBuildDirector::FileCameraBuildDirector()
+    : _reader(std::make_shared<FileReader>()),
+      _builder(std::make_shared<CameraBuilder>())
 {
-    _reader = std::make_shared<FileCarcassModelReader>();
 }
 
-FileCameraBuildDirector::FileCameraBuildDirector(std::shared_ptr<FileCarcassModelReader> &reader)
+FileCameraBuildDirector::FileCameraBuildDirector(std::shared_ptr<BaseReader> reader,
+                                                 std::shared_ptr<BaseCameraBuilder> builder)
+    : _reader(reader),
+      _builder(builder)
 {
-    _reader = reader;
 }
 
-std::shared_ptr<Camera> FileCameraBuildDirector::load(std::shared_ptr<BaseCameraBuilder> builder,
-                                                      std::string &fileName)
+std::shared_ptr<Object> FileCameraBuildDirector::load(const std::string &fileName)
 {
     _reader->open(fileName);
 
-    builder->build();
-    Vertex location = _reader->readVertex();
-    builder->buildLocation(location);
+    auto camera = loadFromCurrentSource();
 
     _reader->close();
 
-    return builder->get();
+    return camera;
+}
+
+std::shared_ptr<Object> FileCameraBuildDirector::loadFromCurrentSource()
+{
+    _builder->build();
+    _builder->buildLocation(_reader->readPoint());
+
+    return _builder->getObject();
 }

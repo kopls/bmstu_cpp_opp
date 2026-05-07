@@ -1,13 +1,15 @@
-#ifndef SCENEBUILDER_H
-#define SCENEBUILDER_H
+#ifndef SCENE_BUILDER_H
+#define SCENE_BUILDER_H
 
-#include "basescenebuilder.h"
+#include <memory>
+
+#include "base_scene_builder.h"
 
 class SceneBuilder : public BaseSceneBuilder
 {
 public:
     SceneBuilder() = default;
-    ~SceneBuilder() = default;
+    ~SceneBuilder() override = default;
 
     void build() override;
     void buildObject(const std::shared_ptr<Object> &object) override;
@@ -19,5 +21,4 @@ private:
     std::shared_ptr<Scene> _scene;
 };
 
-
-#endif //SCENEBUILDER_H
+#endif

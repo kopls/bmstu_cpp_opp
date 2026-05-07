@@ -6,10 +6,10 @@
 #include "base_manager_creator.h"
 #include "transform_manager.h"
 
-class TransformManagerCreator : public BaseManagerCreator
+class TransformManagerCreator : public BaseManagerCreator<TransformManager>
 {
 protected:
-    std::shared_ptr<BaseManager> create() override
+    std::shared_ptr<TransformManager> create() override
     {
         return std::make_shared<TransformManager>();
     }

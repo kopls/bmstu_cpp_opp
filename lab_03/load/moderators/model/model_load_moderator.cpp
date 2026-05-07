@@ -1,35 +1,21 @@
-#include <QDebug>
+#include "model_load_moderator.h"
 
-#include "modelloadmoderator.h"
-#include "exceptions.h"
-#include "modelbuilder.h"
+#include <stdexcept>
 
-
-ModelLoadModerator::ModelLoadModerator(std::shared_ptr<BaseModelBuildDirector> director) :
-    _builder(new ModelBuilder)
+ModelLoadModerator::ModelLoadModerator(std::shared_ptr<BaseModelBuildDirector> director)
+    : _director(director)
 {
-    _director = director;
 }
 
-
-std::shared_ptr<Object> ModelLoadModerator::load(std::string &fileName)
+std::shared_ptr<Object> ModelLoadModerator::load(const std::string &fileName)
 {
-    std::shared_ptr<CarcassModel> model_sh_ptr;
+    if (!_director)
+        throw std::logic_error("ModelLoadModerator: director is not set");
 
-    try
-    {
-        model_sh_ptr = _director->load(_builder, fileName);
-    }
-    catch (SourceException &error)
-    {
-        std::string msg = "Error : Open file";
-        throw SourceException(msg);
-    }
-    catch (std::exception &error)
-    {
-        std::string msg = "Error : Read model";
-        throw SourceException(msg);
-    }
+    return _director->load(fileName);
+}
 
-    return std::shared_ptr<Object>(model_sh_ptr);
+void ModelLoadModerator::setDirector(std::shared_ptr<BaseModelBuildDirector> director)
+{
+    _director = director;
 }

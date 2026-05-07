@@ -1,33 +1,18 @@
-#include "sceneloadmoderator.h"
-#include "exceptions.h"
+#include "scene_load_moderator.h"
 
+#include <stdexcept>
 
-SceneLoadModerator::SceneLoadModerator(std::shared_ptr<BaseSceneBuildDirector> director) :
-    _builder(new SceneBuilder)
+SceneLoadModerator::SceneLoadModerator(std::shared_ptr<BaseSceneBuildDirector> director)
+    : _director(director)
 {
-    _director = director;
 }
 
-std::shared_ptr<Scene> SceneLoadModerator::load(std::string &fileName)
+std::shared_ptr<Scene> SceneLoadModerator::load(const std::string &fileName)
 {
-    std::shared_ptr<Scene> scene;
+    if (!_director)
+        throw std::logic_error("SceneLoadModerator: director is not set");
 
-    try
-    {
-        scene = _director->load(_builder, fileName);
-    }
-    catch (SourceException &error)
-    {
-        std::string msg = "Error : Open file";
-        throw SourceException(msg);
-    }
-    catch (std::exception &error)
-    {
-        std::string msg = "Error : Read model";
-        throw SourceException(msg);
-    }
-
-    return scene;
+    return _director->load(fileName);
 }
 
 void SceneLoadModerator::setDirector(std::shared_ptr<BaseSceneBuildDirector> director)

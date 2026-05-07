@@ -1,33 +1,37 @@
-#include "modelbuilder.h"
+#include "model_builder.h"
+
+#include <stdexcept>
 
 void ModelBuilder::build()
 {
-    _model = std::make_shared<ModelStructure>();
+    _structure = std::make_shared<ListModelStructure>();
 }
 
-
-void ModelBuilder::buildVertex(const Vertex &vertex)
+void ModelBuilder::buildPoint(const Point &point)
 {
-    if (!isBuild()) { }
+    if (!isBuild())
+        throw std::logic_error("ModelBuilder: structure is not built");
 
-    _model->addVertex(vertex);
+    _structure->addPoint(point);
 }
 
-
-void ModelBuilder::buildLink(const Link &link)
+void ModelBuilder::buildEdge(const Edge &edge)
 {
-    if (!isBuild()) { }
+    if (!isBuild())
+        throw std::logic_error("ModelBuilder: structure is not built");
 
-    _model->addLink(link);
+    _structure->addEdge(edge);
 }
-
 
 bool ModelBuilder::isBuild() const
 {
-    return nullptr != _model;
+    return _structure != nullptr;
 }
 
-std::shared_ptr<CarcassModel> ModelBuilder::get()
+std::shared_ptr<Object> ModelBuilder::get()
 {
-    return std::make_shared<CarcassModel>(CarcassModel(_model));
+    if (!isBuild())
+        throw std::logic_error("ModelBuilder: model is not built");
+
+    return std::make_shared<SkeletonModel>(_structure);
 }

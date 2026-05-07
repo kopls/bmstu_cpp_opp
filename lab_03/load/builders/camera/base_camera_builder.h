@@ -1,24 +1,23 @@
-#ifndef BASECAMERABUILDER_H
-#define BASECAMERABUILDER_H
+#ifndef BASE_CAMERA_BUILDER_H
+#define BASE_CAMERA_BUILDER_H
 
+#include <memory>
 
+#include "base_builder.h"
+#include "object.h"
 #include "camera.h"
-#include "basebuilder.h"
+#include "point.h"
 
 class BaseCameraBuilder : public BaseBuilder
 {
 public:
     BaseCameraBuilder() = default;
-    ~BaseCameraBuilder() = default;
+    ~BaseCameraBuilder() override = default;
 
-    virtual void build() override = 0;
-    virtual void buildLocation(const Vertex &location) = 0;
-    virtual bool isBuild() const override = 0;
+    virtual void buildLocation(const Point &location) = 0;
 
-    virtual std::shared_ptr<Camera> get() = 0;
-
-protected:
-    std::shared_ptr<Camera> _camera;
+    virtual std::shared_ptr<Object> getObject() = 0;
+    virtual std::shared_ptr<Camera> getCamera() = 0;
 };
 
-#endif // BASECAMERABUILDER_H
+#endif

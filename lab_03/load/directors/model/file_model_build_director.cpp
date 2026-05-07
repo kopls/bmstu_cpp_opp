@@ -1,38 +1,41 @@
-#include "filemodelbuilddirector.h"
-#include "exceptions.h"
-#include "modelbuilder.h"
-
+#include "file_model_build_director.h"
 
 FileModelBuildDirector::FileModelBuildDirector()
+    : _reader(std::make_shared<FileReader>()),
+      _builder(std::make_shared<ModelBuilder>())
 {
-    _reader = std::make_shared<FileCarcassModelReader>();
 }
 
-FileModelBuildDirector::FileModelBuildDirector(std::shared_ptr<FileCarcassModelReader> &reader)
+FileModelBuildDirector::FileModelBuildDirector(std::shared_ptr<BaseReader> reader,
+                                               std::shared_ptr<BaseModelBuilder> builder)
+    : _reader(reader),
+      _builder(builder)
 {
-    _reader = reader;
 }
 
-std::shared_ptr<CarcassModel> FileModelBuildDirector::load(std::shared_ptr<BaseModelBuilder> builder,
-                                                           std::string &fileName)
+std::shared_ptr<Object> FileModelBuildDirector::load(const std::string &fileName)
 {
     _reader->open(fileName);
 
-    builder->build();
-
-    vector<Vertex> vertexes = _reader->readVertexes();
-    int vertexNum = vertexes.size();
-
-    std::vector<Link> links = _reader->readLinks(vertexNum);
-    int linksNum = links.size();
-
-    for (int i = 0; i < vertexNum; i++)
-        builder->buildVertex(vertexes[i]);
-
-    for (int i = 0; i < linksNum; i++)
-        builder->buildLink(links[i]);
+    auto model = loadFromCurrentSource();
 
     _reader->close();
 
-    return builder->get();
+    return model;
+}
+
+std::shared_ptr<Object> FileModelBuildDirector::loadFromCurrentSource()
+{
+    _builder->build();
+
+    const auto points = _reader->readPoints();
+    const auto edges = _reader->readEdges(points.size());
+
+    for (const auto &point : points)
+        _builder->buildPoint(point);
+
+    for (const auto &edge : edges)
+        _builder->buildEdge(edge);
+
+    return _builder->get();
 }

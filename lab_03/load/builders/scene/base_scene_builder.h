@@ -1,24 +1,21 @@
-#ifndef BASESCENEBUILDER_H
-#define BASESCENEBUILDER_H
+#ifndef BASE_SCENE_BUILDER_H
+#define BASE_SCENE_BUILDER_H
 
+#include <memory>
 
+#include "base_builder.h"
 #include "scene.h"
-#include "basebuilder.h"
+#include "object.h"
 
 class BaseSceneBuilder : public BaseBuilder
 {
 public:
     BaseSceneBuilder() = default;
-    ~BaseSceneBuilder() = default;
+    ~BaseSceneBuilder() override = default;
 
-    virtual void build() override = 0;
     virtual void buildObject(const std::shared_ptr<Object> &object) = 0;
-    virtual bool isBuild() const override = 0;
 
     virtual std::shared_ptr<Scene> get() = 0;
-
-protected:
-    std::shared_ptr<Scene> _scene;
 };
 
-#endif // BASESCENEBUILDER_H
+#endif

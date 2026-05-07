@@ -6,10 +6,10 @@
 #include "base_manager_creator.h"
 #include "draw_manager.h"
 
-class DrawManagerCreator : public BaseManagerCreator
+class DrawManagerCreator : public BaseManagerCreator<DrawManager>
 {
 protected:
-    std::shared_ptr<BaseManager> create() override
+    std::shared_ptr<DrawManager> create() override
     {
         return std::make_shared<DrawManager>();
     }

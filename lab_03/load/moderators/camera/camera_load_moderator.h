@@ -1,20 +1,24 @@
-#ifndef CAMERALOADMODERATOR_H
-#define CAMERALOADMODERATOR_H
+#ifndef CAMERA_LOAD_MODERATOR_H
+#define CAMERA_LOAD_MODERATOR_H
 
-#include "baseloadmoderator.h"
-#include "basecamerabuilddirector.h"
+#include <memory>
+
+#include "../base_load_moderator.h"
+#include "../../directors/camera/base_camera_build_director.h"
 
 class CameraLoadModerator : public BaseLoadModerator
 {
 public:
+    CameraLoadModerator() = default;
     explicit CameraLoadModerator(std::shared_ptr<BaseCameraBuildDirector> director);
-    ~CameraLoadModerator() = default;
+    ~CameraLoadModerator() override = default;
 
-    std::shared_ptr<Object> load(std::string &fileName) override;
+    std::shared_ptr<Object> load(const std::string &fileName) override;
+
+    void setDirector(std::shared_ptr<BaseCameraBuildDirector> director);
 
 private:
-    std::shared_ptr<BaseCameraBuilder> _builder;
     std::shared_ptr<BaseCameraBuildDirector> _director;
 };
 
-#endif // CAMERALOADMODERATOR_H
+#endif

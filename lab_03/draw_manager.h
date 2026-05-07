@@ -9,7 +9,8 @@
 
 class DrawManager : public BaseManager
 {
-public: DrawManager() = default;
+public: 
+    DrawManager() = default;
     ~DrawManager() override = default;
 
     void setVisitor(std::shared_ptr<BaseVisitor> visitor) { _visitor = visitor; };

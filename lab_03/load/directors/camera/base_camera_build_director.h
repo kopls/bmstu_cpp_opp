@@ -1,15 +1,21 @@
-#ifndef BASECAMERABUILDDIRECTOR_H
-#define BASECAMERABUILDDIRECTOR_H
+#ifndef BASE_CAMERA_BUILD_DIRECTOR_H
+#define BASE_CAMERA_BUILD_DIRECTOR_H
 
+#include <memory>
+#include <string>
 
-#include "basedirector.h"
-#include "camerabuilder.h"
+#include "base_director.h"
+#include "base_camera_builder.h"
+#include "object.h"
 
 class BaseCameraBuildDirector : public BaseDirector
 {
 public:
-    virtual std::shared_ptr<Camera> load(std::shared_ptr<BaseCameraBuilder> builder,
-                                         std::string &fileName) = 0;
+    BaseCameraBuildDirector() = default;
+    ~BaseCameraBuildDirector() override = default;
+
+    virtual std::shared_ptr<Object> load(const std::string &fileName) = 0;
+    virtual std::shared_ptr<Object> loadFromCurrentSource() = 0;
 };
 
-#endif // BASECAMERABUILDDIRECTOR_H
+#endif

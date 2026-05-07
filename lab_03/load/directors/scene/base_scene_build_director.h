@@ -1,20 +1,20 @@
-#ifndef BASESCENEBUILDDIRECTOR_H
-#define BASESCENEBUILDDIRECTOR_H
+#ifndef BASE_SCENE_BUILD_DIRECTOR_H
+#define BASE_SCENE_BUILD_DIRECTOR_H
 
+#include <memory>
+#include <string>
 
-#include "scenebuilder.h"
+#include "base_director.h"
+#include "base_scene_builder.h"
+#include "scene.h"
 
-class BaseSceneBuildDirector
+class BaseSceneBuildDirector : public BaseDirector
 {
 public:
-    virtual std::shared_ptr<Scene> load(std::shared_ptr<SceneBuilder> builder,
-                                        std::string &fileName) = 0;
+    BaseSceneBuildDirector() = default;
+    ~BaseSceneBuildDirector() override = default;
 
-protected:
-    virtual void loadModels(std::shared_ptr<SceneBuilder> builder,
-                            std::string &fileName) = 0;
-    virtual void loadCameras(std::shared_ptr<SceneBuilder> builder,
-                             std::string &fileName) = 0;
+    virtual std::shared_ptr<Scene> load(const std::string &fileName) = 0;
 };
 
-#endif // BASESCENEBUILDDIRECTOR_H
+#endif

@@ -1,18 +1,18 @@
-#ifndef SCENELOADMODERATORCREATOR_H
-#define SCENELOADMODERATORCREATOR_H
+#ifndef SCENE_LOAD_MODERATOR_CREATOR_H
+#define SCENE_LOAD_MODERATOR_CREATOR_H
 
-#include "sceneloadmoderator.h"
+#include "base_moderator_creator.h"
+#include "scene_load_moderator.h"
+#include "file_scene_build_director.h"
 
-class SceneLoadModeratorCreator
+class SceneLoadModeratorCreator : public BaseModeratorCreator<SceneLoadModerator>
 {
-public:
-    std::shared_ptr<SceneLoadModerator> createModerator();
-
-private:
-    void createInstance();
-
-    std::shared_ptr<SceneLoadModerator> _moderator;
+protected:
+    std::shared_ptr<SceneLoadModerator> create() override
+    {
+        auto director = std::make_shared<FileSceneBuildDirector>();
+        return std::make_shared<SceneLoadModerator>(director);
+    }
 };
 
-
-#endif //SCENELOADMODERATORCREATOR_H
+#endif
