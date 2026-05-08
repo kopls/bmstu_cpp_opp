@@ -4,102 +4,85 @@
 
 namespace
 {
-std::shared_ptr<Scene> getSceneOrThrow(const std::shared_ptr<SceneManager> &sceneManager, const char *message)
+Iterator getIteratorOrThrow(std::shared_ptr<Scene> scene, std::size_t id, const char *message)
 {
-    if (!sceneManager || !sceneManager->getScene())
+    auto iter = scene->getObject(id);
+
+    if (iter == scene->end())
         throw std::logic_error(message);
 
-    return sceneManager->getScene();
+    return iter;
 }
 }
 
-AddCamera::AddCamera(std::shared_ptr<SceneManager> sceneManager,
-                     ID id,
-                     double x,
-                     double y,
-                     double z,
-                     Action action)
-    : _sceneManager(sceneManager),
-      _action(action),
-      _id(id),
-      _x(x),
-      _y(y),
-      _z(z)
+AddCamera::AddCamera(std::shared_ptr<Object> camera, ID id)
+    : method(&Scene::addObject), camera(camera), id(id)
 {
 }
 
 void AddCamera::execute()
 {
-    auto scene = getSceneOrThrow(_sceneManager, "AddCamera: scene is not set");
+    if (!camera)
+        throw std::logic_error("AddCamera: camera is not set");
 
-    auto impl = std::make_shared<CameraImpl>(Point(_x, _y, _z));
-    auto camera = std::make_shared<Camera>(impl);
+    auto scene = currentScene();
+    ((*scene).*method)(camera);
 
-    ((*scene).*_action)(camera);
-
-    if (_id)
-        *_id = camera->getId();
+    if (id)
+        *id = camera->getId();
 }
 
-DeleteCamera::DeleteCamera(std::shared_ptr<SceneManager> sceneManager,
-                           std::size_t id,
-                           Action action)
-    : _sceneManager(sceneManager),
-      _action(action),
-      _id(id)
+DeleteCamera::DeleteCamera(std::size_t id)
+    : method(&Scene::deleteObject), id(id)
 {
 }
 
 void DeleteCamera::execute()
 {
-    auto scene = getSceneOrThrow(_sceneManager, "DeleteCamera: scene is not set");
-    auto iter = scene->getObject(_id);
-
-    if (iter == scene->end())
-        throw std::logic_error("DeleteCamera: camera not found");
-
-    ((*scene).*_action)(iter);
+    auto scene = currentScene();
+    auto iter = getIteratorOrThrow(scene, id, "DeleteCamera: camera not found");
+    ((*scene).*method)(iter);
 }
 
-MoveCamera::MoveCamera(std::shared_ptr<SceneManager> sceneManager,
-                       std::shared_ptr<TransformManager> transformManager,
-                       std::size_t id,
-                       double dx,
-                       double dy,
-                       double dz,
-                       Action action)
-    : _sceneManager(sceneManager),
-      _receiver(transformManager),
-      _action(action),
-      _id(id),
-      _dx(dx),
-      _dy(dy),
-      _dz(dz)
+MoveCamera::MoveCamera(std::size_t id, double dx, double dy, double dz)
+    : method(&TransformManager::moveObject), id(id), dx(dx), dy(dy), dz(dz)
 {
 }
 
 void MoveCamera::execute()
 {
-    auto scene = getSceneOrThrow(_sceneManager, "MoveCamera: scene is not set");
-    auto iter = scene->getObject(_id);
+    if (!proxy.transform)
+        throw std::logic_error("MoveCamera: transform manager is not set");
 
-    if (iter == scene->end())
-        throw std::logic_error("MoveCamera: camera not found");
+    auto scene = currentScene();
+    auto iter = getIteratorOrThrow(scene, id, "MoveCamera: camera not found");
+    std::shared_ptr<Object> object = *iter;
 
-    auto object = *iter;
-    ((*_receiver).*_action)(object, _dx, _dy, _dz);
+    ((*(proxy.transform)).*method)(object, dx, dy, dz);
 }
 
-SetCamera::SetCamera(std::shared_ptr<SceneManager> sceneManager,
-                     std::size_t id,
-                     Action action)
-    : _receiver(sceneManager),
-      _action(action),
-      _id(id)
+SetCamera::SetCamera(std::size_t id)
+    : method(&SceneManager::setCamera), id(id)
 {
 }
 
 void SetCamera::execute()
 {
-    ((*_receiver).*_action)(_id);
+    if (!proxy.scene)
+        throw std::logic_error("SetCamera: scene manager is not set");
+
+    ((*(proxy.scene)).*method)(id);
+}
+
+GetCamera::GetCamera(std::shared_ptr<BaseCamera> &camera)
+    : method(&SceneManager::getCamera), camera(camera)
+{
+}
+
+void GetCamera::execute()
+{
+    if (!proxy.scene)
+        throw std::logic_error("GetCamera: scene manager is not set");
+
+    camera = ((*(proxy.scene)).*method)();
 }

@@ -1,13 +1,12 @@
-#ifndef MODEL_COMMAND_H
-#define MODEL_COMMAND_H
+#ifndef COMMANDS_MODEL_COMMAND_H
+#define COMMANDS_MODEL_COMMAND_H
 
 #include <cstddef>
 #include <memory>
 
-#include "commands/base_command.h"
+#include "base_command.h"
 #include "object.h"
 #include "point.h"
-#include "scene_manager.h"
 #include "scene.h"
 #include "transform_manager.h"
 
@@ -19,124 +18,79 @@ public:
 
 class MoveModel : public ModelCommand
 {
-public:
     using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
 
-    MoveModel(std::shared_ptr<SceneManager> sceneManager,
-              std::shared_ptr<TransformManager> transformManager,
-              std::size_t id,
-              double dx,
-              double dy,
-              double dz,
-              Action action = &TransformManager::moveObject);
-
+public:
+    MoveModel(std::size_t id, double dx, double dy, double dz);
     void execute() override;
 
 private:
-    std::shared_ptr<SceneManager> _sceneManager;
-    std::shared_ptr<TransformManager> _receiver;
-    Action _action;
-
-    std::size_t _id;
-    double _dx;
-    double _dy;
-    double _dz;
+    Action method;
+    std::size_t id;
+    double dx;
+    double dy;
+    double dz;
 };
 
 class ScaleModel : public ModelCommand
 {
-public:
     using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
 
-    ScaleModel(std::shared_ptr<SceneManager> sceneManager,
-               std::shared_ptr<TransformManager> transformManager,
-               std::size_t id,
-               double kx,
-               double ky,
-               double kz,
-               Action action = &TransformManager::scaleObject);
-
+public:
+    ScaleModel(std::size_t id, double kx, double ky, double kz);
     void execute() override;
 
 private:
-    std::shared_ptr<SceneManager> _sceneManager;
-    std::shared_ptr<TransformManager> _receiver;
-    Action _action;
-
-    std::size_t _id;
-    double _kx;
-    double _ky;
-    double _kz;
+    Action method;
+    std::size_t id;
+    double kx;
+    double ky;
+    double kz;
 };
 
 class RotateModel : public ModelCommand
 {
-public:
     using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
 
-    RotateModel(std::shared_ptr<SceneManager> sceneManager,
-                std::shared_ptr<TransformManager> transformManager,
-                std::size_t id,
-                double ox,
-                double oy,
-                double oz,
-                Action action = &TransformManager::rotateObject);
-
+public:
+    RotateModel(std::size_t id, double ox, double oy, double oz);
     void execute() override;
 
 private:
-    std::shared_ptr<SceneManager> _sceneManager;
-    std::shared_ptr<TransformManager> _receiver;
-    Action _action;
-
-    std::size_t _id;
-    double _ox;
-    double _oy;
-    double _oz;
+    Action method;
+    std::size_t id;
+    double ox;
+    double oy;
+    double oz;
 };
 
 class TransformModel : public ModelCommand
 {
-public:
     using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, const Point &, const Point &, const Point &);
 
-    TransformModel(std::shared_ptr<SceneManager> sceneManager,
-                   std::shared_ptr<TransformManager> transformManager,
-                   std::size_t id,
-                   const Point &move,
-                   const Point &scale,
-                   const Point &rotate,
-                   Action action = &TransformManager::transformObject);
-
+public:
+    TransformModel(std::size_t id, const Point &move, const Point &scale, const Point &rotate);
     void execute() override;
 
 private:
-    std::shared_ptr<SceneManager> _sceneManager;
-    std::shared_ptr<TransformManager> _receiver;
-    Action _action;
-
-    std::size_t _id;
-    Point _move;
-    Point _scale;
-    Point _rotate;
+    Action method;
+    std::size_t id;
+    Point move;
+    Point scale;
+    Point rotate;
 };
 
 class DeleteModel : public ModelCommand
 {
-public:
     using Action = void (Scene::*)(Iterator &);
 
-    DeleteModel(std::shared_ptr<SceneManager> sceneManager,
-                std::size_t id,
-                Action action = &Scene::deleteObject);
-
+public:
+    explicit DeleteModel(std::size_t id);
     void execute() override;
 
 private:
-    std::shared_ptr<SceneManager> _sceneManager;
-    Action _action;
-
-    std::size_t _id;
+    Action method;
+    std::size_t id;
 };
 
 #endif
