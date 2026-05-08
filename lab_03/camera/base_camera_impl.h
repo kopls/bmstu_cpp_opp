@@ -11,6 +11,9 @@ public:
     virtual void transform(const Point &move, const Point &scale, const Point &rotate) = 0;
     virtual Point project(const Point &point) const = 0;
     virtual const Point &getLocation() const = 0;
+    virtual const Point &getRight() const = 0;
+    virtual const Point &getUp() const = 0;
+    virtual const Point &getForward() const = 0;
 };
 
 #endif

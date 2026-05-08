@@ -17,3 +17,18 @@ const Point &Camera::getLocation() const
 {
     return _impl->getLocation();
 }
+
+const Point &Camera::getRight() const
+{
+    return _impl->getRight();
+}
+
+const Point &Camera::getUp() const
+{
+    return _impl->getUp();
+}
+
+const Point &Camera::getForward() const
+{
+    return _impl->getForward();
+}

@@ -1,16 +1,16 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include <memory>
 #include <cstddef>
+#include <memory>
+#include <vector>
 
 #include "object.h"
-#include "composite.h"
 
 class Scene
 {
 public:
-    Scene();
+    Scene() = default;
     ~Scene() = default;
 
     void addObject(const std::shared_ptr<Object> &object);
@@ -22,7 +22,7 @@ public:
     Iterator end();
 
 private:
-    std::list<std::shared_ptr<Object>> _objects;
+    std::vector<std::shared_ptr<Object>> _objects;
 };
 
 #endif

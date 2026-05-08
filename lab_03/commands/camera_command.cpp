@@ -61,6 +61,23 @@ void MoveCamera::execute()
     ((*(proxy.transform)).*method)(object, dx, dy, dz);
 }
 
+RotateCamera::RotateCamera(std::size_t id, double ox, double oy, double oz)
+    : method(&TransformManager::rotateObject), id(id), ox(ox), oy(oy), oz(oz)
+{
+}
+
+void RotateCamera::execute()
+{
+    if (!proxy.transform)
+        throw std::logic_error("RotateCamera: transform manager is not set");
+
+    auto scene = currentScene();
+    auto iter = getIteratorOrThrow(scene, id, "RotateCamera: camera not found");
+    std::shared_ptr<Object> object = *iter;
+
+    ((*(proxy.transform)).*method)(object, ox, oy, oz);
+}
+
 SetCamera::SetCamera(std::size_t id)
     : method(&SceneManager::setCamera), id(id)
 {

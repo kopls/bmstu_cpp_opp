@@ -4,14 +4,14 @@
 #include <memory>
 
 #include "base_visitor_creator.h"
-#include "draw_visitor.h"
+#include "drawer_visitor.h"
 
 class DrawVisitorCreator : public BaseVisitorCreator
 {
 protected:
     std::shared_ptr<BaseVisitor> create() override
     {
-        return std::make_shared<DrawVisitor>();
+        return std::make_shared<DrawerVisitor>();
     }
 };
 

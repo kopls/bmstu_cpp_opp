@@ -62,6 +62,22 @@ private:
     double dz;
 };
 
+class RotateCamera : public CameraCommand
+{
+    using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
+
+public:
+    RotateCamera(std::size_t id, double ox, double oy, double oz);
+    void execute() override;
+
+private:
+    Action method;
+    std::size_t id;
+    double ox;
+    double oy;
+    double oz;
+};
+
 class SetCamera : public CameraCommand
 {
     using Action = void (SceneManager::*)(std::size_t);

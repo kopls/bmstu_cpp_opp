@@ -4,14 +4,20 @@
 #include <memory>
 
 #include "base_drawer_factory.h"
+#include "qt_drawer.h"
 
 class QtFactory : public BaseDrawerFactory
 {
 public:
-     std::unique_ptr<BaseDrawer> createDrawer() override
-     {
-         return std::make_unique<QtDrawer>;
-     }
+    explicit QtFactory(QGraphicsScene *scene) : _scene(scene) {}
+
+    std::unique_ptr<BaseDrawer> createDrawer() override
+    {
+        return std::make_unique<QtDrawer>(_scene);
+    }
+
+private:
+    QGraphicsScene *_scene;
 };
 
 #endif

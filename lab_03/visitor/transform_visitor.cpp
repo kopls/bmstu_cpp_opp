@@ -1,11 +1,11 @@
 #include "transform_visitor.h"
 
-TransformVisitor::visit(SkeletonModel &model)
+void TransformVisitor::visit(SkeletonModel &model)
 {
-    model.modelStructure->transform(_move, _scale, _rotate);
+    model._modelStructure->transform(_move, _scale, _rotate);
 }
 
-TransformVisitor::visit(Camera &camera)
+void TransformVisitor::visit(Camera &camera)
 {
     camera._impl->transform(_move, _scale, _rotate);
 }

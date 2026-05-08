@@ -18,8 +18,11 @@ public:
     ~Camera() override = default;
 
     void accept(BaseVisitor &visitor) override;
-    Point project(const Point &point) const;
-    const Point &getLocation() const;
+    Point project(const Point &point) const override;
+    const Point &getLocation() const override;
+    const Point &getRight() const override;
+    const Point &getUp() const override;
+    const Point &getForward() const override;
 
 //private: дружба крепкая
     std::shared_ptr<BaseCameraImpl> _impl;

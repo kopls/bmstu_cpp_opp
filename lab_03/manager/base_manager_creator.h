@@ -2,7 +2,7 @@
 #define BASE_MANAGER_CREATOR_H
 
 #include <memory>
-#include "base_manager"
+#include "base_manager.h"
 
 template <typename Manager>
 class BaseManagerCreator
