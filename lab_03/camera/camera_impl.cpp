@@ -2,49 +2,6 @@
 
 #include <cmath>
 
-namespace
-{
-constexpr double PI = 3.14159265358979323846;
-
-void rotateVector(Point &vec, const Point &angles)
-{
-    double radX = angles.getX() * PI / 180.0;
-    double cosX = std::cos(radX);
-    double sinX = std::sin(radX);
-    double y = vec.getY() * cosX - vec.getZ() * sinX;
-    double z = vec.getY() * sinX + vec.getZ() * cosX;
-    vec.setY(y);
-    vec.setZ(z);
-
-    double radY = angles.getY() * PI / 180.0;
-    double cosY = std::cos(radY);
-    double sinY = std::sin(radY);
-    double x = vec.getX() * cosY + vec.getZ() * sinY;
-    double z2 = vec.getZ() * cosY - vec.getX() * sinY;
-    vec.setX(x);
-    vec.setZ(z2);
-
-    double radZ = angles.getZ() * PI / 180.0;
-    double cosZ = std::cos(radZ);
-    double sinZ = std::sin(radZ);
-    double x2 = vec.getX() * cosZ - vec.getY() * sinZ;
-    double y2 = vec.getX() * sinZ + vec.getY() * cosZ;
-    vec.setX(x2);
-    vec.setY(y2);
-}
-}
-
-void CameraImpl::transform(const Point &move, const Point &scale, const Point &rotate)
-{
-    _location.move(move.getX(), move.getY(), move.getZ());
-
-    rotateVector(_right, rotate);
-    rotateVector(_up, rotate);
-    rotateVector(_forward, rotate);
-
-    _focalLength *= scale.getX();
-}
-
 Point CameraImpl::project(const Point &point) const
 {
     double dx = point.getX() - _location.getX();

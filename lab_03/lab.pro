@@ -1,7 +1,7 @@
 QT       += widgets
 TEMPLATE  = app
 TARGET    = lab_03
-CONFIG   += c++20 console
+CONFIG   += c++20 console -Wall -Werror -Wextra -Wpedantic
 CONFIG   -= app_bundle
 
 INCLUDEPATH += \

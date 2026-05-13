@@ -24,7 +24,7 @@ public:
     const Point &getUp() const override;
     const Point &getForward() const override;
 
-//private: дружба крепкая
+//private:
     std::shared_ptr<BaseCameraImpl> _impl;
 };
 

@@ -16,7 +16,6 @@ public:
     virtual const std::vector<Point> &getPoints() const = 0;
     virtual const std::vector<Edge> &getEdges() const = 0;
     virtual const Point getCenter() const = 0;
-    virtual void transform(const Point &move, const Point &scale, const Point &rotate) = 0;
 };
 
 #endif

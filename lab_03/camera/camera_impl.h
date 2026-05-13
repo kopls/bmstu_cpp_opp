@@ -18,14 +18,13 @@ public:
 
     ~CameraImpl() override = default;
 
-    void transform(const Point &move, const Point &scale, const Point &rotate) override;
     Point project(const Point &point) const override;
     const Point &getLocation() const override;
     const Point &getRight() const override;
     const Point &getUp() const override;
     const Point &getForward() const override;
 
-private:
+//private:
     Point _location;
     Point _right;
     Point _up;
