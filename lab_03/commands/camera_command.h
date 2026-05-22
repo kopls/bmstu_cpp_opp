@@ -12,7 +12,6 @@
 #include "scene_manager.h"
 #include "transform_manager.h"
 
-
 class CameraCommand : public BaseCommand
 {
 public:
@@ -21,7 +20,7 @@ public:
 
 class AddCamera : public CameraCommand
 {
-    using Action = void (Scene::*)(const std::shared_ptr<Object> &);
+    using Action = void (Scene::*)(const std::shared_ptr<Object> &, const std::shared_ptr<std::size_t> &);
 
 public:
     explicit AddCamera(std::shared_ptr<Object> camera, ID id = nullptr);
@@ -35,7 +34,7 @@ private:
 
 class DeleteCamera : public CameraCommand
 {
-    using Action = void (Scene::*)(Iterator &);
+    using Action = void (Scene::*)(std::size_t);
 
 public:
     explicit DeleteCamera(std::size_t id);
@@ -48,7 +47,7 @@ private:
 
 class MoveCamera : public CameraCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
+    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     MoveCamera(std::size_t id, double dx, double dy, double dz);
@@ -64,7 +63,7 @@ private:
 
 class RotateCamera : public CameraCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Object> &, double, double, double);
+    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     RotateCamera(std::size_t id, double ox, double oy, double oz);

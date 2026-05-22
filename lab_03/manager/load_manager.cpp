@@ -17,6 +17,15 @@ std::shared_ptr<Object> LoadManager::load(const std::string &fileName)
     return _objectModerator->load(fileName);
 }
 
+
+void LoadManager::load(const std::shared_ptr<Scene> &scene, const std::string &fileName, const std::shared_ptr<std::size_t> &id)
+{
+    if (!scene)
+        throw std::logic_error("LoadManager: scene is not set");
+
+    scene->addObject(load(fileName), id);
+}
+
 std::shared_ptr<Scene> LoadManager::loadScene(const std::string &fileName)
 {
     if (!_sceneModerator)

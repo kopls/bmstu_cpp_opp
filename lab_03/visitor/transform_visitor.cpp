@@ -2,9 +2,6 @@
 
 #include <cmath>
 
-#include "list_model_structure.h"
-#include "camera_impl.h"
-
 namespace
 {
 double toRadians(const double angle)
@@ -48,11 +45,11 @@ void rotateVector(Point &vec, const Point &angles)
 
 void TransformVisitor::visit(SkeletonModel &model)
 {
-    auto structure = std::static_pointer_cast<ListModelStructure>(model._modelStructure);
+    auto structure = model._modelStructure;
 
-    structure->_center.move(_move.getX(), _move.getY(), _move.getZ());
+    structure->getCenter().move(_move.getX(), _move.getY(), _move.getZ());
 
-    for (auto &point : structure->_points)
+    for (auto &point : structure->getPoints())
     {
         point.scale(_scale.getX(), _scale.getY(), _scale.getZ());
         point.rotate(_rotate.getX(), _rotate.getY(), _rotate.getZ());
@@ -62,13 +59,13 @@ void TransformVisitor::visit(SkeletonModel &model)
 
 void TransformVisitor::visit(Camera &camera)
 {
-    auto impl = std::static_pointer_cast<CameraImpl>(camera._impl);
+    auto impl = camera._impl;
 
-    impl->_location.move(_move.getX(), _move.getY(), _move.getZ());
+    impl->getLocation().move(_move.getX(), _move.getY(), _move.getZ());
 
-    rotateVector(impl->_right, _rotate);
-    rotateVector(impl->_up, _rotate);
-    rotateVector(impl->_forward, _rotate);
+    rotateVector(impl->getRight(), _rotate);
+    rotateVector(impl->getUp(), _rotate);
+    rotateVector(impl->getForward(), _rotate);
 
-    impl->_focalLength *= _scale.getX();
+    impl->getFocalLength() *= _scale.getX();
 }

@@ -14,7 +14,10 @@ public:
     ~Scene() = default;
 
     void addObject(const std::shared_ptr<Object> &object);
+    void addObject(const std::shared_ptr<Object> &object, const std::shared_ptr<std::size_t> &id);
+
     void deleteObject(Iterator &iter);
+    void deleteObject(std::size_t id);
 
     Iterator getObject(const std::size_t id);
 

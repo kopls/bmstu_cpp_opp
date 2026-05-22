@@ -24,9 +24,19 @@ Point CameraImpl::project(const Point &point) const
     return Point(screenX, screenY, 0);
 }
 
+Point &CameraImpl::getLocation()
+{
+    return _location;
+}
+
 const Point &CameraImpl::getLocation() const
 {
     return _location;
+}
+
+Point &CameraImpl::getRight()
+{
+    return _right;
 }
 
 const Point &CameraImpl::getRight() const
@@ -34,12 +44,27 @@ const Point &CameraImpl::getRight() const
     return _right;
 }
 
+Point &CameraImpl::getUp()
+{
+    return _up;
+}
+
 const Point &CameraImpl::getUp() const
 {
     return _up;
 }
 
+Point &CameraImpl::getForward()
+{
+    return _forward;
+}
+
 const Point &CameraImpl::getForward() const
 {
     return _forward;
+}
+
+double &CameraImpl::getFocalLength()
+{
+    return _focalLength;
 }

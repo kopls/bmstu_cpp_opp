@@ -21,14 +21,29 @@ void ListModelStructure::addPoint(const Point &point)
     _points.push_back(point);
 }
 
+std::vector<Point> &ListModelStructure::getPoints()
+{
+    return _points;
+}
+
 const std::vector<Point> &ListModelStructure::getPoints() const 
 {
     return _points;
 }
 
+std::vector<Edge> &ListModelStructure::getEdges()
+{
+    return _edges;
+}
+
 const std::vector<Edge> &ListModelStructure::getEdges() const
 {
     return _edges;
+}
+
+Point &ListModelStructure::getCenter()
+{
+    return _center;
 }
 
 const Point ListModelStructure::getCenter() const

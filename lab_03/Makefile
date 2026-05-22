@@ -15,8 +15,8 @@ EQ            = =
 CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -O2 -Werror -Wpedantic -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -Werror -Wpedantic -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I. -Icamera -Icommands -Idrawer -Iload -Iload/builders -Iload/builders/model -Iload/builders/camera -Iload/builders/scene -Iload/directors -Iload/directors/model -Iload/directors/camera -Iload/directors/scene -Iload/directors/readers -Iload/moderators -Iload/moderators/model -Iload/moderators/camera -Iload/moderators/scene -Iload/moderators/creators -Imanager -Iobjects -Iscene -Ivisitor -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -175,7 +175,6 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -361,7 +360,6 @@ Makefile: lab.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -440,7 +438,6 @@ Makefile: lab.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -648,9 +645,11 @@ base_command.o: commands/base_command.cpp commands/base_command.h \
 		objects/point.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
 		manager/base_manager.h \
 		scene/scene.h \
-		objects/object.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/moderators/scene/scene_load_moderator.h \
@@ -659,8 +658,6 @@ base_command.o: commands/base_command.cpp commands/base_command.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
 		manager/scene_manager.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -679,9 +676,11 @@ camera_command.o: commands/camera_command.cpp commands/camera_command.h \
 		objects/point.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
 		manager/base_manager.h \
 		scene/scene.h \
-		objects/object.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/moderators/scene/scene_load_moderator.h \
@@ -690,8 +689,6 @@ camera_command.o: commands/camera_command.cpp commands/camera_command.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
 		manager/scene_manager.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -710,9 +707,11 @@ facade.o: commands/facade.cpp commands/facade.h \
 		objects/point.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
 		manager/base_manager.h \
 		scene/scene.h \
-		objects/object.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/moderators/scene/scene_load_moderator.h \
@@ -721,8 +720,6 @@ facade.o: commands/facade.cpp commands/facade.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
 		manager/scene_manager.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -741,9 +738,11 @@ model_command.o: commands/model_command.cpp commands/model_command.h \
 		objects/point.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
 		manager/base_manager.h \
 		scene/scene.h \
-		objects/object.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/moderators/scene/scene_load_moderator.h \
@@ -752,8 +751,6 @@ model_command.o: commands/model_command.cpp commands/model_command.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
 		manager/scene_manager.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -772,9 +769,11 @@ scene_command.o: commands/scene_command.cpp commands/scene_command.h \
 		objects/point.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
 		manager/base_manager.h \
 		scene/scene.h \
-		objects/object.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/moderators/scene/scene_load_moderator.h \
@@ -783,8 +782,6 @@ scene_command.o: commands/scene_command.cpp commands/scene_command.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
 		manager/scene_manager.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -794,8 +791,7 @@ scene_command.o: commands/scene_command.cpp commands/scene_command.h \
 		objects/edge.h \
 		objects/composite.h \
 		camera/camera.h \
-		camera/base_camera_impl.h \
-		visitor/drawer_visitor.h
+		camera/base_camera_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scene_command.o commands/scene_command.cpp
 
 qt_drawer.o: drawer/qt_drawer.cpp drawer/qt_drawer.h \
@@ -804,10 +800,21 @@ qt_drawer.o: drawer/qt_drawer.cpp drawer/qt_drawer.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qt_drawer.o drawer/qt_drawer.cpp
 
 draw_manager.o: manager/draw_manager.cpp manager/draw_manager.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
+		objects/point.h \
+		drawer/base_drawer.h \
 		manager/base_manager.h \
 		visitor/base_visitor.h \
 		scene/scene.h \
-		objects/object.h
+		visitor/drawer_visitor.h \
+		objects/skeleton_model.h \
+		objects/base_model.h \
+		objects/visible_object.h \
+		objects/base_model_structure.h \
+		objects/edge.h \
+		objects/composite.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o draw_manager.o manager/draw_manager.cpp
 
 load_manager.o: manager/load_manager.cpp manager/load_manager.h \
@@ -826,6 +833,7 @@ transform_manager.o: manager/transform_manager.cpp manager/transform_manager.h \
 		manager/base_manager.h \
 		objects/object.h \
 		objects/point.h \
+		scene/scene.h \
 		visitor/transform_visitor.h \
 		visitor/base_visitor.h \
 		objects/skeleton_model.h \

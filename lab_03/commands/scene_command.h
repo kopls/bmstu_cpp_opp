@@ -6,6 +6,9 @@
 #include <string>
 
 #include "base_command.h"
+#include "base_camera.h"
+#include "base_drawer.h"
+#include "base_visitor.h"
 #include "draw_manager.h"
 #include "load_manager.h"
 #include "object.h"
@@ -20,7 +23,10 @@ public:
 
 class DrawScene : public SceneCommand
 {
-    using Action = void (DrawManager::*)(std::shared_ptr<Scene>);
+    using Action = void (DrawManager::*)(std::shared_ptr<Scene>,
+                                         std::shared_ptr<BaseVisitor>,
+                                         std::shared_ptr<BaseDrawer>,
+                                         std::shared_ptr<BaseCamera>);
 
 public:
     DrawScene();
@@ -45,7 +51,7 @@ private:
 
 class LoadModel : public SceneCommand
 {
-    using Action = std::shared_ptr<Object> (LoadManager::*)(const std::string &);
+    using Action = void (LoadManager::*)(const std::shared_ptr<Scene> &, const std::string &, const std::shared_ptr<std::size_t> &);
 
 public:
     explicit LoadModel(std::string fileName, ID id = nullptr);

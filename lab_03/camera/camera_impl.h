@@ -19,10 +19,19 @@ public:
     ~CameraImpl() override = default;
 
     Point project(const Point &point) const override;
+    Point &getLocation() override;
     const Point &getLocation() const override;
+
+    Point &getRight() override;
     const Point &getRight() const override;
+
+    Point &getUp() override;
     const Point &getUp() const override;
+
+    Point &getForward() override;
     const Point &getForward() const override;
+
+    double &getFocalLength() override;
 
 //private:
     Point _location;

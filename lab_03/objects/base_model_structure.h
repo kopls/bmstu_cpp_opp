@@ -9,12 +9,18 @@
 class BaseModelStructure
 {
 public:
-    ~BaseModelStructure() = default;
+    virtual ~BaseModelStructure() = default;
 
     virtual void addEdge(const Edge &edge) = 0;
     virtual void addPoint(const Point &point) = 0;
+
+    virtual std::vector<Point> &getPoints() = 0;
     virtual const std::vector<Point> &getPoints() const = 0;
+
+    virtual std::vector<Edge> &getEdges() = 0;
     virtual const std::vector<Edge> &getEdges() const = 0;
+
+    virtual Point &getCenter() = 0;
     virtual const Point getCenter() const = 0;
 };
 

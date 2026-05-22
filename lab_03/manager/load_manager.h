@@ -1,6 +1,7 @@
 #ifndef LOAD_MANAGER_H
 #define LOAD_MANAGER_H
 
+#include <cstddef>
 #include <memory>
 #include <string>
 
@@ -19,6 +20,7 @@ public:
     ~LoadManager() override = default;
 
     std::shared_ptr<Object> load(const std::string &fileName);
+    void load(const std::shared_ptr<Scene> &scene, const std::string &fileName, const std::shared_ptr<std::size_t> &id);
     std::shared_ptr<Scene> loadScene(const std::string &fileName);
 
     void setObjectModerator(std::shared_ptr<BaseLoadModerator> moderator);
