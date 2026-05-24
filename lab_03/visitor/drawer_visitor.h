@@ -19,8 +19,8 @@ public:
     void visit(Composite &composite) override { (void)composite; };
     void visit(Camera &camera) override { (void)camera; };
 
-    void setDrawer(std::shared_ptr<BaseDrawer> drawer) { _drawer = drawer; };
-    void setCamera(std::shared_ptr<BaseCamera> camera) { _camera = camera; };
+    void setDrawer(std::shared_ptr<BaseDrawer> drawer) override { _drawer = drawer; };
+    void setCamera(std::shared_ptr<BaseCamera> camera) override { _camera = camera; };
 private:
 
     std::shared_ptr<BaseDrawer> _drawer;

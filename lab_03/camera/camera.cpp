@@ -32,3 +32,11 @@ const Point &Camera::getForward() const
 {
     return _impl->getForward();
 }
+
+std::shared_ptr<Object> Camera::clone() const
+{
+    auto impl = _impl ? _impl->clone() : nullptr;
+    auto camera = std::make_shared<Camera>(impl);
+    camera->_id = _id;
+    return camera;
+}

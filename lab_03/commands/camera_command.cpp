@@ -1,7 +1,7 @@
 #include "commands/camera_command.h"
 
 AddCamera::AddCamera(std::shared_ptr<Object> camera, ID id)
-    : method(static_cast<Action>(&Scene::addObject)), camera(camera), id(id)
+    : method(&Scene::addObjectWithId), camera(camera), id(id)
 {
 }
 
@@ -21,7 +21,7 @@ void DeleteCamera::execute()
 }
 
 MoveCamera::MoveCamera(std::size_t id, double dx, double dy, double dz)
-    : method(static_cast<Action>(&TransformManager::moveObject)), id(id), dx(dx), dy(dy), dz(dz)
+    : method(&TransformManager::moveSceneObject), id(id), dx(dx), dy(dy), dz(dz)
 {
 }
 
@@ -31,7 +31,7 @@ void MoveCamera::execute()
 }
 
 RotateCamera::RotateCamera(std::size_t id, double ox, double oy, double oz)
-    : method(static_cast<Action>(&TransformManager::rotateObject)), id(id), ox(ox), oy(oy), oz(oz)
+    : method(&TransformManager::rotateSceneObject), id(id), ox(ox), oy(oy), oz(oz)
 {
 }
 

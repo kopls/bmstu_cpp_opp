@@ -15,6 +15,8 @@ public:
     ListModelStructure(std::vector<Point> &points, std::vector<Edge> &edges);
     ListModelStructure(std::vector<Point> &points, std::vector<Edge> &edges, Point &center);
 
+    std::shared_ptr<BaseModelStructure> clone() const override;
+
     void addEdge(const Edge &edge) override;
     void addPoint(const Point &point) override;
 

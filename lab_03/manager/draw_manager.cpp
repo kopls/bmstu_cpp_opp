@@ -2,7 +2,6 @@
 #include <stdexcept>
 
 #include "draw_manager.h"
-#include "drawer_visitor.h"
 
 void DrawManager::drawScene(std::shared_ptr<Scene> scene)
 {
@@ -21,16 +20,23 @@ void DrawManager::drawScene(std::shared_ptr<Scene> scene,
                             std::shared_ptr<BaseDrawer> drawer,
                             std::shared_ptr<BaseCamera> camera)
 {
-    auto drawerVisitor = std::dynamic_pointer_cast<DrawerVisitor>(visitor);
-    if (!drawerVisitor)
+    if (!visitor)
         throw std::logic_error("DrawManager: draw visitor is not set");
 
-    drawerVisitor->setDrawer(drawer);
-    drawerVisitor->setCamera(camera);
+    visitor->setDrawer(drawer);
+    visitor->setCamera(camera);
 
     if (drawer)
         drawer->clearScene();
 
     setVisitor(visitor);
     drawScene(scene);
+}
+
+void DrawManager::drawSceneWithCamera(std::shared_ptr<Scene> scene,
+                                      std::shared_ptr<BaseVisitor> visitor,
+                                      std::shared_ptr<BaseDrawer> drawer,
+                                      std::shared_ptr<BaseCamera> camera)
+{
+    drawScene(scene, visitor, drawer, camera);
 }

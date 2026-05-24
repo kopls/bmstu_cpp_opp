@@ -18,6 +18,7 @@ public:
     ~Camera() override = default;
 
     void accept(BaseVisitor &visitor) override;
+    std::shared_ptr<Object> clone() const override;
     Point project(const Point &point) const override;
     const Point &getLocation() const override;
     const Point &getRight() const override;

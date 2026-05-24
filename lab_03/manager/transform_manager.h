@@ -27,6 +27,11 @@ public:
     void rotateObject(const std::shared_ptr<Scene> &scene, std::size_t id, double ox, double oy, double oz);
     void transformObject(const std::shared_ptr<Scene> &scene, std::size_t id, const Point &move, const Point &scale, const Point &rotate);
 
+    void moveSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double dx, double dy, double dz);
+    void scaleSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double kx, double ky, double kz);
+    void rotateSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double ox, double oy, double oz);
+    void transformSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, const Point &move, const Point &scale, const Point &rotate);
+
     void setVisitor(std::shared_ptr<TransformVisitor> visitor) { _visitor = visitor; }
 
 private:

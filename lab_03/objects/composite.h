@@ -17,15 +17,15 @@ public:
     bool isVisible() const override;
     bool isComposite() const override;
     void accept(BaseVisitor &visitor) override;
+    std::shared_ptr<Object> clone() const override;
 
     Iterator begin() override;
     Iterator end() override;
 
-    std::vector<std::shared_ptr<Object>> getElements();
+    std::vector<std::shared_ptr<Object>> getElements() const override;
 
 private:
     std::vector<std::shared_ptr<Object>> _elements;
 };
-
 
 #endif

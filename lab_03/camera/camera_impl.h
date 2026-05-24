@@ -18,6 +18,8 @@ public:
 
     ~CameraImpl() override = default;
 
+    std::shared_ptr<BaseCameraImpl> clone() const override;
+
     Point project(const Point &point) const override;
     Point &getLocation() override;
     const Point &getLocation() const override;

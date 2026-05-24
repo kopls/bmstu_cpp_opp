@@ -74,3 +74,23 @@ void TransformManager::transformObject(const std::shared_ptr<Scene> &scene, std:
 {
     transformObject(getObjectOrThrow(scene, id), move, scale, rotate);
 }
+
+void TransformManager::moveSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double dx, double dy, double dz)
+{
+    moveObject(scene, id, dx, dy, dz);
+}
+
+void TransformManager::scaleSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double kx, double ky, double kz)
+{
+    scaleObject(scene, id, kx, ky, kz);
+}
+
+void TransformManager::rotateSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, double ox, double oy, double oz)
+{
+    rotateObject(scene, id, ox, oy, oz);
+}
+
+void TransformManager::transformSceneObject(const std::shared_ptr<Scene> &scene, std::size_t id, const Point &move, const Point &scale, const Point &rotate)
+{
+    transformObject(scene, id, move, scale, rotate);
+}

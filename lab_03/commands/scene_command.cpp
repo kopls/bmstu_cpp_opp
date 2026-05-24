@@ -3,7 +3,7 @@
 #include <utility>
 
 DrawScene::DrawScene()
-    : method(static_cast<Action>(&DrawManager::drawScene))
+    : method(&DrawManager::drawSceneWithCamera)
 {
 }
 
@@ -23,11 +23,48 @@ void LoadScene::execute()
 }
 
 LoadModel::LoadModel(std::string fileName, ID id)
-    : method(static_cast<Action>(&LoadManager::load)), fileName(std::move(fileName)), id(id)
+    : method(&LoadManager::loadObjectToScene), fileName(std::move(fileName)), id(id)
 {
 }
 
 void LoadModel::execute()
 {
     ((*(proxy.load)).*method)(currentScene(), fileName, id);
+}
+
+LoadModelWithOptions::LoadModelWithOptions(std::string fileName,
+                                           ModelFileFormat format,
+                                           ModelRepresentation representation,
+                                           ID id)
+    : method(&LoadManager::loadModelToScene),
+      fileName(std::move(fileName)),
+      format(format),
+      representation(representation),
+      id(id)
+{
+}
+
+void LoadModelWithOptions::execute()
+{
+    ((*(proxy.load)).*method)(currentScene(), fileName, format, representation, id);
+}
+
+CollectModelsToComposite::CollectModelsToComposite()
+    : method(&Scene::collectVisibleObjectsToComposite)
+{
+}
+
+void CollectModelsToComposite::execute()
+{
+    ((*currentScene()).*method)();
+}
+
+SplitCompositeToModels::SplitCompositeToModels()
+    : method(&Scene::splitCompositesToObjects)
+{
+}
+
+void SplitCompositeToModels::execute()
+{
+    ((*currentScene()).*method)();
 }

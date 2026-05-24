@@ -16,6 +16,7 @@ public:
     ~SkeletonModel() override = default;
 
     void accept(BaseVisitor &visitor) override;
+    std::shared_ptr<Object> clone() const override;
 
     //std::shared_ptr<BaseModelStructure> getStructure() const { return _modelStructure; } либо гетер, либо общий доступ, без дружбы никак
 

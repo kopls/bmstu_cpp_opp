@@ -1,6 +1,8 @@
 
 #include "list_model_structure.h"
 
+#include <memory>
+
 ListModelStructure::ListModelStructure(std::vector<Point> &points, std::vector<Edge> &edges) : _center{}, _points(points), _edges(edges)
 {
 
@@ -10,6 +12,11 @@ ListModelStructure::ListModelStructure(std::vector<Point> &points, std::vector<E
 {
 
 };
+
+std::shared_ptr<BaseModelStructure> ListModelStructure::clone() const
+{
+    return std::make_shared<ListModelStructure>(*this);
+}
 
 void ListModelStructure::addEdge(const Edge &edge)
 {

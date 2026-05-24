@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QComboBox>
+#include <QDir>
 #include <QFileDialog>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -63,7 +64,19 @@ void MainWindow::setupUi()
     _addCameraButton = new QPushButton("Создать камеру", panel);
     _switchCameraButton = new QPushButton("Переключить камеру", panel);
     _loadModelButton = new QPushButton("Загрузить модель", panel);
+    _collectCompositeButton = new QPushButton("Собрать модели в композит", panel);
+    _splitCompositeButton = new QPushButton("Разъединить композит", panel);
+    _undoButton = new QPushButton("Отменить операцию", panel);
+
     _cameraBox = new QComboBox(panel);
+    _fileFormatBox = new QComboBox(panel);
+    _representationBox = new QComboBox(panel);
+
+    _fileFormatBox->addItem("Текстовый файл");
+    _fileFormatBox->addItem("Бинарный файл");
+    _representationBox->addItem("ListModelStructure");
+    _representationBox->addItem("MatrixModelStructure");
+
     _statusLabel = new QLabel("W/A/S/D — движение относительно взгляда, ЛКМ + мышь — поворот камеры", panel);
     _statusLabel->setWordWrap(true);
 
@@ -72,7 +85,16 @@ void MainWindow::setupUi()
     panelLayout->addWidget(_addCameraButton);
     panelLayout->addWidget(_switchCameraButton);
     panelLayout->addSpacing(12);
+    panelLayout->addWidget(new QLabel("Формат данных модели", panel));
+    panelLayout->addWidget(_fileFormatBox);
+    panelLayout->addWidget(new QLabel("Представление модели", panel));
+    panelLayout->addWidget(_representationBox);
     panelLayout->addWidget(_loadModelButton);
+    panelLayout->addSpacing(12);
+    panelLayout->addWidget(_collectCompositeButton);
+    panelLayout->addWidget(_splitCompositeButton);
+    panelLayout->addSpacing(12);
+    panelLayout->addWidget(_undoButton);
     panelLayout->addStretch();
     panelLayout->addWidget(_statusLabel);
 
@@ -80,7 +102,7 @@ void MainWindow::setupUi()
     mainLayout->addWidget(panel);
 
     setCentralWidget(central);
-    resize(1050, 700);
+    resize(1120, 700);
     setWindowTitle("3D Viewer");
 }
 
@@ -112,6 +134,9 @@ void MainWindow::setupConnections()
     connect(_addCameraButton, &QPushButton::clicked, this, [this]() { addCameraAtCurrentPosition(); });
     connect(_switchCameraButton, &QPushButton::clicked, this, [this]() { switchCamera(); });
     connect(_loadModelButton, &QPushButton::clicked, this, [this]() { loadModel(); });
+    connect(_collectCompositeButton, &QPushButton::clicked, this, [this]() { collectModelsToComposite(); });
+    connect(_splitCompositeButton, &QPushButton::clicked, this, [this]() { splitCompositeToModels(); });
+    connect(_undoButton, &QPushButton::clicked, this, [this]() { undo(); });
 
     connect(_cameraBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
         if (index >= 0)
@@ -141,6 +166,8 @@ void MainWindow::addCameraAtCurrentPosition()
 {
     try
     {
+        saveHistory();
+
         const Point position = currentCameraPosition();
         auto impl = std::make_shared<CameraImpl>(position);
         auto camera = std::make_shared<Camera>(impl);
@@ -181,16 +208,39 @@ void MainWindow::switchCamera()
     }
 }
 
+ModelFileFormat MainWindow::selectedFileFormat() const
+{
+    if (_fileFormatBox->currentIndex() == 1)
+        return ModelFileFormat::Binary;
+
+    return ModelFileFormat::Text;
+}
+
+ModelRepresentation MainWindow::selectedRepresentation() const
+{
+    if (_representationBox->currentIndex() == 1)
+        return ModelRepresentation::Matrix;
+
+    return ModelRepresentation::List;
+}
+
 void MainWindow::loadModel()
 {
     try
     {
-        const QString fileName = QFileDialog::getOpenFileName(this, "Загрузка модели", QString(), "Text files (*.txt);;All files (*)");
+        const QString filter = selectedFileFormat() == ModelFileFormat::Binary
+                                   ? "Binary files (*.bin);;All files (*)"
+                                   : "Text files (*.txt);;All files (*)";
+        const QString modelsDir = QDir::current().absoluteFilePath("models");
+        const QString startDir = QDir(modelsDir).exists() ? modelsDir : QString();
+        const QString fileName = QFileDialog::getOpenFileName(this, "Загрузка модели", startDir, filter);
         if (fileName.isEmpty())
             return;
 
+        saveHistory();
+
         ID id = std::make_shared<std::size_t>();
-        LoadModel loadModel(fileName.toStdString(), id);
+        LoadModelWithOptions loadModel(fileName.toStdString(), selectedFileFormat(), selectedRepresentation(), id);
         _facade->execute(loadModel);
 
         _modelIds.push_back(*id);
@@ -204,12 +254,111 @@ void MainWindow::loadModel()
     }
 }
 
+void MainWindow::collectModelsToComposite()
+{
+    try
+    {
+        saveHistory();
+
+        CollectModelsToComposite command;
+        _facade->execute(command);
+        _statusLabel->setText("Все видимые модели собраны в композит");
+        redraw();
+    }
+    catch (const std::exception &error)
+    {
+        showError(QString::fromStdString(error.what()));
+    }
+}
+
+void MainWindow::splitCompositeToModels()
+{
+    try
+    {
+        saveHistory();
+
+        SplitCompositeToModels command;
+        _facade->execute(command);
+        _statusLabel->setText("Композиты разъединены в объекты");
+        redraw();
+    }
+    catch (const std::exception &error)
+    {
+        showError(QString::fromStdString(error.what()));
+    }
+}
+
+void MainWindow::saveHistory()
+{
+    if (!_sceneManager)
+        return;
+
+    _history.push_back(_sceneManager->createMemento());
+
+    if (_history.size() > 50)
+        _history.erase(_history.begin());
+}
+
+void MainWindow::undo()
+{
+    try
+    {
+        if (_history.empty())
+        {
+            _statusLabel->setText("История операций пуста");
+            return;
+        }
+
+        const SceneMemento memento = _history.back();
+        _history.pop_back();
+
+        _sceneManager->restoreMemento(memento);
+        refreshCameraBox();
+        _statusLabel->setText("Операция отменена");
+        redraw();
+    }
+    catch (const std::exception &error)
+    {
+        showError(QString::fromStdString(error.what()));
+    }
+}
+
+void MainWindow::refreshCameraBox()
+{
+    if (!_sceneManager || !_sceneManager->getScene())
+        return;
+
+    const std::size_t activeId = _sceneManager->getCameraId();
+    _cameraIds = _sceneManager->getScene()->getCameraIds();
+
+    _cameraBox->blockSignals(true);
+    _cameraBox->clear();
+
+    int activeIndex = 0;
+    int index = 0;
+
+    for (const auto id : _cameraIds)
+    {
+        _cameraBox->addItem(QString("Camera %1").arg(index + 1));
+        if (id == activeId)
+            activeIndex = index;
+        ++index;
+    }
+
+    if (!_cameraIds.empty())
+        _cameraBox->setCurrentIndex(activeIndex);
+
+    _cameraBox->blockSignals(false);
+}
+
 void MainWindow::moveActiveCamera(double dx, double dy, double dz)
 {
     try
     {
         if (_cameraIds.empty())
             return;
+
+        saveHistory();
 
         MoveCamera moveCamera(selectedCameraId(), dx, dy, dz);
         _facade->execute(moveCamera);
@@ -245,6 +394,8 @@ void MainWindow::rotateActiveCamera(double ox, double oy, double oz)
     {
         if (_cameraIds.empty())
             return;
+
+        saveHistory();
 
         RotateCamera rotateCamera(selectedCameraId(), ox, oy, oz);
         _facade->execute(rotateCamera);

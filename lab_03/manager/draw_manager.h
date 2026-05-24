@@ -21,6 +21,10 @@ public:
                    std::shared_ptr<BaseVisitor> visitor,
                    std::shared_ptr<BaseDrawer> drawer,
                    std::shared_ptr<BaseCamera> camera);
+    void drawSceneWithCamera(std::shared_ptr<Scene> scene,
+                             std::shared_ptr<BaseVisitor> visitor,
+                             std::shared_ptr<BaseDrawer> drawer,
+                             std::shared_ptr<BaseCamera> camera);
 
 private:
     std::shared_ptr<BaseVisitor> _visitor;

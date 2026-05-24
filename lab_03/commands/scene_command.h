@@ -11,6 +11,7 @@
 #include "base_visitor.h"
 #include "draw_manager.h"
 #include "load_manager.h"
+#include "model_load_options.h"
 #include "object.h"
 #include "scene.h"
 #include "scene_manager.h"
@@ -61,6 +62,53 @@ private:
     Action method;
     std::string fileName;
     ID id;
+};
+
+class LoadModelWithOptions : public SceneCommand
+{
+    using Action = void (LoadManager::*)(const std::shared_ptr<Scene> &,
+                                         const std::string &,
+                                         ModelFileFormat,
+                                         ModelRepresentation,
+                                         const std::shared_ptr<std::size_t> &);
+
+public:
+    LoadModelWithOptions(std::string fileName,
+                         ModelFileFormat format,
+                         ModelRepresentation representation,
+                         ID id = nullptr);
+    void execute() override;
+
+private:
+    Action method;
+    std::string fileName;
+    ModelFileFormat format;
+    ModelRepresentation representation;
+    ID id;
+};
+
+class CollectModelsToComposite : public SceneCommand
+{
+    using Action = void (Scene::*)();
+
+public:
+    CollectModelsToComposite();
+    void execute() override;
+
+private:
+    Action method;
+};
+
+class SplitCompositeToModels : public SceneCommand
+{
+    using Action = void (Scene::*)();
+
+public:
+    SplitCompositeToModels();
+    void execute() override;
+
+private:
+    Action method;
 };
 
 #endif

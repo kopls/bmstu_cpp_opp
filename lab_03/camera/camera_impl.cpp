@@ -1,6 +1,12 @@
 #include "camera_impl.h"
 
 #include <cmath>
+#include <memory>
+
+std::shared_ptr<BaseCameraImpl> CameraImpl::clone() const
+{
+    return std::make_shared<CameraImpl>(*this);
+}
 
 Point CameraImpl::project(const Point &point) const
 {

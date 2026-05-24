@@ -2,9 +2,17 @@
 
 #include <stdexcept>
 
+ModelBuilder::ModelBuilder(ModelRepresentation representation)
+    : _representation(representation)
+{
+}
+
 void ModelBuilder::build()
 {
-    _structure = std::make_shared<ListModelStructure>();
+    if (_representation == ModelRepresentation::Matrix)
+        _structure = std::make_shared<MatrixModelStructure>();
+    else
+        _structure = std::make_shared<ListModelStructure>();
 }
 
 void ModelBuilder::buildPoint(const Point &point)

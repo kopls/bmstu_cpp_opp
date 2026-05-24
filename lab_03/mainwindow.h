@@ -14,8 +14,10 @@
 #include "draw_manager.h"
 #include "facade.h"
 #include "load_manager.h"
+#include "model_load_options.h"
 #include "point.h"
 #include "scene_manager.h"
+#include "scene_memento.h"
 #include "transform_manager.h"
 
 class QComboBox;
@@ -47,12 +49,19 @@ private:
     void addCameraAtCurrentPosition();
     void switchCamera();
     void loadModel();
+    void collectModelsToComposite();
+    void splitCompositeToModels();
+    void undo();
 
     void moveActiveCamera(double dx, double dy, double dz);
     void moveActiveCameraByBasis(double forwardStep, double rightStep, double upStep);
     void rotateActiveCamera(double ox, double oy, double oz);
     void redraw();
+    void saveHistory();
+    void refreshCameraBox();
 
+    ModelFileFormat selectedFileFormat() const;
+    ModelRepresentation selectedRepresentation() const;
     std::shared_ptr<BaseCamera> currentCamera() const;
     Point currentCameraPosition() const;
     std::size_t selectedCameraId() const;
@@ -64,7 +73,12 @@ private:
     QPushButton *_addCameraButton{nullptr};
     QPushButton *_switchCameraButton{nullptr};
     QPushButton *_loadModelButton{nullptr};
+    QPushButton *_collectCompositeButton{nullptr};
+    QPushButton *_splitCompositeButton{nullptr};
+    QPushButton *_undoButton{nullptr};
     QComboBox *_cameraBox{nullptr};
+    QComboBox *_fileFormatBox{nullptr};
+    QComboBox *_representationBox{nullptr};
     QLabel *_statusLabel{nullptr};
 
     std::shared_ptr<Facade> _facade;
@@ -75,6 +89,7 @@ private:
     std::shared_ptr<BaseVisitor> _drawVisitor;
     std::shared_ptr<BaseDrawer> _drawer;
 
+    std::vector<SceneMemento> _history;
     std::vector<std::size_t> _cameraIds;
     std::vector<std::size_t> _modelIds;
     std::size_t _cameraCounter{0};
