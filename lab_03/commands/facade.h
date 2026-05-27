@@ -4,14 +4,17 @@
 #include <memory>
 
 #include "base_command.h"
+#include "solution_pack.h"
 
 class Facade
 {
 public:
     Facade() = default;
     explicit Facade(const CommandProxy &proxy);
+    explicit Facade(const SolutionPack &solutions);
 
     void setProxy(const CommandProxy &proxy);
+    void setSolutions(const SolutionPack &solutions);
     CommandProxy getProxy() const;
 
     void execute(BaseCommand &command);

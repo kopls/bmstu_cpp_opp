@@ -5,23 +5,20 @@
 #include <memory>
 #include <stdexcept>
 
-#include "base_drawer.h"
-#include "base_visitor.h"
-#include "draw_manager.h"
-#include "load_manager.h"
-#include "scene_manager.h"
-#include "transform_manager.h"
+#include "scene.h"
+#include "solution_draw.h"
+#include "solution_load.h"
+#include "solution_scene.h"
+#include "solution_transform.h"
 
 using ID = std::shared_ptr<std::size_t>;
 
 struct CommandProxy
 {
-    std::shared_ptr<SceneManager> scene;
-    std::shared_ptr<TransformManager> transform;
-    std::shared_ptr<DrawManager> draw;
-    std::shared_ptr<LoadManager> load;
-    std::shared_ptr<BaseVisitor> drawVisitor;
-    std::shared_ptr<BaseDrawer> drawer;
+    std::shared_ptr<SolutionScene> scene;
+    std::shared_ptr<SolutionTransform> transform;
+    std::shared_ptr<SolutionDraw> draw;
+    std::shared_ptr<SolutionLoad> load;
 };
 
 class BaseCommand

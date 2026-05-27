@@ -3,21 +3,28 @@
 
 #include <memory>
 
+#include <QGraphicsScene>
+#include <QGraphicsView>
+
 #include "base_drawer_factory.h"
 #include "qt_drawer.h"
 
 class QtFactory : public BaseDrawerFactory
 {
 public:
-    explicit QtFactory(QGraphicsScene *scene) : _scene(scene) {}
-
-    std::unique_ptr<BaseDrawer> createDrawer() override
+    QtFactory(QGraphicsScene *scene, QGraphicsView *view)
+        : _scene(scene), _view(view)
     {
-        return std::make_unique<QtDrawer>(_scene);
+    }
+
+    std::shared_ptr<BaseDrawer> createDrawer() override
+    {
+        return std::make_shared<QtDrawer>(_scene, _view);
     }
 
 private:
     QGraphicsScene *_scene;
+    QGraphicsView *_view;
 };
 
 #endif

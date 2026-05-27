@@ -27,6 +27,7 @@ INCLUDEPATH += \
     $$PWD/manager \
     $$PWD/objects \
     $$PWD/scene \
+    $$PWD/solution \
     $$PWD/visitor
 
 SOURCES += $$files($$PWD/*.cpp, true)

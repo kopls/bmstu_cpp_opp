@@ -9,8 +9,8 @@
 #include "camera.h"
 #include "object.h"
 #include "scene.h"
-#include "scene_manager.h"
-#include "transform_manager.h"
+#include "solution_scene.h"
+#include "solution_transform.h"
 
 class CameraCommand : public BaseCommand
 {
@@ -20,7 +20,7 @@ public:
 
 class AddCamera : public CameraCommand
 {
-    using Action = void (Scene::*)(const std::shared_ptr<Object> &, const std::shared_ptr<std::size_t> &);
+    using Action = void (SolutionScene::*)(const std::shared_ptr<Object> &, const std::shared_ptr<std::size_t> &);
 
 public:
     explicit AddCamera(std::shared_ptr<Object> camera, ID id = nullptr);
@@ -34,7 +34,7 @@ private:
 
 class DeleteCamera : public CameraCommand
 {
-    using Action = void (Scene::*)(std::size_t);
+    using Action = void (SolutionScene::*)(std::size_t);
 
 public:
     explicit DeleteCamera(std::size_t id);
@@ -47,7 +47,7 @@ private:
 
 class MoveCamera : public CameraCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     MoveCamera(std::size_t id, double dx, double dy, double dz);
@@ -63,7 +63,7 @@ private:
 
 class RotateCamera : public CameraCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     RotateCamera(std::size_t id, double ox, double oy, double oz);
@@ -79,7 +79,7 @@ private:
 
 class SetCamera : public CameraCommand
 {
-    using Action = void (SceneManager::*)(std::size_t);
+    using Action = void (SolutionScene::*)(std::size_t);
 
 public:
     explicit SetCamera(std::size_t id);
@@ -92,7 +92,7 @@ private:
 
 class GetCamera : public CameraCommand
 {
-    using Action = std::shared_ptr<BaseCamera> (SceneManager::*)() const;
+    using Action = std::shared_ptr<BaseCamera> (SolutionScene::*)() const;
 
 public:
     explicit GetCamera(std::shared_ptr<BaseCamera> &camera);

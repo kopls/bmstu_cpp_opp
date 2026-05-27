@@ -1,7 +1,7 @@
 #include "model_command.h"
 
 MoveModel::MoveModel(std::size_t id, double dx, double dy, double dz)
-    : method(&TransformManager::moveSceneObject), id(id), dx(dx), dy(dy), dz(dz)
+    : method(&SolutionTransform::moveSceneObject), id(id), dx(dx), dy(dy), dz(dz)
 {
 }
 
@@ -11,7 +11,7 @@ void MoveModel::execute()
 }
 
 ScaleModel::ScaleModel(std::size_t id, double kx, double ky, double kz)
-    : method(&TransformManager::scaleSceneObject), id(id), kx(kx), ky(ky), kz(kz)
+    : method(&SolutionTransform::scaleSceneObject), id(id), kx(kx), ky(ky), kz(kz)
 {
 }
 
@@ -21,7 +21,7 @@ void ScaleModel::execute()
 }
 
 RotateModel::RotateModel(std::size_t id, double ox, double oy, double oz)
-    : method(&TransformManager::rotateSceneObject), id(id), ox(ox), oy(oy), oz(oz)
+    : method(&SolutionTransform::rotateSceneObject), id(id), ox(ox), oy(oy), oz(oz)
 {
 }
 
@@ -31,7 +31,7 @@ void RotateModel::execute()
 }
 
 TransformModel::TransformModel(std::size_t id, const Point &move, const Point &scale, const Point &rotate)
-    : method(&TransformManager::transformSceneObject), id(id), move(move), scale(scale), rotate(rotate)
+    : method(&SolutionTransform::transformSceneObject), id(id), move(move), scale(scale), rotate(rotate)
 {
 }
 
@@ -41,11 +41,11 @@ void TransformModel::execute()
 }
 
 DeleteModel::DeleteModel(std::size_t id)
-    : method(&Scene::deleteObject), id(id)
+    : method(&SolutionScene::deleteObject), id(id)
 {
 }
 
 void DeleteModel::execute()
 {
-    ((*currentScene()).*method)(id);
+    ((*(proxy.scene)).*method)(id);
 }

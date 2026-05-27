@@ -9,16 +9,11 @@
 #include <vector>
 
 #include "base_camera.h"
-#include "base_drawer.h"
-#include "base_visitor.h"
-#include "draw_manager.h"
 #include "facade.h"
-#include "load_manager.h"
 #include "model_load_options.h"
 #include "point.h"
-#include "scene_manager.h"
 #include "scene_memento.h"
-#include "transform_manager.h"
+#include "solution_pack.h"
 
 class QComboBox;
 class QGraphicsScene;
@@ -82,12 +77,7 @@ private:
     QLabel *_statusLabel{nullptr};
 
     std::shared_ptr<Facade> _facade;
-    std::shared_ptr<SceneManager> _sceneManager;
-    std::shared_ptr<TransformManager> _transformManager;
-    std::shared_ptr<DrawManager> _drawManager;
-    std::shared_ptr<LoadManager> _loadManager;
-    std::shared_ptr<BaseVisitor> _drawVisitor;
-    std::shared_ptr<BaseDrawer> _drawer;
+    SolutionPack _solutions;
 
     std::vector<SceneMemento> _history;
     std::vector<std::size_t> _cameraIds;

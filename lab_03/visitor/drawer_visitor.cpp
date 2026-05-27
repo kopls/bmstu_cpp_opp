@@ -1,11 +1,12 @@
 #include "drawer_visitor.h"
+
 #include "camera.h"
+#include "z_buffer.h"
 
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
-#include <limits>
 #include <set>
 #include <vector>
 
@@ -13,9 +14,7 @@ namespace
 {
 constexpr double NEAR_PLANE = 1.0;
 constexpr double EPS = 1e-9;
-constexpr double DEPTH_EPS = 1e-4;
-constexpr double SCREEN_WIDTH = 800.0;
-constexpr double SCREEN_HEIGHT = 600.0;
+constexpr double DEPTH_EPS = 1e-2;
 
 const int INSIDE = 0;
 const int LEFT = 1;
@@ -49,7 +48,7 @@ double length(const Point &point)
     return std::sqrt(dot(point, point));
 }
 
-Point interpolate(const Point &first, const Point &second, const double t)
+Point interpolate(const Point &first, const Point &second, double t)
 {
     return Point(first.getX() + (second.getX() - first.getX()) * t,
                  first.getY() + (second.getY() - first.getY()) * t,
@@ -63,11 +62,6 @@ Point relativeToCamera(const Point &point, const BaseCamera &camera)
                  point.getZ() - camera.getLocation().getZ());
 }
 
-double cameraDepth(const Point &point, const BaseCamera &camera)
-{
-    return dot(relativeToCamera(point, camera), camera.getForward());
-}
-
 bool isFinitePoint(const Point &point)
 {
     return std::isfinite(point.getX()) &&
@@ -75,32 +69,68 @@ bool isFinitePoint(const Point &point)
            std::isfinite(point.getZ());
 }
 
-int outCode(double x, double y)
+int intFloor(double value)
+{
+    return std::floor(value);
+}
+
+int intCeil(double value)
+{
+    return std::ceil(value);
+}
+
+bool projectPoint(const Point &point,
+                  const BaseCamera &camera,
+                  double width,
+                  double height,
+                  Point &projection,
+                  double &depth)
+{
+    const Point relative = relativeToCamera(point, camera);
+
+    const double cameraX = dot(relative, camera.getRight());
+    const double cameraY = dot(relative, camera.getUp());
+    depth = dot(relative, camera.getForward());
+
+    if (depth <= NEAR_PLANE)
+        return false;
+
+    const double normalizedX = cameraX / depth;
+    const double normalizedY = cameraY / depth;
+
+    projection = Point((normalizedX + 1.0) * width / 2.0,
+                       (1.0 - normalizedY) * height / 2.0,
+                       0.0);
+
+    return isFinitePoint(projection);
+}
+
+int outCode(double x, double y, double width, double height)
 {
     int code = INSIDE;
 
     if (x < 0.0)
         code |= LEFT;
-    else if (x > SCREEN_WIDTH)
+    else if (x > width)
         code |= RIGHT;
 
     if (y < 0.0)
         code |= TOP;
-    else if (y > SCREEN_HEIGHT)
+    else if (y > height)
         code |= BOTTOM;
 
     return code;
 }
 
-bool clipLine(Point &first, Point &second)
+bool clipLine(Point &first, Point &second, double width, double height)
 {
     double x1 = first.getX();
     double y1 = first.getY();
     double x2 = second.getX();
     double y2 = second.getY();
 
-    int code1 = outCode(x1, y1);
-    int code2 = outCode(x2, y2);
+    int code1 = outCode(x1, y1, width, height);
+    int code2 = outCode(x2, y2, width, height);
 
     while (true)
     {
@@ -133,16 +163,16 @@ bool clipLine(Point &first, Point &second)
             if (std::abs(y2 - y1) < EPS)
                 return false;
 
-            x = x1 + (x2 - x1) * (SCREEN_HEIGHT - y1) / (y2 - y1);
-            y = SCREEN_HEIGHT;
+            x = x1 + (x2 - x1) * (height - y1) / (y2 - y1);
+            y = height;
         }
         else if ((code & RIGHT) != 0)
         {
             if (std::abs(x2 - x1) < EPS)
                 return false;
 
-            y = y1 + (y2 - y1) * (SCREEN_WIDTH - x1) / (x2 - x1);
-            x = SCREEN_WIDTH;
+            y = y1 + (y2 - y1) * (width - x1) / (x2 - x1);
+            x = width;
         }
         else if ((code & LEFT) != 0)
         {
@@ -157,13 +187,13 @@ bool clipLine(Point &first, Point &second)
         {
             x1 = x;
             y1 = y;
-            code1 = outCode(x1, y1);
+            code1 = outCode(x1, y1, width, height);
         }
         else
         {
             x2 = x;
             y2 = y;
-            code2 = outCode(x2, y2);
+            code2 = outCode(x2, y2, width, height);
         }
     }
 }
@@ -179,11 +209,11 @@ Face canonicalFace(const Face &face)
 
     for (std::size_t i = 0; i < face.size(); ++i)
     {
-        std::rotate(direct.begin(), direct.begin() + 1, direct.end());
         variants.push_back(direct);
+        std::rotate(direct.begin(), direct.begin() + 1, direct.end());
 
-        std::rotate(reversed.begin(), reversed.begin() + 1, reversed.end());
         variants.push_back(reversed);
+        std::rotate(reversed.begin(), reversed.begin() + 1, reversed.end());
     }
 
     return *std::min_element(variants.begin(), variants.end());
@@ -213,27 +243,40 @@ bool isPlanarFace(const Face &face, const std::vector<Point> &points)
     return true;
 }
 
-bool hasVertex(const Face &face, const std::size_t vertex)
+bool isBoundaryFace(const Face &face, const std::vector<Point> &points)
 {
-    return std::find(face.begin(), face.end(), vertex) != face.end();
-}
-
-bool faceHasEdge(const Face &face, const Edge &edge)
-{
-    if (!hasVertex(face, edge.getFirst()) || !hasVertex(face, edge.getSecond()))
+    if (face.size() < 3)
         return false;
 
-    for (std::size_t i = 0; i < face.size(); ++i)
-    {
-        const std::size_t first = face[i];
-        const std::size_t second = face[(i + 1) % face.size()];
+    const Point first = subtract(points[face[1]], points[face[0]]);
+    const Point second = subtract(points[face[2]], points[face[0]]);
+    const Point normal = cross(first, second);
+    const double normalLength = length(normal);
 
-        if ((first == edge.getFirst() && second == edge.getSecond()) ||
-            (first == edge.getSecond() && second == edge.getFirst()))
-            return true;
+    if (normalLength < EPS)
+        return false;
+
+    bool hasPositive = false;
+    bool hasNegative = false;
+    const double tolerance = normalLength * 1e-5;
+
+    for (std::size_t i = 0; i < points.size(); ++i)
+    {
+        if (std::find(face.begin(), face.end(), i) != face.end())
+            continue;
+
+        const double side = dot(subtract(points[i], points[face[0]]), normal);
+
+        if (side > tolerance)
+            hasPositive = true;
+        else if (side < -tolerance)
+            hasNegative = true;
+
+        if (hasPositive && hasNegative)
+            return false;
     }
 
-    return false;
+    return true;
 }
 
 std::vector<Face> buildFaces(const std::vector<Point> &points, const std::vector<Edge> &edges)
@@ -257,7 +300,7 @@ std::vector<Face> buildFaces(const std::vector<Point> &points, const std::vector
         if (face.size() < 3 || face.size() > 4)
             return;
 
-        if (!isPlanarFace(face, points))
+        if (!isPlanarFace(face, points) || !isBoundaryFace(face, points))
             return;
 
         const Face canonical = canonicalFace(face);
@@ -267,7 +310,7 @@ std::vector<Face> buildFaces(const std::vector<Point> &points, const std::vector
 
     Face path;
 
-    auto dfs = [&](auto &&self, const std::size_t start, const std::size_t current) -> void
+    auto dfs = [&](auto &&self, std::size_t start, std::size_t current) -> void
     {
         for (const auto next : graph[current])
         {
@@ -277,8 +320,7 @@ std::vector<Face> buildFaces(const std::vector<Point> &points, const std::vector
                 continue;
             }
 
-            if (path.size() == 4 ||
-                std::find(path.begin(), path.end(), next) != path.end())
+            if (path.size() == 4 || std::find(path.begin(), path.end(), next) != path.end())
                 continue;
 
             path.push_back(next);
@@ -327,11 +369,48 @@ bool barycentricWeights(const Point &point,
            weights[0] <= 1.0 + EPS && weights[1] <= 1.0 + EPS && weights[2] <= 1.0 + EPS;
 }
 
-bool faceDepthAtPoint(const Face &face,
+void putTriangleToZBuffer(const std::array<Point, 3> &screen,
+                          const std::array<double, 3> &depth,
+                          ZBuffer &zBuffer)
+{
+    const double minX = std::min({screen[0].getX(), screen[1].getX(), screen[2].getX()});
+    const double maxX = std::max({screen[0].getX(), screen[1].getX(), screen[2].getX()});
+    const double minY = std::min({screen[0].getY(), screen[1].getY(), screen[2].getY()});
+    const double maxY = std::max({screen[0].getY(), screen[1].getY(), screen[2].getY()});
+
+    const int left = std::max(0, intFloor(minX));
+    const int right = std::min(zBuffer.getWidth() - 1, intCeil(maxX));
+    const int top = std::max(0, intFloor(minY));
+    const int bottom = std::min(zBuffer.getHeight() - 1, intCeil(maxY));
+
+    for (int y = top; y <= bottom; ++y)
+    {
+        for (int x = left; x <= right; ++x)
+        {
+            std::array<double, 3> weights{};
+            const Point pixel(x + 0.5, y + 0.5, 0.0);
+
+            if (!barycentricWeights(pixel, screen, weights))
+                continue;
+
+            const double invertedDepth = weights[0] / depth[0] +
+                                         weights[1] / depth[1] +
+                                         weights[2] / depth[2];
+
+            if (std::abs(invertedDepth) < EPS)
+                continue;
+
+            zBuffer.putDepth(x, y, 1.0 / invertedDepth);
+        }
+    }
+}
+
+void putFaceToZBuffer(const Face &face,
                       const std::vector<Point> &points,
                       const BaseCamera &camera,
-                      const Point &screenPoint,
-                      double &depth)
+                      double width,
+                      double height,
+                      ZBuffer &zBuffer)
 {
     std::vector<Point> screenPoints;
     std::vector<double> depths;
@@ -341,107 +420,148 @@ bool faceDepthAtPoint(const Face &face,
 
     for (const auto index : face)
     {
-        const double currentDepth = cameraDepth(points[index], camera);
+        Point projection;
+        double depth = 0.0;
 
-        if (currentDepth <= NEAR_PLANE)
-            return false;
-
-        const Point projection = camera.project(points[index]);
-
-        if (!isFinitePoint(projection))
-            return false;
+        if (!projectPoint(points[index], camera, width, height, projection, depth))
+            return;
 
         screenPoints.push_back(projection);
-        depths.push_back(currentDepth);
+        depths.push_back(depth);
     }
 
-    const std::array<std::array<std::size_t, 3>, 2> triangleIndexes = {{
-        {{0, 1, 2}},
-        {{0, 2, 3}}
-    }};
-
+    const std::array<std::array<std::size_t, 3>, 2> indexes = {{{{0, 1, 2}}, {{0, 2, 3}}}};
     const std::size_t trianglesCount = face.size() == 3 ? 1 : 2;
 
     for (std::size_t i = 0; i < trianglesCount; ++i)
     {
-        const auto &indexes = triangleIndexes[i];
+        const auto &triangleIndexes = indexes[i];
+
         const std::array<Point, 3> triangle = {{
-            screenPoints[indexes[0]],
-            screenPoints[indexes[1]],
-            screenPoints[indexes[2]]
+            screenPoints[triangleIndexes[0]],
+            screenPoints[triangleIndexes[1]],
+            screenPoints[triangleIndexes[2]]
         }};
 
-        std::array<double, 3> weights{};
+        const std::array<double, 3> triangleDepth = {{
+            depths[triangleIndexes[0]],
+            depths[triangleIndexes[1]],
+            depths[triangleIndexes[2]]
+        }};
 
-        if (!barycentricWeights(screenPoint, triangle, weights))
-            continue;
-
-        const double invertedDepth = weights[0] / depths[indexes[0]] +
-                                     weights[1] / depths[indexes[1]] +
-                                     weights[2] / depths[indexes[2]];
-
-        if (std::abs(invertedDepth) < EPS)
-            return false;
-
-        depth = 1.0 / invertedDepth;
-        return true;
+        putTriangleToZBuffer(triangle, triangleDepth, zBuffer);
     }
-
-    return false;
 }
 
-bool isPointHiddenByFaces(const Point &worldPoint,
-                          const Point &screenPoint,
-                          const Edge &edge,
-                          const std::vector<Face> &faces,
-                          const std::vector<Point> &points,
-                          const BaseCamera &camera)
+void buildZBuffer(const std::vector<Point> &points,
+                  const std::vector<Face> &faces,
+                  const BaseCamera &camera,
+                  double width,
+                  double height,
+                  ZBuffer &zBuffer)
 {
-    const double pointDepth = cameraDepth(worldPoint, camera);
+    zBuffer.reset(width, height);
 
     for (const auto &face : faces)
+        putFaceToZBuffer(face, points, camera, width, height, zBuffer);
+}
+
+bool isVisibleInZBuffer(const Point &worldPoint,
+                        const BaseCamera &camera,
+                        double width,
+                        double height,
+                        const ZBuffer &zBuffer,
+                        Point &screenPoint)
+{
+    double depth = 0.0;
+
+    if (!projectPoint(worldPoint, camera, width, height, screenPoint, depth))
+        return false;
+
+    if (screenPoint.getX() < 0.0 || screenPoint.getX() >= width ||
+        screenPoint.getY() < 0.0 || screenPoint.getY() >= height)
+        return false;
+
+    const int x = intFloor(screenPoint.getX());
+    const int y = intFloor(screenPoint.getY());
+
+    for (int dy = -1; dy <= 1; ++dy)
     {
-        if (faceHasEdge(face, edge))
-            continue;
-
-        double faceDepth = 0.0;
-
-        if (!faceDepthAtPoint(face, points, camera, screenPoint, faceDepth))
-            continue;
-
-        if (faceDepth + DEPTH_EPS < pointDepth)
-            return true;
+        for (int dx = -1; dx <= 1; ++dx)
+        {
+            if (zBuffer.isVisible(x + dx, y + dy, depth, DEPTH_EPS))
+                return true;
+        }
     }
 
     return false;
 }
 
-bool isEdgeHiddenByFaces(const Edge &edge,
-                         const std::vector<Face> &faces,
-                         const std::vector<Point> &points,
-                         const BaseCamera &camera)
+void drawVisibleEdge(const Edge &edge,
+                     const std::vector<Point> &points,
+                     const BaseCamera &camera,
+                     BaseDrawer &drawer,
+                     const ZBuffer &zBuffer)
 {
-    const Point &first = points[edge.getFirst()];
-    const Point &second = points[edge.getSecond()];
-    const std::array<double, 5> samples = {{0.1, 0.3, 0.5, 0.7, 0.9}};
+    const Point &worldFirst = points[edge.getFirst()];
+    const Point &worldSecond = points[edge.getSecond()];
 
-    for (const double sample : samples)
+    Point screenFirst;
+    Point screenSecond;
+    double firstDepth = 0.0;
+    double secondDepth = 0.0;
+    const double width = drawer.getWidth();
+    const double height = drawer.getHeight();
+
+    if (!projectPoint(worldFirst, camera, width, height, screenFirst, firstDepth) ||
+        !projectPoint(worldSecond, camera, width, height, screenSecond, secondDepth))
+        return;
+
+    const double dx = screenSecond.getX() - screenFirst.getX();
+    const double dy = screenSecond.getY() - screenFirst.getY();
+    const int steps = std::max(1, intCeil(std::max(std::abs(dx), std::abs(dy))));
+
+    bool segmentStarted = false;
+    Point segmentStart;
+    Point previousVisible;
+
+    for (int i = 0; i <= steps; ++i)
     {
-        const Point worldPoint = interpolate(first, second, sample);
+        const double t = static_cast<double>(i) / static_cast<double>(steps);
+        Point currentScreen;
+        const Point currentWorld = interpolate(worldFirst, worldSecond, t);
+        const bool visible = isVisibleInZBuffer(currentWorld, camera, width, height, zBuffer, currentScreen);
 
-        if (cameraDepth(worldPoint, camera) <= NEAR_PLANE)
-            return false;
+        if (visible && !segmentStarted)
+        {
+            segmentStart = currentScreen;
+            previousVisible = currentScreen;
+            segmentStarted = true;
+        }
+        else if (visible)
+        {
+            previousVisible = currentScreen;
+        }
+        else if (segmentStarted)
+        {
+            Point clippedStart = segmentStart;
+            Point clippedEnd = previousVisible;
 
-        const Point screenPoint = camera.project(worldPoint);
+            if (clipLine(clippedStart, clippedEnd, width, height))
+                drawer.drawLine(clippedStart, clippedEnd);
 
-        if (!isFinitePoint(screenPoint))
-            return false;
-
-        if (!isPointHiddenByFaces(worldPoint, screenPoint, edge, faces, points, camera))
-            return false;
+            segmentStarted = false;
+        }
     }
 
-    return true;
+    if (segmentStarted)
+    {
+        Point clippedStart = segmentStart;
+        Point clippedEnd = previousVisible;
+
+        if (clipLine(clippedStart, clippedEnd, width, height))
+            drawer.drawLine(clippedStart, clippedEnd);
+    }
 }
 }
 
@@ -454,30 +574,14 @@ void DrawerVisitor::visit(SkeletonModel &model)
     const auto &edges = model._modelStructure->getEdges();
     const auto faces = buildFaces(points, edges);
 
+    ZBuffer zBuffer(_drawer->getWidth(), _drawer->getHeight());
+    buildZBuffer(points, faces, *_camera, _drawer->getWidth(), _drawer->getHeight(), zBuffer);
+
     for (const auto &edge : edges)
     {
         if (edge.getFirst() >= points.size() || edge.getSecond() >= points.size())
             continue;
 
-        const auto &worldFirst = points[edge.getFirst()];
-        const auto &worldSecond = points[edge.getSecond()];
-
-        if (cameraDepth(worldFirst, *_camera) <= NEAR_PLANE ||
-            cameraDepth(worldSecond, *_camera) <= NEAR_PLANE)
-            continue;
-
-        if (isEdgeHiddenByFaces(edge, faces, points, *_camera))
-            continue;
-
-        Point screenFirst = _camera->project(worldFirst);
-        Point screenSecond = _camera->project(worldSecond);
-
-        if (!isFinitePoint(screenFirst) || !isFinitePoint(screenSecond))
-            continue;
-
-        if (!clipLine(screenFirst, screenSecond))
-            continue;
-
-        _drawer->drawLine(screenFirst, screenSecond);
+        drawVisibleEdge(edge, points, *_camera, *_drawer, zBuffer);
     }
 }

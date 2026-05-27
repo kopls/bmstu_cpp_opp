@@ -21,15 +21,13 @@
 #include "camera.h"
 #include "camera_command.h"
 #include "camera_impl.h"
-#include "draw_manager_creator.h"
-#include "draw_visitor_creator.h"
-#include "load_manager_creator.h"
 #include "model_command.h"
-#include "qt_drawer.h"
-#include "scene.h"
 #include "scene_command.h"
-#include "scene_manager_creator.h"
-#include "transform_manager_creator.h"
+#include "qt_factory.h"
+#include "solution_draw_creator.h"
+#include "solution_load_creator.h"
+#include "solution_scene_creator.h"
+#include "solution_transform_creator.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -108,25 +106,19 @@ void MainWindow::setupUi()
 
 void MainWindow::setupFacade()
 {
-    _sceneManager = SceneManagerCreator().getManager();
-    _transformManager = TransformManagerCreator().getManager();
-    _drawManager = DrawManagerCreator().getManager();
-    _loadManager = LoadManagerCreator().getManager();
-    _drawVisitor = DrawVisitorCreator().getVisitor();
-    _drawer = std::make_shared<QtDrawer>(_graphicsScene);
+    SolutionSceneCreator sceneCreator;
+    SolutionTransformCreator transformCreator;
+    SolutionLoadCreator loadCreator;
 
-    auto scene = std::make_shared<Scene>();
-    _sceneManager->setScene(scene);
+    auto drawerFactory = std::make_shared<QtFactory>(_graphicsScene, _graphicsView);
+    SolutionDrawCreator drawCreator(drawerFactory);
 
-    CommandProxy proxy;
-    proxy.scene = _sceneManager;
-    proxy.transform = _transformManager;
-    proxy.draw = _drawManager;
-    proxy.load = _loadManager;
-    proxy.drawVisitor = _drawVisitor;
-    proxy.drawer = _drawer;
+    _solutions.scene = sceneCreator.getSolution();
+    _solutions.transform = transformCreator.getSolution();
+    _solutions.load = loadCreator.getSolution();
+    _solutions.draw = drawCreator.getSolution();
 
-    _facade = std::make_shared<Facade>(proxy);
+    _facade = std::make_shared<Facade>(_solutions);
 }
 
 void MainWindow::setupConnections()
@@ -290,10 +282,10 @@ void MainWindow::splitCompositeToModels()
 
 void MainWindow::saveHistory()
 {
-    if (!_sceneManager)
+    if (!_solutions.scene)
         return;
 
-    _history.push_back(_sceneManager->createMemento());
+    _history.push_back(_solutions.scene->createMemento());
 
     if (_history.size() > 50)
         _history.erase(_history.begin());
@@ -312,7 +304,7 @@ void MainWindow::undo()
         const SceneMemento memento = _history.back();
         _history.pop_back();
 
-        _sceneManager->restoreMemento(memento);
+        _solutions.scene->restoreMemento(memento);
         refreshCameraBox();
         _statusLabel->setText("Операция отменена");
         redraw();
@@ -325,11 +317,11 @@ void MainWindow::undo()
 
 void MainWindow::refreshCameraBox()
 {
-    if (!_sceneManager || !_sceneManager->getScene())
+    if (!_solutions.scene || !_solutions.scene->getScene())
         return;
 
-    const std::size_t activeId = _sceneManager->getCameraId();
-    _cameraIds = _sceneManager->getScene()->getCameraIds();
+    const std::size_t activeId = _solutions.scene->getCameraId();
+    _cameraIds = _solutions.scene->getCameraIds();
 
     _cameraBox->blockSignals(true);
     _cameraBox->clear();

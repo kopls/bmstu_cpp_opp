@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I. -Icamera -Icommands -Idrawer -Iload -Iload/builders -Iload/builders/model -Iload/builders/camera -Iload/builders/scene -Iload/directors -Iload/directors/model -Iload/directors/camera -Iload/directors/scene -Iload/directors/readers -Iload/moderators -Iload/moderators/model -Iload/moderators/camera -Iload/moderators/scene -Iload/moderators/creators -Imanager -Iobjects -Iscene -Ivisitor -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I. -Icamera -Icommands -Idrawer -Iload -Iload/builders -Iload/builders/model -Iload/builders/camera -Iload/builders/scene -Iload/directors -Iload/directors/model -Iload/directors/camera -Iload/directors/scene -Iload/directors/readers -Iload/moderators -Iload/moderators/model -Iload/moderators/camera -Iload/moderators/scene -Iload/moderators/creators -Imanager -Iobjects -Iscene -Isolution -Ivisitor -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -37,7 +37,7 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = lab_031.0.0
-DISTDIR = /home/artyom/lab_03/.tmp/lab_031.0.0
+DISTDIR = /home/artyom/Programing/repositories/bmstu_cpp_opp/lab_03/.tmp/lab_031.0.0
 LINK          = g++
 LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt5Widgets.so /usr/lib/x86_64-linux-gnu/libQt5Gui.so /usr/lib/x86_64-linux-gnu/libQt5Core.so -lGL -lpthread   
@@ -74,9 +74,14 @@ SOURCES       = main.cpp \
 		objects/point.cpp \
 		objects/skeleton_model.cpp \
 		scene/scene.cpp \
+		solution/solution_draw.cpp \
+		solution/solution_load.cpp \
+		solution/solution_scene.cpp \
+		solution/solution_transform.cpp \
 		visitor/base_visitor_creator.cpp \
 		visitor/drawer_visitor.cpp \
 		visitor/transform_visitor.cpp \
+		visitor/z_buffer.cpp \
 		load/builders/camera/camera_builder.cpp \
 		load/builders/model/model_builder.cpp \
 		load/builders/scene/scene_builder.cpp \
@@ -110,9 +115,14 @@ OBJECTS       = main.o \
 		point.o \
 		skeleton_model.o \
 		scene.o \
+		solution_draw.o \
+		solution_load.o \
+		solution_scene.o \
+		solution_transform.o \
 		base_visitor_creator.o \
 		drawer_visitor.o \
 		transform_visitor.o \
+		z_buffer.o \
 		camera_builder.o \
 		model_builder.o \
 		scene_builder.o \
@@ -238,12 +248,24 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		objects/skeleton_model.h \
 		objects/visible_object.h \
 		scene/scene.h \
+		solution/base_solution.h \
+		solution/base_solution_creator.h \
+		solution/solution_draw.h \
+		solution/solution_draw_creator.h \
+		solution/solution_load.h \
+		solution/solution_load_creator.h \
+		solution/solution_pack.h \
+		solution/solution_scene.h \
+		solution/solution_scene_creator.h \
+		solution/solution_transform.h \
+		solution/solution_transform_creator.h \
 		visitor/base_visitor.h \
 		visitor/base_visitor_creator.h \
 		visitor/draw_visitor_creator.h \
 		visitor/drawer_visitor.h \
 		visitor/transform_visitor.h \
 		visitor/transform_visitor_creator.h \
+		visitor/z_buffer.h \
 		load/builders/base_builder.h \
 		load/directors/base_director.h \
 		load/moderators/base_load_moderator.h \
@@ -291,9 +313,14 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		objects/point.cpp \
 		objects/skeleton_model.cpp \
 		scene/scene.cpp \
+		solution/solution_draw.cpp \
+		solution/solution_load.cpp \
+		solution/solution_scene.cpp \
+		solution/solution_transform.cpp \
 		visitor/base_visitor_creator.cpp \
 		visitor/drawer_visitor.cpp \
 		visitor/transform_visitor.cpp \
+		visitor/z_buffer.cpp \
 		load/builders/camera/camera_builder.cpp \
 		load/builders/model/model_builder.cpp \
 		load/builders/scene/scene_builder.cpp \
@@ -486,8 +513,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mainwindow.h camera/base_camera.h camera/base_camera_impl.h camera/camera.h camera/camera_impl.h commands/base_command.h commands/camera_command.h commands/facade.h commands/model_command.h commands/scene_command.h drawer/base_drawer.h drawer/base_drawer_factory.h drawer/qt_drawer.h drawer/qt_factory.h load/model_load_options.h manager/base_manager.h manager/base_manager_creator.h manager/draw_manager.h manager/draw_manager_creator.h manager/load_manager.h manager/load_manager_creator.h manager/scene_manager.h manager/scene_manager_creator.h manager/scene_memento.h manager/transform_manager.h manager/transform_manager_creator.h objects/base_model.h objects/base_model_structure.h objects/composite.h objects/edge.h objects/invisible_object.h objects/list_model_structure.h objects/matrix_model_structure.h objects/object.h objects/point.h objects/skeleton_model.h objects/visible_object.h scene/scene.h visitor/base_visitor.h visitor/base_visitor_creator.h visitor/draw_visitor_creator.h visitor/drawer_visitor.h visitor/transform_visitor.h visitor/transform_visitor_creator.h load/builders/base_builder.h load/directors/base_director.h load/moderators/base_load_moderator.h load/builders/camera/base_camera_builder.h load/builders/camera/camera_builder.h load/builders/model/base_model_builder.h load/builders/model/model_builder.h load/builders/scene/base_scene_builder.h load/builders/scene/scene_builder.h load/directors/camera/base_camera_build_director.h load/directors/camera/file_camera_build_director.h load/directors/model/base_model_build_director.h load/directors/model/file_model_build_director.h load/directors/readers/base_reader.h load/directors/readers/binary_file_reader.h load/directors/readers/file_reader.h load/directors/scene/base_scene_build_director.h load/directors/scene/file_scene_build_director.h load/moderators/camera/camera_load_moderator.h load/moderators/creators/base_moderator_creator.h load/moderators/creators/camera_load_moderator_creator.h load/moderators/creators/model_load_moderator_creator.h load/moderators/creators/moderator_solution.h load/moderators/creators/scene_load_moderator_creator.h load/moderators/model/model_load_moderator.h load/moderators/scene/scene_load_moderator.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mainwindow.cpp camera/camera.cpp camera/camera_impl.cpp commands/base_command.cpp commands/camera_command.cpp commands/facade.cpp commands/model_command.cpp commands/scene_command.cpp drawer/qt_drawer.cpp manager/draw_manager.cpp manager/load_manager.cpp manager/scene_memento.cpp manager/transform_manager.cpp objects/composite.cpp objects/edge.cpp objects/list_model_structure.cpp objects/matrix_model_structure.cpp objects/object.cpp objects/point.cpp objects/skeleton_model.cpp scene/scene.cpp visitor/base_visitor_creator.cpp visitor/drawer_visitor.cpp visitor/transform_visitor.cpp load/builders/camera/camera_builder.cpp load/builders/model/model_builder.cpp load/builders/scene/scene_builder.cpp load/directors/camera/file_camera_build_director.cpp load/directors/model/file_model_build_director.cpp load/directors/readers/binary_file_reader.cpp load/directors/readers/file_reader.cpp load/directors/scene/file_scene_build_director.cpp load/moderators/camera/camera_load_moderator.cpp load/moderators/model/model_load_moderator.cpp load/moderators/scene/scene_load_moderator.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mainwindow.h camera/base_camera.h camera/base_camera_impl.h camera/camera.h camera/camera_impl.h commands/base_command.h commands/camera_command.h commands/facade.h commands/model_command.h commands/scene_command.h drawer/base_drawer.h drawer/base_drawer_factory.h drawer/qt_drawer.h drawer/qt_factory.h load/model_load_options.h manager/base_manager.h manager/base_manager_creator.h manager/draw_manager.h manager/draw_manager_creator.h manager/load_manager.h manager/load_manager_creator.h manager/scene_manager.h manager/scene_manager_creator.h manager/scene_memento.h manager/transform_manager.h manager/transform_manager_creator.h objects/base_model.h objects/base_model_structure.h objects/composite.h objects/edge.h objects/invisible_object.h objects/list_model_structure.h objects/matrix_model_structure.h objects/object.h objects/point.h objects/skeleton_model.h objects/visible_object.h scene/scene.h solution/base_solution.h solution/base_solution_creator.h solution/solution_draw.h solution/solution_draw_creator.h solution/solution_load.h solution/solution_load_creator.h solution/solution_pack.h solution/solution_scene.h solution/solution_scene_creator.h solution/solution_transform.h solution/solution_transform_creator.h visitor/base_visitor.h visitor/base_visitor_creator.h visitor/draw_visitor_creator.h visitor/drawer_visitor.h visitor/transform_visitor.h visitor/transform_visitor_creator.h visitor/z_buffer.h load/builders/base_builder.h load/directors/base_director.h load/moderators/base_load_moderator.h load/builders/camera/base_camera_builder.h load/builders/camera/camera_builder.h load/builders/model/base_model_builder.h load/builders/model/model_builder.h load/builders/scene/base_scene_builder.h load/builders/scene/scene_builder.h load/directors/camera/base_camera_build_director.h load/directors/camera/file_camera_build_director.h load/directors/model/base_model_build_director.h load/directors/model/file_model_build_director.h load/directors/readers/base_reader.h load/directors/readers/binary_file_reader.h load/directors/readers/file_reader.h load/directors/scene/base_scene_build_director.h load/directors/scene/file_scene_build_director.h load/moderators/camera/camera_load_moderator.h load/moderators/creators/base_moderator_creator.h load/moderators/creators/camera_load_moderator_creator.h load/moderators/creators/model_load_moderator_creator.h load/moderators/creators/moderator_solution.h load/moderators/creators/scene_load_moderator_creator.h load/moderators/model/model_load_moderator.h load/moderators/scene/scene_load_moderator.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mainwindow.cpp camera/camera.cpp camera/camera_impl.cpp commands/base_command.cpp commands/camera_command.cpp commands/facade.cpp commands/model_command.cpp commands/scene_command.cpp drawer/qt_drawer.cpp manager/draw_manager.cpp manager/load_manager.cpp manager/scene_memento.cpp manager/transform_manager.cpp objects/composite.cpp objects/edge.cpp objects/list_model_structure.cpp objects/matrix_model_structure.cpp objects/object.cpp objects/point.cpp objects/skeleton_model.cpp scene/scene.cpp solution/solution_draw.cpp solution/solution_load.cpp solution/solution_scene.cpp solution/solution_transform.cpp visitor/base_visitor_creator.cpp visitor/drawer_visitor.cpp visitor/transform_visitor.cpp visitor/z_buffer.cpp load/builders/camera/camera_builder.cpp load/builders/model/model_builder.cpp load/builders/scene/scene_builder.cpp load/directors/camera/file_camera_build_director.cpp load/directors/model/file_model_build_director.cpp load/directors/readers/binary_file_reader.cpp load/directors/readers/file_reader.cpp load/directors/scene/file_scene_build_director.cpp load/moderators/camera/camera_load_moderator.cpp load/moderators/model/model_load_moderator.cpp load/moderators/scene/scene_load_moderator.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -542,13 +569,16 @@ main.o: main.cpp mainwindow.h \
 		objects/invisible_object.h \
 		objects/object.h \
 		objects/point.h \
+		commands/facade.h \
+		commands/base_command.h \
+		scene/scene.h \
+		solution/solution_draw.h \
 		drawer/base_drawer.h \
+		solution/base_solution.h \
 		visitor/base_visitor.h \
 		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
-		commands/facade.h \
-		commands/base_command.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -557,42 +587,10 @@ main.o: main.cpp mainwindow.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
-		manager/transform_manager.h \
-		visitor/transform_visitor.h \
-		objects/skeleton_model.h \
-		objects/base_model.h \
-		objects/visible_object.h \
-		objects/base_model_structure.h \
-		objects/edge.h \
-		objects/composite.h \
-		camera/camera.h \
-		camera/base_camera_impl.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
-
-mainwindow.o: mainwindow.cpp mainwindow.h \
-		camera/base_camera.h \
-		objects/invisible_object.h \
-		objects/object.h \
-		objects/point.h \
-		drawer/base_drawer.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
-		manager/base_manager.h \
-		scene/scene.h \
-		commands/facade.h \
-		commands/base_command.h \
-		manager/load_manager.h \
-		load/moderators/base_load_moderator.h \
-		load/model_load_options.h \
-		load/moderators/scene/scene_load_moderator.h \
-		load/directors/scene/base_scene_build_director.h \
-		load/directors/base_director.h \
-		load/builders/scene/base_scene_builder.h \
-		load/builders/base_builder.h \
-		manager/scene_manager.h \
-		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -603,13 +601,62 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		objects/composite.h \
 		camera/camera.h \
 		camera/base_camera_impl.h \
+		solution/solution_pack.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+mainwindow.o: mainwindow.cpp mainwindow.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
+		objects/point.h \
+		commands/facade.h \
+		commands/base_command.h \
+		scene/scene.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
+		manager/base_manager.h \
+		solution/solution_load.h \
+		manager/load_manager.h \
+		load/moderators/base_load_moderator.h \
+		load/model_load_options.h \
+		load/moderators/scene/scene_load_moderator.h \
+		load/directors/scene/base_scene_build_director.h \
+		load/directors/base_director.h \
+		load/builders/scene/base_scene_builder.h \
+		load/builders/base_builder.h \
+		solution/solution_scene.h \
+		manager/scene_manager.h \
+		manager/scene_memento.h \
+		solution/solution_transform.h \
+		manager/transform_manager.h \
+		visitor/transform_visitor.h \
+		objects/skeleton_model.h \
+		objects/base_model.h \
+		objects/visible_object.h \
+		objects/base_model_structure.h \
+		objects/edge.h \
+		objects/composite.h \
+		camera/camera.h \
+		camera/base_camera_impl.h \
+		solution/solution_pack.h \
 		commands/camera_command.h \
 		camera/camera_impl.h \
+		commands/model_command.h \
+		commands/scene_command.h \
+		drawer/qt_factory.h \
+		drawer/base_drawer_factory.h \
+		drawer/qt_drawer.h \
+		solution/solution_draw_creator.h \
+		solution/base_solution_creator.h \
 		manager/draw_manager_creator.h \
 		manager/base_manager_creator.h \
 		visitor/draw_visitor_creator.h \
 		visitor/base_visitor_creator.h \
 		visitor/drawer_visitor.h \
+		solution/solution_load_creator.h \
 		manager/load_manager_creator.h \
 		load/moderators/creators/model_load_moderator_creator.h \
 		load/moderators/creators/base_moderator_creator.h \
@@ -629,10 +676,9 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		load/builders/camera/base_camera_builder.h \
 		load/directors/camera/file_camera_build_director.h \
 		load/builders/camera/camera_builder.h \
-		commands/model_command.h \
-		drawer/qt_drawer.h \
-		commands/scene_command.h \
+		solution/solution_scene_creator.h \
 		manager/scene_manager_creator.h \
+		solution/solution_transform_creator.h \
 		manager/transform_manager_creator.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
@@ -659,15 +705,18 @@ camera_impl.o: camera/camera_impl.cpp camera/camera_impl.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o camera_impl.o camera/camera_impl.cpp
 
 base_command.o: commands/base_command.cpp commands/base_command.h \
-		drawer/base_drawer.h \
-		objects/point.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
+		scene/scene.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		objects/object.h \
+		objects/point.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -676,8 +725,10 @@ base_command.o: commands/base_command.cpp commands/base_command.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -692,15 +743,18 @@ base_command.o: commands/base_command.cpp commands/base_command.h \
 
 camera_command.o: commands/camera_command.cpp commands/camera_command.h \
 		commands/base_command.h \
-		drawer/base_drawer.h \
-		objects/point.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
+		scene/scene.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		objects/object.h \
+		objects/point.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -709,8 +763,10 @@ camera_command.o: commands/camera_command.cpp commands/camera_command.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -725,15 +781,18 @@ camera_command.o: commands/camera_command.cpp commands/camera_command.h \
 
 facade.o: commands/facade.cpp commands/facade.h \
 		commands/base_command.h \
-		drawer/base_drawer.h \
-		objects/point.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
+		scene/scene.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		objects/object.h \
+		objects/point.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -742,8 +801,10 @@ facade.o: commands/facade.cpp commands/facade.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -753,20 +814,24 @@ facade.o: commands/facade.cpp commands/facade.h \
 		objects/edge.h \
 		objects/composite.h \
 		camera/camera.h \
-		camera/base_camera_impl.h
+		camera/base_camera_impl.h \
+		solution/solution_pack.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o facade.o commands/facade.cpp
 
 model_command.o: commands/model_command.cpp commands/model_command.h \
 		commands/base_command.h \
-		drawer/base_drawer.h \
-		objects/point.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
+		scene/scene.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		objects/object.h \
+		objects/point.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -775,8 +840,10 @@ model_command.o: commands/model_command.cpp commands/model_command.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -791,15 +858,18 @@ model_command.o: commands/model_command.cpp commands/model_command.h \
 
 scene_command.o: commands/scene_command.cpp commands/scene_command.h \
 		commands/base_command.h \
-		drawer/base_drawer.h \
-		objects/point.h \
-		visitor/base_visitor.h \
-		manager/draw_manager.h \
+		scene/scene.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		objects/object.h \
+		objects/point.h \
+		solution/solution_draw.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
 		manager/base_manager.h \
-		scene/scene.h \
+		solution/solution_load.h \
 		manager/load_manager.h \
 		load/moderators/base_load_moderator.h \
 		load/model_load_options.h \
@@ -808,8 +878,10 @@ scene_command.o: commands/scene_command.cpp commands/scene_command.h \
 		load/directors/base_director.h \
 		load/builders/scene/base_scene_builder.h \
 		load/builders/base_builder.h \
+		solution/solution_scene.h \
 		manager/scene_manager.h \
 		manager/scene_memento.h \
+		solution/solution_transform.h \
 		manager/transform_manager.h \
 		visitor/transform_visitor.h \
 		objects/skeleton_model.h \
@@ -941,6 +1013,70 @@ scene.o: scene/scene.cpp scene/scene.h \
 		visitor/base_visitor.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o scene.o scene/scene.cpp
 
+solution_draw.o: solution/solution_draw.cpp solution/solution_draw.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
+		objects/point.h \
+		drawer/base_drawer.h \
+		solution/base_solution.h \
+		visitor/base_visitor.h \
+		manager/draw_manager.h \
+		manager/base_manager.h \
+		scene/scene.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o solution_draw.o solution/solution_draw.cpp
+
+solution_load.o: solution/solution_load.cpp solution/solution_load.h \
+		solution/base_solution.h \
+		manager/load_manager.h \
+		manager/base_manager.h \
+		objects/object.h \
+		scene/scene.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/point.h \
+		load/moderators/base_load_moderator.h \
+		load/model_load_options.h \
+		load/moderators/scene/scene_load_moderator.h \
+		load/directors/scene/base_scene_build_director.h \
+		load/directors/base_director.h \
+		load/builders/scene/base_scene_builder.h \
+		load/builders/base_builder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o solution_load.o solution/solution_load.cpp
+
+solution_scene.o: solution/solution_scene.cpp solution/solution_scene.h \
+		solution/base_solution.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
+		objects/point.h \
+		scene/scene.h \
+		manager/scene_manager.h \
+		manager/base_manager.h \
+		manager/scene_memento.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o solution_scene.o solution/solution_scene.cpp
+
+solution_transform.o: solution/solution_transform.cpp solution/solution_transform.h \
+		solution/base_solution.h \
+		objects/point.h \
+		scene/scene.h \
+		camera/base_camera.h \
+		objects/invisible_object.h \
+		objects/object.h \
+		manager/transform_manager.h \
+		manager/base_manager.h \
+		visitor/transform_visitor.h \
+		visitor/base_visitor.h \
+		objects/skeleton_model.h \
+		objects/base_model.h \
+		objects/visible_object.h \
+		objects/base_model_structure.h \
+		objects/edge.h \
+		objects/composite.h \
+		camera/camera.h \
+		camera/base_camera_impl.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o solution_transform.o solution/solution_transform.cpp
+
 base_visitor_creator.o: visitor/base_visitor_creator.cpp visitor/base_visitor_creator.h \
 		visitor/base_visitor.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o base_visitor_creator.o visitor/base_visitor_creator.cpp
@@ -959,7 +1095,8 @@ drawer_visitor.o: visitor/drawer_visitor.cpp visitor/drawer_visitor.h \
 		camera/base_camera.h \
 		objects/invisible_object.h \
 		camera/camera.h \
-		camera/base_camera_impl.h
+		camera/base_camera_impl.h \
+		visitor/z_buffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o drawer_visitor.o visitor/drawer_visitor.cpp
 
 transform_visitor.o: visitor/transform_visitor.cpp visitor/transform_visitor.h \
@@ -977,6 +1114,9 @@ transform_visitor.o: visitor/transform_visitor.cpp visitor/transform_visitor.h \
 		camera/base_camera.h \
 		objects/invisible_object.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o transform_visitor.o visitor/transform_visitor.cpp
+
+z_buffer.o: visitor/z_buffer.cpp visitor/z_buffer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o z_buffer.o visitor/z_buffer.cpp
 
 camera_builder.o: load/builders/camera/camera_builder.cpp load/builders/camera/camera_builder.h \
 		load/builders/camera/base_camera_builder.h \

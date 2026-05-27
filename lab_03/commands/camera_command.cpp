@@ -1,27 +1,27 @@
 #include "commands/camera_command.h"
 
 AddCamera::AddCamera(std::shared_ptr<Object> camera, ID id)
-    : method(&Scene::addObjectWithId), camera(camera), id(id)
+    : method(&SolutionScene::addObjectWithId), camera(camera), id(id)
 {
 }
 
 void AddCamera::execute()
 {
-    ((*currentScene()).*method)(camera, id);
+    ((*(proxy.scene)).*method)(camera, id);
 }
 
 DeleteCamera::DeleteCamera(std::size_t id)
-    : method(&Scene::deleteObject), id(id)
+    : method(&SolutionScene::deleteObject), id(id)
 {
 }
 
 void DeleteCamera::execute()
 {
-    ((*currentScene()).*method)(id);
+    ((*(proxy.scene)).*method)(id);
 }
 
 MoveCamera::MoveCamera(std::size_t id, double dx, double dy, double dz)
-    : method(&TransformManager::moveSceneObject), id(id), dx(dx), dy(dy), dz(dz)
+    : method(&SolutionTransform::moveSceneObject), id(id), dx(dx), dy(dy), dz(dz)
 {
 }
 
@@ -31,7 +31,7 @@ void MoveCamera::execute()
 }
 
 RotateCamera::RotateCamera(std::size_t id, double ox, double oy, double oz)
-    : method(&TransformManager::rotateSceneObject), id(id), ox(ox), oy(oy), oz(oz)
+    : method(&SolutionTransform::rotateSceneObject), id(id), ox(ox), oy(oy), oz(oz)
 {
 }
 
@@ -41,7 +41,7 @@ void RotateCamera::execute()
 }
 
 SetCamera::SetCamera(std::size_t id)
-    : method(&SceneManager::setCamera), id(id)
+    : method(&SolutionScene::setCamera), id(id)
 {
 }
 
@@ -51,7 +51,7 @@ void SetCamera::execute()
 }
 
 GetCamera::GetCamera(std::shared_ptr<BaseCamera> &camera)
-    : method(&SceneManager::getCamera), camera(camera)
+    : method(&SolutionScene::getCamera), camera(camera)
 {
 }
 

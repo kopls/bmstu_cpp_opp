@@ -8,7 +8,8 @@
 #include "object.h"
 #include "point.h"
 #include "scene.h"
-#include "transform_manager.h"
+#include "solution_scene.h"
+#include "solution_transform.h"
 
 class ModelCommand : public BaseCommand
 {
@@ -18,7 +19,7 @@ public:
 
 class MoveModel : public ModelCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     MoveModel(std::size_t id, double dx, double dy, double dz);
@@ -34,7 +35,7 @@ private:
 
 class ScaleModel : public ModelCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     ScaleModel(std::size_t id, double kx, double ky, double kz);
@@ -50,7 +51,7 @@ private:
 
 class RotateModel : public ModelCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, double, double, double);
 
 public:
     RotateModel(std::size_t id, double ox, double oy, double oz);
@@ -66,7 +67,7 @@ private:
 
 class TransformModel : public ModelCommand
 {
-    using Action = void (TransformManager::*)(const std::shared_ptr<Scene> &, std::size_t, const Point &, const Point &, const Point &);
+    using Action = void (SolutionTransform::*)(const std::shared_ptr<Scene> &, std::size_t, const Point &, const Point &, const Point &);
 
 public:
     TransformModel(std::size_t id, const Point &move, const Point &scale, const Point &rotate);
@@ -82,7 +83,7 @@ private:
 
 class DeleteModel : public ModelCommand
 {
-    using Action = void (Scene::*)(std::size_t);
+    using Action = void (SolutionScene::*)(std::size_t);
 
 public:
     explicit DeleteModel(std::size_t id);

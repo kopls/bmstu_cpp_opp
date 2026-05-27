@@ -9,7 +9,7 @@ class BaseDrawerFactory
 {
 public:
     virtual ~BaseDrawerFactory() = default;
-    virtual std::unique_ptr<BaseDrawer> createDrawer() = 0;
+    virtual std::shared_ptr<BaseDrawer> createDrawer() = 0;
 };
 
 #endif

@@ -10,6 +10,8 @@ public:
 
     virtual void drawLine(const Point &p1, const Point &p2) = 0;
     virtual void clearScene() = 0;
+    virtual double getWidth() const = 0;
+    virtual double getHeight() const = 0;
 };
 
 #endif

@@ -7,14 +7,12 @@
 
 #include "base_command.h"
 #include "base_camera.h"
-#include "base_drawer.h"
-#include "base_visitor.h"
-#include "draw_manager.h"
-#include "load_manager.h"
 #include "model_load_options.h"
 #include "object.h"
 #include "scene.h"
-#include "scene_manager.h"
+#include "solution_draw.h"
+#include "solution_load.h"
+#include "solution_scene.h"
 
 class SceneCommand : public BaseCommand
 {
@@ -24,10 +22,7 @@ public:
 
 class DrawScene : public SceneCommand
 {
-    using Action = void (DrawManager::*)(std::shared_ptr<Scene>,
-                                         std::shared_ptr<BaseVisitor>,
-                                         std::shared_ptr<BaseDrawer>,
-                                         std::shared_ptr<BaseCamera>);
+    using Action = void (SolutionDraw::*)(std::shared_ptr<Scene>, std::shared_ptr<BaseCamera>);
 
 public:
     DrawScene();
@@ -39,7 +34,7 @@ private:
 
 class LoadScene : public SceneCommand
 {
-    using Action = std::shared_ptr<Scene> (LoadManager::*)(const std::string &);
+    using Action = std::shared_ptr<Scene> (SolutionLoad::*)(const std::string &);
 
 public:
     explicit LoadScene(std::string fileName);
@@ -52,7 +47,7 @@ private:
 
 class LoadModel : public SceneCommand
 {
-    using Action = void (LoadManager::*)(const std::shared_ptr<Scene> &, const std::string &, const std::shared_ptr<std::size_t> &);
+    using Action = void (SolutionLoad::*)(const std::shared_ptr<Scene> &, const std::string &, const std::shared_ptr<std::size_t> &);
 
 public:
     explicit LoadModel(std::string fileName, ID id = nullptr);
@@ -66,11 +61,11 @@ private:
 
 class LoadModelWithOptions : public SceneCommand
 {
-    using Action = void (LoadManager::*)(const std::shared_ptr<Scene> &,
-                                         const std::string &,
-                                         ModelFileFormat,
-                                         ModelRepresentation,
-                                         const std::shared_ptr<std::size_t> &);
+    using Action = void (SolutionLoad::*)(const std::shared_ptr<Scene> &,
+                                          const std::string &,
+                                          ModelFileFormat,
+                                          ModelRepresentation,
+                                          const std::shared_ptr<std::size_t> &);
 
 public:
     LoadModelWithOptions(std::string fileName,
@@ -89,7 +84,7 @@ private:
 
 class CollectModelsToComposite : public SceneCommand
 {
-    using Action = void (Scene::*)();
+    using Action = void (SolutionScene::*)();
 
 public:
     CollectModelsToComposite();
@@ -101,7 +96,7 @@ private:
 
 class SplitCompositeToModels : public SceneCommand
 {
-    using Action = void (Scene::*)();
+    using Action = void (SolutionScene::*)();
 
 public:
     SplitCompositeToModels();

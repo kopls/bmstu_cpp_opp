@@ -8,10 +8,26 @@ Facade::Facade(const CommandProxy &proxy)
     BaseCommand::setProxy(this->proxy);
 }
 
+Facade::Facade(const SolutionPack &solutions)
+{
+    setSolutions(solutions);
+}
+
 void Facade::setProxy(const CommandProxy &proxy)
 {
     this->proxy = proxy;
     BaseCommand::setProxy(this->proxy);
+}
+
+void Facade::setSolutions(const SolutionPack &solutions)
+{
+    CommandProxy commandProxy;
+    commandProxy.scene = solutions.scene;
+    commandProxy.transform = solutions.transform;
+    commandProxy.draw = solutions.draw;
+    commandProxy.load = solutions.load;
+
+    setProxy(commandProxy);
 }
 
 CommandProxy Facade::getProxy() const
