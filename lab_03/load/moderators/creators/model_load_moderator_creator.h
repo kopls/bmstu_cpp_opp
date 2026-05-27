@@ -7,12 +7,25 @@
 
 class ModelLoadModeratorCreator : public BaseModeratorCreator<ModelLoadModerator>
 {
+public:
+    ModelLoadModeratorCreator(std::shared_ptr<BaseReader> reader,
+                              ModelRepresentation representation)
+        : _reader(reader), _representation(representation)
+    {
+    }
+
 protected:
     std::shared_ptr<ModelLoadModerator> create() override
     {
-        auto director = std::make_shared<FileModelBuildDirector>();
+        auto builder = std::make_shared<ModelBuilder>(_representation);
+        auto director = std::make_shared<FileModelBuildDirector>(_reader, builder);
+
         return std::make_shared<ModelLoadModerator>(director);
     }
+
+private:
+    std::shared_ptr<BaseReader> _reader;
+    ModelRepresentation _representation;
 };
 
 #endif

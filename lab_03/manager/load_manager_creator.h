@@ -13,13 +13,7 @@ class LoadManagerCreator : public BaseManagerCreator<LoadManager>
 protected:
     std::shared_ptr<LoadManager> create() override
     {
-        ModelLoadModeratorCreator objectModeratorCreator;
-        SceneLoadModeratorCreator sceneModeratorCreator;
-
-        return std::make_shared<LoadManager>(
-            objectModeratorCreator.getModerator(),
-            sceneModeratorCreator.getModerator()
-        );
+        return std::make_shared<LoadManager>();
     }
 };
 

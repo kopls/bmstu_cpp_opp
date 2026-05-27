@@ -7,6 +7,7 @@
 #include "file_reader.h"
 #include "model_builder.h"
 #include "model_load_moderator.h"
+#include "model_load_moderator_creator.h"
 
 LoadManager::LoadManager(std::shared_ptr<BaseLoadModerator> objectModerator,
                          std::shared_ptr<SceneLoadModerator> sceneModerator)
@@ -34,9 +35,8 @@ std::shared_ptr<Object> LoadManager::loadModel(const std::string &fileName,
     else
         reader = std::make_shared<FileReader>();
 
-    auto builder = std::make_shared<ModelBuilder>(representation);
-    auto director = std::make_shared<FileModelBuildDirector>(reader, builder);
-    auto moderator = std::make_shared<ModelLoadModerator>(director);
+    ModelLoadModeratorCreator creator(reader, representation);
+    auto moderator = creator.getModerator();
 
     return moderator->load(fileName);
 }
