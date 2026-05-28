@@ -2,12 +2,8 @@
 
 #include <stdexcept>
 
-#include "binary_file_reader.h"
-#include "file_model_build_director.h"
-#include "file_reader.h"
-#include "model_builder.h"
-#include "model_load_moderator.h"
 #include "model_load_moderator_creator.h"
+#include "reader_solution.h"
 
 LoadManager::LoadManager(std::shared_ptr<BaseLoadModerator> objectModerator,
                          std::shared_ptr<SceneLoadModerator> sceneModerator)
@@ -28,14 +24,10 @@ std::shared_ptr<Object> LoadManager::loadModel(const std::string &fileName,
                                                ModelFileFormat format,
                                                ModelRepresentation representation)
 {
-    std::shared_ptr<BaseReader> reader;
+    ReaderSolution readerSolution;
+    auto reader = readerSolution.resolve(format);
 
-    if (format == ModelFileFormat::Binary)
-        reader = std::make_shared<BinaryFileReader>();
-    else
-        reader = std::make_shared<FileReader>();
-
-    ModelLoadModeratorCreator creator(reader, representation);
+    ModelLoadModeratorCreator creator(format, reader, representation);
     auto moderator = creator.getModerator();
 
     return moderator->load(fileName);
