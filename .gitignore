@@ -1,0 +1,49 @@
+# Compiler and linker output
+*.o
+*.obj
+*.exe
+*.a
+*.so
+*.so.*
+*.dll
+*.pdb
+*.d
+*.gcno
+*.gcda
+*.gcov
+
+# Build directories
+build/
+build-*/
+out/
+debug/
+release/
+
+# Generated Qt files
+.qmake.stash
+.qmake.cache
+moc_*.cpp
+moc_predefs.h
+ui_*.h
+*.pro.user
+*.pro.user.*
+Makefile.Debug
+Makefile.Release
+/lab_01/src/Makefile
+/lab_03/Makefile
+
+# Application binaries without an extension
+/lab_01/src/lab_01
+/lab_01/src/app
+/lab_03/lab_03
+
+# Editor, backup, and OS files
+*.sw?
+*~
+*.bak
+*.bkp
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*:Zone.Identifier
